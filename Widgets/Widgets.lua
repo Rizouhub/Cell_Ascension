@@ -619,14 +619,14 @@ function Cell.CreateButton(parent, text, buttonColor, size, noBorder, noBackgrou
             if template and strfind(template, "SecureActionButtonTemplate") then
                 -- NOTE: ActionButtonUseKeyDown will affect OnClick
                 if down == GetCVarBool("ActionButtonUseKeyDown") then
-                    PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+                    PlaySound(Cell.SOUNDKIT.U_CHAT_SCROLL_BUTTON)
                 end
             else
-                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+                PlaySound(Cell.SOUNDKIT.U_CHAT_SCROLL_BUTTON)
             end
         end)
     else
-        b:SetScript("PostClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) end)
+        b:SetScript("PostClick", function() PlaySound(Cell.SOUNDKIT.U_CHAT_SCROLL_BUTTON) end)
     end
 
     Cell.SetTooltips(b, "ANCHOR_TOPLEFT", 0, 3, ...)
@@ -794,7 +794,7 @@ function Cell.CreateCheckButton(parent, label, onClick, ...)
     local cb = CreateFrame("CheckButton", nil, parent)
     cb.onClick = onClick
     cb:SetScript("OnClick", function(self)
-        PlaySound(self:GetChecked() and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
+        PlaySound(self:GetChecked() and Cell.SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or Cell.SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
         if cb.onClick then cb.onClick(self:GetChecked() and true or false, self) end
     end)
 
@@ -2263,7 +2263,7 @@ local function CreateItemButtons(items, itemTable, itemParent, level)
 
             -- clear parent menuItem's onClick
             b:SetScript("OnClick", function()
-                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+                PlaySound(Cell.SOUNDKIT.U_CHAT_SCROLL_BUTTON)
                 if item.onClick then
                     menu:Hide()
                     item.onClick(item.text)
@@ -2279,7 +2279,7 @@ local function CreateItemButtons(items, itemTable, itemParent, level)
             end)
 
             b:SetScript("OnClick", function()
-                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+                PlaySound(Cell.SOUNDKIT.U_CHAT_SCROLL_BUTTON)
                 menu:Hide()
                 if item.onClick then item.onClick(item.text) end
             end)
@@ -2396,7 +2396,7 @@ local function CreateItemButtons_Scroll(items, itemTable, limit, level)
 
             -- clear parent menuItem's onClick
             b:SetScript("OnClick", function()
-                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+                PlaySound(Cell.SOUNDKIT.U_CHAT_SCROLL_BUTTON)
                 if item.onClick then
                     menu:Hide()
                     item.onClick(item.text)
@@ -2412,7 +2412,7 @@ local function CreateItemButtons_Scroll(items, itemTable, limit, level)
             end)
 
             b:SetScript("OnClick", function()
-                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+                PlaySound(Cell.SOUNDKIT.U_CHAT_SCROLL_BUTTON)
                 menu:Hide()
                 if item.onClick then item.onClick(item.text) end
             end)
@@ -3097,7 +3097,7 @@ function Cell.CreateDropdown(parent, width, dropdownType, isMini, isHorizontal)
             end
 
             b:SetScript("OnClick", function()
-                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+                PlaySound(Cell.SOUNDKIT.U_CHAT_SCROLL_BUTTON)
                 if dropdownType == "texture" then
                     menu:SetSelected(item.text, item.texture)
                 elseif dropdownType == "font" then

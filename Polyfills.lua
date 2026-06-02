@@ -1491,19 +1491,18 @@ do
 end
 
 -- SOUNDKIT
-if not SOUNDKIT then
-    SOUNDKIT = {
-        U_CHAT_SCROLL_BUTTON = "UChatScrollButton",
-        IG_MAINMENU_OPTION_CHECKBOX_ON = "igMainMenuOptionCheckBoxOn",
-        IG_MAINMENU_OPTION_CHECKBOX_OFF = "igMainMenuOptionCheckBoxOff",
-        IG_MAINMENU_OPEN = "igMainMenuOpen",
-        IG_MAINMENU_CLOSE = "igMainMenuClose",
-        IG_ABILITY_PAGE_TURN = "igAbilityPageTurn",
-        IG_CHARACTER_INFO_TAB = "igCharacterInfoTab",
-        IG_BACKPACK_OPEN = "igBackPackOpen",
-        IG_BACKPACK_CLOSE = "igBackPackClose",
-    }
-end
+Cell.SOUNDKIT = {
+    U_CHAT_SCROLL_BUTTON = "igChatScrollUp",
+    IG_MAINMENU_OPTION_CHECKBOX_ON = "igMainMenuOptionCheckBoxOn",
+    IG_MAINMENU_OPTION_CHECKBOX_OFF = "igMainMenuOptionCheckBoxOff",
+    IG_MAINMENU_OPEN = "igMainMenuOpen",
+    IG_MAINMENU_CLOSE = "igMainMenuClose",
+    IG_ABILITY_PAGE_TURN = "igAbilityPageTurn",
+    IG_CHARACTER_INFO_TAB = "igCharacterInfoTab",
+    IG_BACKPACK_OPEN = "igBackPackOpen",
+    IG_BACKPACK_CLOSE = "igBackPackClose",
+}
+
 
 -- C_ClassTalents (Retail talent system, not in WotLK)
 if not C_ClassTalents then
