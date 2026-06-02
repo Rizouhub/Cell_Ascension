@@ -2655,7 +2655,8 @@ end
 -------------------------------------------------
 local function UnitButton_RegisterEvents(self)
     -- self:RegisterEvent("PLAYER_ENTERING_WORLD")
-    self:RegisterEvent("GROUP_ROSTER_UPDATE")
+    -- self:RegisterEvent("GROUP_ROSTER_UPDATE")
+    Cell_RegisterForGroupRosterProxy(self)
 
     self:RegisterEvent("UNIT_HEALTH")
     self:RegisterEvent("UNIT_MAXHEALTH")
@@ -2731,10 +2732,11 @@ end
 
 local function UnitButton_UnregisterEvents(self)
     self:UnregisterAllEvents()
+    Cell_UnregisterFromGroupRosterProxy(self)
 end
 
 local function UnitButton_OnEvent(self, event, unit, arg)
-    if unit and (self.states.displayedUnit == unit or self.states.unit == unit) then
+    if type(unit) == "string" and (self.states.displayedUnit == unit or self.states.unit == unit) then
         if  event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_CONNECTION" then
             self._updateRequired = 1
             self._powerUpdateRequired = 1
@@ -2790,6 +2792,7 @@ local function UnitButton_OnEvent(self, event, unit, arg)
 
         elseif event == "UNIT_AURA" then
             UnitButton_UpdateAuras(self, arg)
+            UnitButton_UpdateShieldAbsorbs(self)
 
         -- elseif event == "UNIT_IN_RANGE_UPDATE" then
         --     UnitButton_UpdateInRange(self, arg)

@@ -1510,9 +1510,6 @@ end
 -------------------------------------------------
 local pwsInfo = {} -- Power Word: Shield
 local daInfo = {} -- Divine Aegis
--- 64413: Protection of Ancient Kings
--- 64411: Blessing of Ancient Kings
-local absorbInfos = {}
 
 local function UnitButton_UpdateHealthStates(self, diff)
     local unit = self.states.displayedUnit
@@ -1525,16 +1522,8 @@ local function UnitButton_UpdateHealthStates(self, diff)
     self.states.health = health
     self.states.healthMax = healthMax
     if guid then
-        local total = 0
-        if absorbInfos[guid] then
-             for spellName, amount in pairs(absorbInfos[guid]) do
-                 total = total + amount
-             end
-        end
-        self.states.totalAbsorbs = total
-        -- WotLK 3.3.5a: Heal absorbs don't exist in WotLK (added in Cataclysm+)
-        -- Only shield absorbs (like PW:S) exist, so healAbsorbs should always be 0
-        self.states.healAbsorbs = 0
+        self.states.totalAbsorbs = UnitGetTotalAbsorbs(unit) or 0
+        self.states.healAbsorbs = UnitGetTotalHealAbsorbs(unit) or 0
     else
         self.states.totalAbsorbs = 0
         self.states.healAbsorbs = 0
@@ -2338,287 +2327,13 @@ local function UnitButton_UpdatePowerWordShield(self, current, max, resetMax)
     self.indicators.powerWordShield:UpdateShield(current, max, resetMax)
 end
 
-local function _UpdateShield(b, current, max, resetMax)
+local function _UpdateShield(b)
     UnitButton_UpdateShieldAbsorbs(b)
-    UnitButton_UpdatePowerWordShield(b, current, max, resetMax)
 end
 
-local function UpdateShield(guid, max, resetMax)
-    local pws = absorbInfos[guid] and absorbInfos[guid][PWS_NAME] or 0
-    F.HandleUnitButton("guid", guid, _UpdateShield, pws, max, resetMax)
+local function UpdateShield(guid)
+    F.HandleUnitButton("guid", guid, _UpdateShield)
 end
-
-local cleu = CreateFrame("Frame")
-cleu:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-
-local UnitLevel = UnitLevel
--- local totalAbsorbed = 0
-local lastHealAmount, lastHealGUID
-local lastGlyphHeal = {}
-local blessing
-local lastHealTimeStamp = {}
-
--- Localized Spell Names
-local PWS_NAME = GetSpellInfo(17) or "Power Word: Shield"
-local DA_NAME = GetSpellInfo(47753) or "Divine Aegis"
--- Localized Spell Names
-local PWS_NAME = GetSpellInfo(17) or "Power Word: Shield"
-local DA_NAME = GetSpellInfo(47753) or "Divine Aegis"
-local PAK_NAME = GetSpellInfo(64413) or "Protection of Ancient Kings"
-
--- Shaman
-local STONECLAW_NAME = GetSpellInfo(55277) or "Stoneclaw Totem"
--- Mage
-local ICE_BARRIER_NAME = GetSpellInfo(11426) or "Ice Barrier"
-local MANA_SHIELD_NAME = GetSpellInfo(1463) or "Mana Shield"
--- Paladin
-local SACRED_SHIELD_NAME = GetSpellInfo(58597) or "Sacred Shield"
--- Warlock
-local SACRIFICE_NAME = GetSpellInfo(7812) or "Sacrifice"
-
-local ABSORB_SPELLS = {
-    [PWS_NAME] = true,
-    [DA_NAME] = true,
-    [PAK_NAME] = true,
-    [STONECLAW_NAME] = true,
-    [ICE_BARRIER_NAME] = true,
-    [SACRED_SHIELD_NAME] = true,
-    [MANA_SHIELD_NAME] = true,
-    [SACRIFICE_NAME] = true,
-}
-
--------------------------------------------------
--- WotLK Absorb Scanner
--------------------------------------------------
-local scanner = CreateFrame("GameTooltip", "CellAbsorbScanner", nil, "GameTooltipTemplate")
-scanner:SetOwner(WorldFrame, "ANCHOR_NONE")
-
-local function GetShieldAmount(unit, spellName)
-    local index = 1
-    while true do
-        local name = UnitBuff(unit, index)
-        if not name then break end
-        if name == spellName then
-            scanner:ClearLines()
-            scanner:SetUnitBuff(unit, index)
-            local text = CellAbsorbScannerTextLeft2:GetText() 
-            if text then
-                local value = tonumber(string.match(text, "(%d+)"))
-                return value
-            end
-        end
-        index = index + 1
-    end
-    return 0
-end
-
-local GetCLEU = function(...)
-    if CombatLogGetCurrentEventInfo then
-        local a = {CombatLogGetCurrentEventInfo()}
-        if a[2] ~= nil then return unpack(a) end
-    end
-    return ...
-end
-
-cleu:SetScript("OnEvent", function(_, _, ...)
-    local timestamp, subEvent, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20 = GetCLEU(...)
-    local spellId, spellName, spellSchool = arg9, arg10, arg11
-
-    if subEvent == "SPELL_HEAL" then
-        if spellId == 56160 then -- Glyph of Power Word: Shield
-            lastHealTimeStamp[destGUID] = timestamp
-
-            local amount
-            if arg17 then
-                amount = arg12 / 1.5 / 0.2
-            else
-                amount = arg12 / 0.2
-            end
-            lastGlyphHeal[destGUID] = arg12
-            
-            if not absorbInfos[destGUID] then absorbInfos[destGUID] = {} end
-            absorbInfos[destGUID][PWS_NAME] = amount
-
-            if not indicatorBooleans["powerWordShield"] or sourceGUID == Cell.vars.playerGUID then
-                UpdateShield(destGUID, amount)
-            else
-                UpdateShield(destGUID, nil, true)
-            end
-        end
-
-        -- Divine Aegis (mine)
-        if sourceGUID == Cell.vars.playerGUID and Cell.vars.divineAegisMultiplier and arg18 then
-            local maxDA = Cell.vars.guids[destGUID] and 125 * UnitLevel(Cell.vars.guids[destGUID]) or 10000
-            if not absorbInfos[destGUID] then absorbInfos[destGUID] = {} end
-            
-            local currentDA = absorbInfos[destGUID][DA_NAME] or 0
-            absorbInfos[destGUID][DA_NAME] = min(currentDA + arg15 * Cell.vars.divineAegisMultiplier, maxDA)
-            
-            UpdateShield(destGUID)
-        end
-
-        -- Val'anyr
-        if sourceGUID == Cell.vars.playerGUID then
-            lastHealAmount = arg15
-            lastHealGUID = destGUID
-            if blessing then
-                if not absorbInfos[destGUID] then absorbInfos[destGUID] = {} end
-                local currentPAK = absorbInfos[destGUID][PAK_NAME] or 0
-                absorbInfos[destGUID][PAK_NAME] = min(currentPAK + arg15 * 0.15, 20000)
-                
-                UpdateShield(destGUID)
-            end
-        end
-
-    elseif subEvent == "SPELL_PERIODIC_HEAL" then
-        -- Val'anyr
-        if sourceGUID == Cell.vars.playerGUID then
-            lastHealAmount = arg15
-            lastHealGUID = destGUID
-            if blessing then
-                if not absorbInfos[destGUID] then absorbInfos[destGUID] = {} end
-                local currentPAK = absorbInfos[destGUID][PAK_NAME] or 0
-                absorbInfos[destGUID][PAK_NAME] = min(currentPAK + arg15 * 0.15, 20000)
-                
-                UpdateShield(destGUID)
-            end
-        end
-
-    -- WotLK Absorb Application / Removal
-    elseif subEvent == "SPELL_AURA_APPLIED" or subEvent == "SPELL_AURA_REFRESH" then
-        if spellName and ABSORB_SPELLS[spellName] then
-             -- Specific logic for PW:S glyph check prioritization
-             if spellName == PWS_NAME and lastGlyphHeal[destGUID] and lastHealTimeStamp[destGUID] and (timestamp - lastHealTimeStamp[destGUID] < 0.5) then
-                  if not absorbInfos[destGUID] then absorbInfos[destGUID] = {} end
-                  absorbInfos[destGUID][PWS_NAME] = lastGlyphHeal[destGUID] / 0.2
-                  lastGlyphHeal[destGUID] = nil
-                  UpdateShield(destGUID)
-             else
-                  local unit = Cell.vars.guids[destGUID]
-                  if unit then
-                      local function UpdateAbsorbScan()
-                           local amount = GetShieldAmount(unit, spellName)
-                           if amount and amount > 0 then
-                                if not absorbInfos[destGUID] then absorbInfos[destGUID] = {} end
-                                absorbInfos[destGUID][spellName] = amount
-                                UpdateShield(destGUID, amount)
-                                return true
-                           end
-                           return false
-                      end
-                      
-                      -- Try immediately
-                      if not UpdateAbsorbScan() then
-                           -- Retry in 0.1s (Race condition fix)
-                           C_Timer.After(0.1, function() 
-                                -- Re-check unit existence/guid match? 
-                                -- Minimal check: if shield is still expected.
-                                if not UpdateAbsorbScan() then
-                                     -- Final retry 0.3s?
-                                     C_Timer.After(0.2, UpdateAbsorbScan)
-                                end
-                           end)
-                      end
-                  end
-             end
-             -- UpdateShield called inside UpdateAbsorbScan if successful
-        elseif spellId == 64411 and sourceGUID == Cell.vars.playerGUID then
-             -- Blessing of Ancient Kings (start)
-             blessing = true
-             if lastHealAmount then
-                 if not absorbInfos[lastHealGUID] then absorbInfos[lastHealGUID] = {} end
-                 absorbInfos[lastHealGUID][PAK_NAME] = min(lastHealAmount * 0.15, 20000)
-                 UpdateShield(lastHealGUID)
-             end
-        end
-
-    elseif subEvent == "SPELL_AURA_REMOVED" then
-        if spellName and ABSORB_SPELLS[spellName] then
-            if absorbInfos[destGUID] then
-                 absorbInfos[destGUID][spellName] = nil
-            end
-            if spellName == PWS_NAME and lastGlyphHeal[destGUID] then
-                lastGlyphHeal[destGUID] = nil
-                 -- Only clear PW:S
-            end
-            
-            UpdateShield(destGUID)
-            
-            if spellName == PWS_NAME then
-                -- drop absorb bar immediately ? No update handles it.
-                -- However legacy code forced hide if HealAbsorbs 0.
-                -- UpdateShield calls UpdateShieldAbsorbs which hides if 0.
-            end
-        elseif sourceGUID == Cell.vars.playerGUID then 
-            if spellId == 64411 then
-                blessing = false
-                UpdateShield(destGUID)
-            end
-        end
-
-    -- WotLK Consumption
-    -- SWING_DAMAGE: amount(9), ..., absorbed(14)
-    elseif subEvent == "SWING_DAMAGE" then
-        local absorbed = arg14
-        if absorbed and absorbed > 0 and absorbInfos[destGUID] then
-             -- Distribute consumption?
-             -- Usually deduct from ANY shield.
-             -- Iterate and reduce until absorbed is covered.
-             for spellName, amount in pairs(absorbInfos[destGUID]) do
-                 local deduct = math.min(amount, absorbed)
-                 absorbInfos[destGUID][spellName] = amount - deduct
-                 if absorbInfos[destGUID][spellName] <= 0 then absorbInfos[destGUID][spellName] = nil end
-                 absorbed = absorbed - deduct
-                 if absorbed <= 0 then break end
-             end
-             UpdateShield(destGUID)
-        end
-    -- SPELL_DAMAGE / RANGE_DAMAGE: amount(12), ..., absorbed(17)
-    elseif subEvent == "SPELL_DAMAGE" or subEvent == "RANGE_DAMAGE" then
-         local absorbed = arg17
-         if absorbed and absorbed > 0 and absorbInfos[destGUID] then
-             for spellName, amount in pairs(absorbInfos[destGUID]) do
-                 local deduct = math.min(amount, absorbed)
-                 absorbInfos[destGUID][spellName] = amount - deduct
-                 if absorbInfos[destGUID][spellName] <= 0 then absorbInfos[destGUID][spellName] = nil end
-                 absorbed = absorbed - deduct
-                 if absorbed <= 0 then break end
-             end
-             UpdateShield(destGUID)
-        end
-    -- SWING_MISSED / SPELL_MISSED
-    elseif subEvent == "SWING_MISSED" then
-        if arg9 == "ABSORB" then 
-             local amount = arg11 -- Amount
-             if type(amount) == "number" and amount > 0 and absorbInfos[destGUID] then
-                  local absorbed = amount
-                  for spellName, amt in pairs(absorbInfos[destGUID]) do
-                      local deduct = math.min(amt, absorbed)
-                      absorbInfos[destGUID][spellName] = amt - deduct
-                      if absorbInfos[destGUID][spellName] <= 0 then absorbInfos[destGUID][spellName] = nil end
-                      absorbed = absorbed - deduct
-                      if absorbed <= 0 then break end
-                  end
-                  UpdateShield(destGUID)
-             end
-        end
-    elseif subEvent == "SPELL_MISSED" or subEvent == "RANGE_MISSED" then
-         if arg12 == "ABSORB" then 
-             local amount = arg14
-             if type(amount) == "number" and amount > 0 and absorbInfos[destGUID] then
-                  local absorbed = amount
-                  for spellName, amt in pairs(absorbInfos[destGUID]) do
-                      local deduct = math.min(amt, absorbed)
-                      absorbInfos[destGUID][spellName] = amt - deduct
-                      if absorbInfos[destGUID][spellName] <= 0 then absorbInfos[destGUID][spellName] = nil end
-                      absorbed = absorbed - deduct
-                      if absorbed <= 0 then break end
-                  end
-                  UpdateShield(destGUID)
-             end
-        end
-    end
-end)
 
 -------------------------------------------------
 -- cleu health updater
@@ -2741,7 +2456,8 @@ end
 -------------------------------------------------
 local function UnitButton_RegisterEvents(self)
     -- self:RegisterEvent("PLAYER_ENTERING_WORLD")
-    self:RegisterEvent("GROUP_ROSTER_UPDATE")
+    -- self:RegisterEvent("GROUP_ROSTER_UPDATE")
+    Cell_RegisterForGroupRosterProxy(self)
 
     self:RegisterEvent("UNIT_HEALTH")
     self:RegisterEvent("UNIT_HEALTH_FREQUENT")
@@ -2757,6 +2473,8 @@ local function UnitButton_RegisterEvents(self)
     self:RegisterEvent("UNIT_DISPLAYPOWER")
 
     self:RegisterEvent("UNIT_AURA")
+    self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+    self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
 
     self:RegisterEvent("UNIT_HEAL_PREDICTION")
 
@@ -2826,12 +2544,13 @@ end
 
 local function UnitButton_UnregisterEvents(self)
     self:UnregisterAllEvents()
+    Cell_UnregisterFromGroupRosterProxy(self)
 end
 
 local function UnitButton_OnEvent(self, event, unit, ...)
     -- print(event, self:GetName(), unit, self.states.displayedUnit, self.states.unit)
     -- if UnitExists(unit) and (UnitIsUnit(unit, self.states.displayedUnit) or UnitIsUnit(unit, self.states.unit)) then
-    if unit and (self.states.displayedUnit == unit or self.states.unit == unit or UnitIsUnit(unit, self.states.displayedUnit)) then
+    if type(unit) == "string" and (self.states.displayedUnit == unit or self.states.unit == unit or (self.states.displayedUnit and UnitIsUnit(unit, self.states.displayedUnit))) then
         if  event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_CONNECTION" then
             self._updateRequired = 1
             self._powerUpdateRequired = 1
@@ -2859,6 +2578,12 @@ local function UnitButton_OnEvent(self, event, unit, ...)
 
         elseif event == "UNIT_HEAL_PREDICTION" or event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_DELAYED" then
             UnitButton_UpdateHealPrediction(self)
+
+        elseif event == "UNIT_ABSORB_AMOUNT_CHANGED" then
+            UnitButton_UpdateShieldAbsorbs(self)
+
+        elseif event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" then
+            UnitButton_UpdateHealAbsorbs(self, true)
 
         elseif event == "UNIT_MAXPOWER" then
             UnitButton_UpdatePowerStates(self)
@@ -3000,9 +2725,6 @@ local function UnitButton_OnAttributeChanged(self, name, value)
 
             -- reset shields
             local guid = UnitGUID(value)
-            if guid then
-                absorbInfos[guid] = nil
-            end
         end
     end
 end
@@ -3045,9 +2767,6 @@ local function UnitButton_OnHide(self)
     ResetAuraTables(self)
 
     -- reset shields
-    if self.__displayedGuid then
-        absorbInfos[self.__displayedGuid] = nil
-    end
 
     -- NOTE: update Cell.vars.guids
     -- print("hide", self.states.unit, self.__unitGuid, self.__unitName)
