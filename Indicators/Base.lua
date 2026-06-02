@@ -228,6 +228,10 @@ end
 -- SetCooldownStyle
 -------------------------------------------------
 local function Shared_SetCooldownStyle(frame, style, noIcon)
+    if style == "VERTICAL" and Cell.isWrath then
+        style = "CLOCK"
+    end
+
     if frame.style == style then return end
 
     if frame.cooldown then
