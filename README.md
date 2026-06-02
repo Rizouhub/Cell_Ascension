@@ -22,6 +22,8 @@ fixes to the ZB version:
 
 5- buff/debuff animation fixed (must use clock style in 3.3.5 not vertical like retail supports)
 
+6- many general fixes from contributor PR's
+
 # Known issues:
 
 1- Heal prediction is not working perfectly right 100% of the times, but it mostly works, neither it was with ascension default frames. will try to fix
