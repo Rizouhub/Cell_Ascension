@@ -16,6 +16,9 @@ fixes to the ZB version:
 
 2- range check logic now works properly where before it would fade out at 28 yards. Tested for priest after you learn renew may need testing on other classes
 
+# Known issues:
+
+1- Heal prediction is not working 100% right, neither it was with ascension default frames. will try to fix
 
 # Cell
 
