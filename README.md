@@ -4,6 +4,8 @@ Ported from: https://github.com/ZeroBeta/Cell_Wrath
 
 Make sure to folder name is Cell_Ascension for the addon to work.
 
+i recommend installing with gitAddonManager. it should name the folder properly by default.
+
 
 # Cell
 
