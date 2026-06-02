@@ -3,6 +3,6 @@ to test range check:
 /run CellRangeCheckDebug:Show()
 
 
-to check addon usage ram:
+to check addon usage ram -- only use this to test out addons, it reduces FPS by a lot:
 
 /run GarbageCollectionUtil.SetAllowUpdateMemoryUsage(true)
