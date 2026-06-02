@@ -599,8 +599,124 @@ local function ApplyClickCastings(b)
     end
 end
 
+local function GetPostClickModifier()
+    local modifier = ""
+
+    if IsAltKeyDown() then
+        modifier = modifier .. "alt-"
+    end
+    if IsControlKeyDown() then
+        modifier = modifier .. "ctrl-"
+    end
+    if IsShiftKeyDown() then
+        modifier = modifier .. "shift-"
+    end
+
+    return modifier
+end
+
+local function GetPostClickBindKey(button, modifier)
+    if not button then return end
+
+    modifier = modifier or GetPostClickModifier()
+
+    if button == "LeftButton" then
+        return modifier.."type1"
+    elseif button == "RightButton" then
+        return modifier.."type2"
+    elseif button == "MiddleButton" then
+        return modifier.."type3"
+    end
+
+    local mouseButton = strmatch(button, "^Button(%d+)$")
+    if mouseButton then
+        return modifier.."type"..mouseButton
+    end
+
+    return "type-"..button
+end
+
+local function ShowUnitMenu(button)
+    if InCombatLockdown() then return end
+
+    local unit = button:GetAttribute("unit")
+    if not unit or not UnitExists(unit) then return end
+
+    if UnitIsUnit(unit, "player") then
+        if PlayerFrameDropDown then
+            ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor")
+        end
+        return
+    end
+
+    if unit == "pet" or unit == "vehicle" then
+        if PetFrameDropDown then
+            ToggleDropDownMenu(1, nil, PetFrameDropDown, "cursor")
+        end
+        return
+    end
+
+    if unit == "target" then
+        if TargetFrameDropDown then
+            ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
+        end
+        return
+    end
+
+    if unit == "focus" then
+        if FocusFrameDropDown then
+            ToggleDropDownMenu(1, nil, FocusFrameDropDown, "cursor")
+        end
+        return
+    end
+
+    local unitID = tonumber(strmatch(unit, "(%d+)$"))
+    if strfind(unit, "^party%d+$") then
+        local dropdown = unitID and _G["PartyMemberFrame"..unitID.."DropDown"]
+        if dropdown then
+            ToggleDropDownMenu(1, nil, dropdown, "cursor")
+        end
+        return
+    end
+
+    if strfind(unit, "^raid%d+$") and FriendsDropDown and RaidFrameDropDown_Initialize and unitID then
+        HideDropDownMenu(1)
+
+        local menuFrame = FriendsDropDown
+        menuFrame.displayMode = "MENU"
+        menuFrame.initialize = RaidFrameDropDown_Initialize
+        menuFrame.userData = unitID
+        menuFrame.unit = unit
+        menuFrame.name = UnitName(unit)
+        menuFrame.id = unitID
+        ToggleDropDownMenu(1, nil, menuFrame, "cursor")
+    end
+end
+
 function F.UpdateClickCastOnFrame(frame, snippet)
     if frame then
+        if not frame._menuPostClickHooked then
+            frame._menuPostClickHooked = true
+            frame:HookScript("PreClick", function(self)
+                self._menuClickModifier = GetPostClickModifier()
+            end)
+
+            frame:HookScript("PostClick", function(self, button)
+                local modifier = self._menuClickModifier or ""
+                self._menuClickModifier = nil
+
+                local modifiedMouse = modifier ~= ""
+                if not modifiedMouse and (button == "LeftButton" or button == "RightButton" or button == "MiddleButton" or strmatch(button, "^Button%d+$")) then
+                    return
+                end
+
+                local bindKey = GetPostClickBindKey(button, modifier)
+                if bindKey and self:GetAttribute(bindKey) == "togglemenu" then
+                    ShowUnitMenu(self)
+                end
+            end)
+        end
+
         ClearClickCastings(frame)
         -- update bindingClicks
         frame:SetAttribute("snippet", snippet)
