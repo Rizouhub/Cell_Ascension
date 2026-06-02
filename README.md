@@ -17,13 +17,17 @@ Clean, responsive raid and party frames designed to surface the information you 
 - Built for clarity: sharp debuff tracking, healer-friendly indicators, and quick setup.
 - Works great on Ascension and Wrath-era clients.
 
-**Ascension Wrath port**
+**Ascension port**
 
-- Ported by ZB.
+- Ported by Holyjezus.
+- Improvements & bugs: Discord Username `roger400` or in-game on Bronzebeard (`Holypiest`).
+- Port date: 2026-06-02.
+
+**Wrath port**
+
+- Ported by ZB - https://github.com/ZeroBeta/Cell_Wrath.
 - Improvements & bugs: Discord Username `08374` or in-game on Bronzebeard (`Zeruto` / `Zeruta` / `Reana`).
 - Port date: 2025-12-03.
-
-*
 
 ## Features
 
