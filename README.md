@@ -1,6 +1,9 @@
+Ported from: https://github.com/ZeroBeta/Cell_Wrath
+
 # Installation
 
-Make sure to rename the folder into Cell_Ascension for the addon to work.
+Make sure to folder name is Cell_Ascension for the addon to work.
+
 
 # Cell
 
