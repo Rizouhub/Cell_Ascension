@@ -2250,6 +2250,7 @@ local friendSpells = {
     ["SHAMAN"] = Cell.isRetail and 8004 or 331, -- 治疗之涌 / 治疗波
     ["WARLOCK"] = 5697, -- 无尽呼吸
     -- ["WARRIOR"] = 3411,
+    ["WITCHDOCTOR"] = 801670
 }
 
 local deadSpells = {
@@ -2276,6 +2277,7 @@ local harmSpells = {
     ["SHAMAN"] = Cell.isRetail and 188196 or 403, -- 闪电箭
     ["WARLOCK"] = 234153, -- 吸取生命
     ["WARRIOR"] = 355, -- 嘲讽
+    ["WITCHDOCTOR"] = 807037
 }
 
 -- local friendItems = {
