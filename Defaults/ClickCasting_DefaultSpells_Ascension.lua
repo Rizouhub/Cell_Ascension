@@ -274,6 +274,7 @@ local defaultSpells = {
         ["common"] = {
          806240, -- Hexbreak
          801661, -- Potion Toss
+         801696, -- Spirit in a Bottle
          801670, -- Loa's Brew
          804049, -- Allcure Elixir
          707671, -- Power Wuju
@@ -381,6 +382,7 @@ local normalResurrection = {
     ["PALADIN"] = 7328,
     ["PRIEST"] = 2006,
     ["SHAMAN"] = 2008,
+    ["WITCHDOCTOR"] = 801796
 }
 
 do
