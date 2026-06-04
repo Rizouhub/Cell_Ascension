@@ -26,7 +26,8 @@ local function SoloFrame_UpdateLayout(layout, which)
         soloFrame:Hide()
         return
     else
-        RegisterAttributeDriver(soloFrame, "state-visibility", "[@raid1,exists] hide;[@party1,exists] hide;[group] hide;show")
+        RegisterAttributeDriver(soloFrame, "state-visibility", "show")
+        soloFrame:Show()
     end
 
     -- update

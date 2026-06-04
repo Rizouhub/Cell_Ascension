@@ -201,6 +201,25 @@ local function ForceSyncPartyButtons()
     end
 end
 
+local rosterRefreshTimer
+local function QueuePartyRosterLayoutUpdate()
+    if rosterRefreshTimer then
+        rosterRefreshTimer:Cancel()
+    end
+
+    -- Manual party buttons only get anchors during layout updates, so refresh
+    -- the current party layout when a slot starts or stops existing.
+    rosterRefreshTimer = C_Timer.NewTimer(0.1, function()
+        rosterRefreshTimer = nil
+
+        if Cell.vars.groupType ~= "party" then
+            return
+        end
+
+        F.UpdateLayout(Cell.vars.layoutGroupType or "party")
+    end)
+end
+
 -- Manually trigger UpdateButtonUnit for each button to populate Cell.unitButtons.party.units
 C_Timer.After(0.1, function()
     if not header.UpdateButtonUnit then return end
@@ -525,3 +544,11 @@ local function PartyFrame_GroupTypeChanged(groupType)
     end
 end
 Cell.RegisterCallback("GroupTypeChanged", "PartyFrame_GroupTypeChanged", PartyFrame_GroupTypeChanged)
+
+local partyRosterRefreshFrame = CreateFrame("Frame")
+partyRosterRefreshFrame:SetScript("OnEvent", function(_, event)
+    if event == "GROUP_ROSTER_UPDATE" then
+        QueuePartyRosterLayoutUpdate()
+    end
+end)
+Cell_RegisterForGroupRosterProxy(partyRosterRefreshFrame)
