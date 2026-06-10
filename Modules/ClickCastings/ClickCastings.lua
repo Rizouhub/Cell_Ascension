@@ -279,7 +279,12 @@ if Cell.isRetail then
         --! NOTE: if another frame shows in front of b, _onleave will NOT trigger. Use WrapScript to solve this issue.
         b:SetAttribute("_onleave", [[
             -- print("_onleave")
-            self:ClearBindings()
+            -- Only clear when cursor left the button area. Child indicator frames (debuff icons
+            -- with EnableMouse=true) fire OnLeave on the parent even while the cursor is still
+            -- geometrically inside the button bounds. IsUnderMouse() is a geometric check.
+            if not self:IsUnderMouse() then
+                self:ClearBindings()
+            end
         ]])
 
         -- wrapFrame:WrapScript(b, "OnLeave", [[
@@ -361,7 +366,12 @@ else
         --! NOTE: if another frame shows in front of b, _onleave will NOT trigger. Use WrapScript to solve this issue.
         b:SetAttribute("_onleave", [[
             -- print("_onleave")
-            self:ClearBindings()
+            -- Only clear when cursor left the button area. Child indicator frames (debuff icons
+            -- with EnableMouse=true) fire OnLeave on the parent even while the cursor is still
+            -- geometrically inside the button bounds. IsUnderMouse() is a geometric check.
+            if not self:IsUnderMouse() then
+                self:ClearBindings()
+            end
         ]])
 
         -- wrapFrame:WrapScript(b, "OnLeave", [[
