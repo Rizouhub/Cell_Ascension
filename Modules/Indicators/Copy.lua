@@ -61,7 +61,7 @@ local function CreateIndicatorsCopyFrame()
     -- buttons
     copyBtn = Cell.CreateButton(copyFrame, L["Copy"], "green", {64, 20})
     copyBtn:SetPoint("BOTTOMLEFT", 5, 5)
-    copyBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(copyBtn, false)
     copyBtn:SetScript("OnClick", function()
         local last = #CellDB["layouts"][to]["indicators"]
         last = tonumber(string.match(CellDB["layouts"][to]["indicators"][last]["indicatorName"], "%d+")) or last
@@ -120,7 +120,7 @@ local function CreateIndicatorsCopyFrame()
         fromList.scrollFrame:Reset()
         fromDropdown:SetSelected()
         toDropdown:SetSelected()
-        copyBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(copyBtn, false)
         wipe(selectedIndicators)
         from, to = nil, nil
     end)
@@ -132,9 +132,9 @@ end
 Validate = function()
     from, to = fromDropdown:GetSelected(), toDropdown:GetSelected()
     if from and to and F.Getn(selectedIndicators) ~= 0 then
-        copyBtn:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(copyBtn, true)
     else
-        copyBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(copyBtn, false)
     end
 end
 

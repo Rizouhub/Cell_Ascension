@@ -139,20 +139,20 @@ local function CreateLayoutImportExportFrame()
 
                         if success and data then
                             title:SetText(L["Import"]..": "..(name == "default" and _G.DEFAULT or name))
-                            importBtn:SetEnabled(true)
+                            Cell.Polyfill.SetEnabled(importBtn, true)
                             imported["name"] = name
                             imported["data"] = data
                         else
                             title:SetText(L["Import"]..": |cffff2222"..L["Error"])
-                            importBtn:SetEnabled(false)
+                            Cell.Polyfill.SetEnabled(importBtn, false)
                         end
                     else -- incompatible version
                         title:SetText(L["Import"]..": |cffff2222"..L["Incompatible Version"])
-                        importBtn:SetEnabled(false)
+                        Cell.Polyfill.SetEnabled(importBtn, false)
                     end
                 else
                     title:SetText(L["Import"]..": |cffff2222"..L["Error"])
-                    importBtn:SetEnabled(false)
+                    Cell.Polyfill.SetEnabled(importBtn, false)
                 end
             else
                 eb:SetText(exported)
@@ -199,7 +199,7 @@ function F.ShowLayoutImportFrame()
     importExportFrame:Show()
     isImport = true
     importBtn:Show()
-    importBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(importBtn, false)
 
     exported = ""
     title:SetText(L["Import"])

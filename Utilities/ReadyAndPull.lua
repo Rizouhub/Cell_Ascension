@@ -204,12 +204,12 @@ local function CreateTexture(b, tex)
     b:SetScript("OnMouseUp", b.onMouseUp)
 
     -- enable / disable
-    b:HookScript("OnEnable", function()
+    Cell.Polyfill.HookScript(b, "OnEnable", function()
         b.tex:SetVertexColor(1, 1, 1)
         b:SetScript("OnMouseDown", b.onMouseDown)
         b:SetScript("OnMouseUp", b.onMouseUp)
     end)
-    b:HookScript("OnDisable", function()
+    Cell.Polyfill.HookScript(b, "OnDisable", function()
         b.tex:SetVertexColor(0.4, 0.4, 0.4)
         b:SetScript("OnMouseDown", nil)
         b:SetScript("OnMouseUp", nil)
@@ -283,14 +283,14 @@ local function CheckPermission()
         buttonsFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
         if F.HasPermission() and CellDB["tools"]["readyAndPull"][1] then
             readyBtn:Show()
-            readyBtn:SetEnabled(true)
+            Cell.Polyfill.SetEnabled(readyBtn, true)
             pullBtn:Show()
-            pullBtn:SetEnabled(true)
+            Cell.Polyfill.SetEnabled(pullBtn, true)
         else
             readyBtn:Hide()
-            readyBtn:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(readyBtn, false)
             pullBtn:Hide()
-            pullBtn:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(pullBtn, false)
         end
     end
 end

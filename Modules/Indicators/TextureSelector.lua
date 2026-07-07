@@ -129,10 +129,10 @@ LoadTextures = function()
             b.delBtn = Cell.CreateButton(b, "×", "red", {13, 13})
             b.delBtn:GetFontString():SetFont("Interface\\AddOns\\Cell_Ascension\\Media\\Fonts\\font.ttf", 10, "")
             b.delBtn:SetPoint("TOPRIGHT")
-            b.delBtn:HookScript("OnEnter", function()
+            Cell.Polyfill.HookScript(b.delBtn, "OnEnter", function()
                 b:GetScript("OnEnter")(b)
             end)
-            b.delBtn:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(b.delBtn, "OnLeave", function()
                 b:GetScript("OnLeave")(b)
             end)
             b.delBtn:SetScript("OnClick", function()
@@ -161,7 +161,7 @@ LoadTextures = function()
         if strfind(strlower(path), "^interface") then
             b.tex:SetTexture(path)
         else
-            b.tex:SetAtlas(path)
+            Cell.Polyfill.SetAtlas(b.tex, path)
         end
 
         -- onclick

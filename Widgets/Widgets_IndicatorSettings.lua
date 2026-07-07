@@ -1075,16 +1075,16 @@ local function CreateSetting_HealthFormat(parent)
 
         local function UpdateWidgets()
             local health1Enabled = widget.format.health1.format ~= "none"
-            widget.health1HideIfEmptyOrFullCB:SetEnabled(health1Enabled)
-            widget.health1ColorDropdown:SetEnabled(health1Enabled)
-            widget.health1ColorPicker:SetEnabled(health1Enabled)
+            Cell.Polyfill.SetEnabled(widget.health1HideIfEmptyOrFullCB, health1Enabled)
+            Cell.Polyfill.SetEnabled(widget.health1ColorDropdown, health1Enabled)
+            Cell.Polyfill.SetEnabled(widget.health1ColorPicker, health1Enabled)
 
             local health2Enabled = widget.format.health2.format ~= "none"
-            widget.health2DelimiterEB:SetEnabled(health2Enabled)
+            Cell.Polyfill.SetEnabled(widget.health2DelimiterEB, health2Enabled)
             widget.health2DelimiterEB.confirmBtn:Hide()
-            widget.health2HideIfEmptyOrFullCB:SetEnabled(health2Enabled)
-            widget.health2ColorDropdown:SetEnabled(health2Enabled)
-            widget.health2ColorPicker:SetEnabled(health2Enabled)
+            Cell.Polyfill.SetEnabled(widget.health2HideIfEmptyOrFullCB, health2Enabled)
+            Cell.Polyfill.SetEnabled(widget.health2ColorDropdown, health2Enabled)
+            Cell.Polyfill.SetEnabled(widget.health2ColorPicker, health2Enabled)
             if health2Enabled then
                 widget.health2DelimiterText:SetTextColor(1, 1, 1)
             else
@@ -1092,10 +1092,10 @@ local function CreateSetting_HealthFormat(parent)
             end
 
             local shieldEnabled = widget.format.shields.format ~= "none"
-            widget.shieldDelimiterEB:SetEnabled(shieldEnabled)
+            Cell.Polyfill.SetEnabled(widget.shieldDelimiterEB, shieldEnabled)
             widget.shieldDelimiterEB.confirmBtn:Hide()
-            widget.shieldColorDropdown:SetEnabled(shieldEnabled)
-            widget.shieldColorPicker:SetEnabled(shieldEnabled)
+            Cell.Polyfill.SetEnabled(widget.shieldColorDropdown, shieldEnabled)
+            Cell.Polyfill.SetEnabled(widget.shieldColorPicker, shieldEnabled)
             if shieldEnabled then
                 widget.shieldDelimiterText:SetTextColor(1, 1, 1)
             else
@@ -1103,10 +1103,10 @@ local function CreateSetting_HealthFormat(parent)
             end
 
             local healAbsorbEnabled = widget.format.healAbsorbs.format ~= "none"
-            widget.healAbsorbDelimiterEB:SetEnabled(healAbsorbEnabled)
+            Cell.Polyfill.SetEnabled(widget.healAbsorbDelimiterEB, healAbsorbEnabled)
             widget.healAbsorbDelimiterEB.confirmBtn:Hide()
-            widget.healAbsorbColorDropdown:SetEnabled(healAbsorbEnabled)
-            widget.healAbsorbColorPicker:SetEnabled(healAbsorbEnabled)
+            Cell.Polyfill.SetEnabled(widget.healAbsorbColorDropdown, healAbsorbEnabled)
+            Cell.Polyfill.SetEnabled(widget.healAbsorbColorPicker, healAbsorbEnabled)
             if healAbsorbEnabled then
                 widget.healAbsorbDelimiterText:SetTextColor(1, 1, 1)
             else
@@ -3321,7 +3321,7 @@ local function CreateSetting_StatusColors(parent)
             widget.func()
         end)
         pendingColor:SetPoint("TOPLEFT", ghostColor, "BOTTOMLEFT", 0, -8)
-        pendingColor:SetEnabled(Cell.isRetail)
+        Cell.Polyfill.SetEnabled(pendingColor, Cell.isRetail)
 
         local acceptedColor = Cell.CreateColorPicker(widget, L["ACCEPTED"], true, function(r, g, b, a)
             widget.colorsTable["ACCEPTED"][1] = r
@@ -3331,7 +3331,7 @@ local function CreateSetting_StatusColors(parent)
             widget.func()
         end)
         acceptedColor:SetPoint("TOPLEFT", pendingColor, "TOPRIGHT", 70, 0)
-        acceptedColor:SetEnabled(Cell.isRetail)
+        Cell.Polyfill.SetEnabled(acceptedColor, Cell.isRetail)
 
         local declinedColor = Cell.CreateColorPicker(widget, L["DECLINED"], true, function(r, g, b, a)
             widget.colorsTable["DECLINED"][1] = r
@@ -3341,7 +3341,7 @@ local function CreateSetting_StatusColors(parent)
             widget.func()
         end)
         declinedColor:SetPoint("TOPLEFT", acceptedColor, "TOPRIGHT", 70, 0)
-        declinedColor:SetEnabled(Cell.isRetail)
+        Cell.Polyfill.SetEnabled(declinedColor, Cell.isRetail)
 
         local resetBtn = Cell.CreateButton(widget, L["Reset All"], "accent", {70, 20})
         resetBtn:SetPoint("TOPLEFT", pendingColor, "BOTTOMLEFT", 0, -8)
@@ -3652,7 +3652,7 @@ local function CreateSetting_Stack(parent)
         widget.stackCB = Cell.CreateCheckButton(widget, L["showStack"], function(checked, self)
             widget.stackTbl[1] = checked
             widget.func(widget.stackTbl)
-            -- widget.circledStackCB:SetEnabled(checked)
+            -- Cell.Polyfill.SetEnabled(widget.circledStackCB, checked)
         end)
         widget.stackCB:SetPoint("TOPLEFT", 5, -8)
 
@@ -3676,7 +3676,7 @@ local function CreateSetting_Stack(parent)
             widget.stackTbl = stackTbl
             widget.stackCB:SetChecked(stackTbl[1])
             widget.circledStackCB:SetChecked(stackTbl[2])
-            -- widget.circledStackCB:SetEnabled(stackTbl[1])
+            -- Cell.Polyfill.SetEnabled(widget.circledStackCB, stackTbl[1])
         end
     else
         widget = settingWidgets["stack"]
@@ -4178,11 +4178,11 @@ local function CreateAuraButtons(parent, auraButtons, auraTable, noUpDownButtons
 
             CellSpellTooltip:SetOwner(popup, "ANCHOR_NONE")
             CellSpellTooltip:SetPoint("TOPLEFT", popup, "BOTTOMLEFT", 0, -1)
-            CellSpellTooltip:SetSpellByID(spellId, tex)
+            Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId, tex)
             CellSpellTooltip:Show()
         end)
 
-        popup:HookScript("OnHide", function()
+        Cell.Polyfill.HookScript(popup, "OnHide", function()
             CellSpellTooltip:Hide()
         end)
     end
@@ -4233,7 +4233,7 @@ local function CreateAuraButtons(parent, auraButtons, auraTable, noUpDownButtons
             auraButtons[i].spellIconBg = auraButtons[i]:CreateTexture(nil, "BORDER")
             auraButtons[i].spellIconBg:SetSize(16, 16)
             auraButtons[i].spellIconBg:SetPoint("TOPLEFT", 2, -2)
-            auraButtons[i].spellIconBg:SetColorTexture(0, 0, 0, 1)
+            Cell.Polyfill.SetColorTexture(auraButtons[i].spellIconBg, 0, 0, 0, 1)
             auraButtons[i].spellIconBg:Hide()
 
             auraButtons[i].spellIcon = auraButtons[i]:CreateTexture(nil, "OVERLAY")
@@ -4316,15 +4316,15 @@ local function CreateAuraButtons(parent, auraButtons, auraTable, noUpDownButtons
             auraButtons[i].colorPicker = Cell.CreateColorPicker(auraButtons[i], "", true)
             auraButtons[i].colorPicker:SetPoint("RIGHT", auraButtons[i].up, "LEFT", -1, 0)
             auraButtons[i].colorPicker:SetPoint("TOP", 0, -3)
-            auraButtons[i].colorPicker:HookScript("OnEnter", function()
+            Cell.Polyfill.HookScript(auraButtons[i].colorPicker, "OnEnter", function()
                 auraButtons[i]:GetScript("OnEnter")(auraButtons[i])
             end)
-            auraButtons[i].colorPicker:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(auraButtons[i].colorPicker, "OnLeave", function()
                 auraButtons[i]:GetScript("OnLeave")(auraButtons[i])
             end)
 
             -- spell tooltip
-            auraButtons[i]:HookScript("OnEnter", function(self)
+            Cell.Polyfill.HookScript(auraButtons[i], "OnEnter", function(self)
                 if parent.popupEditBox:IsShown() then return end
 
                 local name = F.GetSpellInfo(self.spellId)
@@ -4335,10 +4335,10 @@ local function CreateAuraButtons(parent, auraButtons, auraTable, noUpDownButtons
 
                 CellSpellTooltip:SetOwner(auraButtons[i], "ANCHOR_NONE")
                 CellSpellTooltip:SetPoint("TOPRIGHT", auraButtons[i], "TOPLEFT", -1, 0)
-                CellSpellTooltip:SetSpellByID(self.spellId, self.spellTex)
+                Cell.Polyfill.SetSpellByID(CellSpellTooltip, self.spellId, self.spellTex)
                 CellSpellTooltip:Show()
             end)
-            auraButtons[i]:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(auraButtons[i], "OnLeave", function()
                 if not parent.popupEditBox:IsShown() then
                     CellSpellTooltip:Hide()
                 end
@@ -4610,10 +4610,10 @@ local function CreateSetting_Auras(parent, index)
                     if data and #data ~= 0 then
                         auraImportExportFrame.data = data
                         auraImportExportFrame.info:SetText(Cell.GetAccentColorString()..L["Spells"]..":|r "..#data)
-                        auraImportExportFrame.importBtn:SetEnabled(true)
+                        Cell.Polyfill.SetEnabled(auraImportExportFrame.importBtn, true)
                     else
                         auraImportExportFrame.info:SetText(Cell.GetAccentColorString()..L["Spells"]..":|r 0")
-                        auraImportExportFrame.importBtn:SetEnabled(false)
+                        Cell.Polyfill.SetEnabled(auraImportExportFrame.importBtn, false)
                     end
                 else
                     eb:SetText(auraImportExportFrame.exported)
@@ -4704,7 +4704,7 @@ local function CreateSetting_Auras(parent, index)
             auraImportExportFrame.textArea:SetText("")
             auraImportExportFrame.info:SetText(Cell.GetAccentColorString()..L["Spells"]..":|r 0")
             auraImportExportFrame.importBtn:Show()
-            auraImportExportFrame.importBtn:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(auraImportExportFrame.importBtn, false)
             auraImportExportFrame:ShowUp()
             -- hide editbox
             if widget.frame.popupEditBox then
@@ -4784,12 +4784,12 @@ local function CreateCleuAuraButtons(parent, auraTable, updateHeightFunc)
             inputs.durationEB.isValid = false
             inputs.spellEB:SetText("")
             inputs.durationEB:SetText("")
-            inputs.okBtn:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(inputs.okBtn, false)
             CellSpellTooltip:Hide()
         end)
 
         local function Validate()
-            inputs.okBtn:SetEnabled(inputs.spellEB.isValid and inputs.durationEB.isValid)
+            Cell.Polyfill.SetEnabled(inputs.okBtn, inputs.spellEB.isValid and inputs.durationEB.isValid)
         end
 
         local spellEB = Cell.CreateEditBox(inputs, 20, 20, false, false, true)
@@ -4816,12 +4816,12 @@ local function CreateCleuAuraButtons(parent, auraTable, updateHeightFunc)
 
             CellSpellTooltip:SetOwner(spellEB, "ANCHOR_NONE")
             CellSpellTooltip:SetPoint("TOPLEFT", spellEB, "BOTTOMLEFT", 0, -1)
-            CellSpellTooltip:SetSpellByID(spellId)
+            Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId)
             CellSpellTooltip:Show()
             spellEB.isValid = true
             Validate()
         end)
-        spellEB:HookScript("OnHide", function()
+        Cell.Polyfill.HookScript(spellEB, "OnHide", function()
             CellSpellTooltip:Hide()
         end)
         spellEB:SetScript("OnEscapePressed", function()
@@ -4857,7 +4857,7 @@ local function CreateCleuAuraButtons(parent, auraTable, updateHeightFunc)
         end)
 
         local okBtn = Cell.CreateButton(inputs, "OK", "green", {40, 20})
-        okBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(okBtn, false)
 
         spellEB:SetPoint("TOPLEFT")
         spellEB:SetPoint("BOTTOMRIGHT", inputs, "BOTTOMLEFT", 120, 0)
@@ -4886,7 +4886,7 @@ local function CreateCleuAuraButtons(parent, auraTable, updateHeightFunc)
         parent.inputs:Show()
         parent.inputs.spellEB:SetText("")
         parent.inputs.durationEB:SetText("")
-        parent.inputs.okBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(parent.inputs.okBtn, false)
         parent.inputs.okBtn:SetScript("OnClick", function()
             local spellId = tonumber(parent.inputs.spellEB:GetText())
             local duration = tonumber(parent.inputs.durationEB:GetText())
@@ -4908,7 +4908,7 @@ local function CreateCleuAuraButtons(parent, auraTable, updateHeightFunc)
             cleuAuraButtons[i].spellIconBg = cleuAuraButtons[i]:CreateTexture(nil, "BORDER")
             cleuAuraButtons[i].spellIconBg:SetSize(16, 16)
             cleuAuraButtons[i].spellIconBg:SetPoint("TOPLEFT", 2, -2)
-            cleuAuraButtons[i].spellIconBg:SetColorTexture(0, 0, 0, 1)
+            Cell.Polyfill.SetColorTexture(cleuAuraButtons[i].spellIconBg, 0, 0, 0, 1)
             cleuAuraButtons[i].spellIconBg:Hide()
 
             cleuAuraButtons[i].spellIcon = cleuAuraButtons[i]:CreateTexture(nil, "OVERLAY")
@@ -4967,7 +4967,7 @@ local function CreateCleuAuraButtons(parent, auraTable, updateHeightFunc)
             end)
 
             -- spell tooltip
-            cleuAuraButtons[i]:HookScript("OnEnter", function(self)
+            Cell.Polyfill.HookScript(cleuAuraButtons[i], "OnEnter", function(self)
                 if parent.inputs:IsShown() then return end
 
                 local name = F.GetSpellInfo(self.spellId)
@@ -4978,10 +4978,10 @@ local function CreateCleuAuraButtons(parent, auraTable, updateHeightFunc)
 
                 CellSpellTooltip:SetOwner(cleuAuraButtons[i], "ANCHOR_NONE")
                 CellSpellTooltip:SetPoint("TOPRIGHT", cleuAuraButtons[i], "TOPLEFT", -1, 0)
-                CellSpellTooltip:SetSpellByID(self.spellId)
+                Cell.Polyfill.SetSpellByID(CellSpellTooltip, self.spellId)
                 CellSpellTooltip:Show()
             end)
-            cleuAuraButtons[i]:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(cleuAuraButtons[i], "OnLeave", function()
                 if parent.inputs:IsShown() then return end
                 CellSpellTooltip:Hide()
             end)
@@ -5019,7 +5019,7 @@ local function CreateCleuAuraButtons(parent, auraTable, updateHeightFunc)
             parent.inputs:Show()
             parent.inputs.spellEB:SetText(cleuAuraButtons[i].spellId)
             parent.inputs.durationEB:SetText(cleuAuraButtons[i].duration)
-            parent.inputs.okBtn:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(parent.inputs.okBtn, false)
             parent.inputs.okBtn:SetScript("OnClick", function()
                 local spellId = tonumber(parent.inputs.spellEB:GetText())
                 local duration = tonumber(parent.inputs.durationEB:GetText())
@@ -5147,7 +5147,7 @@ local function CreateSpellButtons(parent, class, spells, disableds)
         spellButtons[buttonIndex]:SetScript("OnEnter", function(self)
             CellSpellTooltip:SetOwner(self, "ANCHOR_NONE")
             CellSpellTooltip:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, P.Scale(3))
-            CellSpellTooltip:SetSpellByID(spellId)
+            Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId)
             CellSpellTooltip:Show()
         end)
         spellButtons[buttonIndex]:SetScript("OnLeave", function()
@@ -5426,11 +5426,11 @@ local function CreateActionButtons(parent, spellTable, updateHeightFunc)
 
             CellSpellTooltip:SetOwner(popup, "ANCHOR_NONE")
             CellSpellTooltip:SetPoint("TOPLEFT", popup, "BOTTOMLEFT", 0, -1)
-            CellSpellTooltip:SetSpellByID(spellId)
+            Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId)
             CellSpellTooltip:Show()
         end)
 
-        popup:HookScript("OnHide", function()
+        Cell.Polyfill.HookScript(popup, "OnHide", function()
             CellSpellTooltip:Hide()
         end)
     end
@@ -5476,7 +5476,7 @@ local function CreateActionButtons(parent, spellTable, updateHeightFunc)
             actionButtons[i].spellIconBg = actionButtons[i]:CreateTexture(nil, "BORDER")
             actionButtons[i].spellIconBg:SetSize(16, 16)
             actionButtons[i].spellIconBg:SetPoint("TOPLEFT", 2, -2)
-            actionButtons[i].spellIconBg:SetColorTexture(0, 0, 0, 1)
+            Cell.Polyfill.SetColorTexture(actionButtons[i].spellIconBg, 0, 0, 0, 1)
             actionButtons[i].spellIconBg:Hide()
 
             actionButtons[i].spellIcon = actionButtons[i]:CreateTexture(nil, "OVERLAY")
@@ -5503,10 +5503,10 @@ local function CreateActionButtons(parent, spellTable, updateHeightFunc)
             actionButtons[i].styleDropdown = Cell.CreateDropdown(actionButtons[i], 30, nil, true)
             P.Height(actionButtons[i].styleDropdown, 16)
             actionButtons[i].styleDropdown:SetPoint("TOPLEFT", actionButtons[i], 180, -2)
-            actionButtons[i].styleDropdown.button:HookScript("OnEnter", function()
+            Cell.Polyfill.HookScript(actionButtons[i].styleDropdown.button, "OnEnter", function()
                 actionButtons[i]:GetScript("OnEnter")(actionButtons[i])
             end)
-            actionButtons[i].styleDropdown.button:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(actionButtons[i].styleDropdown.button, "OnLeave", function()
                 actionButtons[i]:GetScript("OnLeave")(actionButtons[i])
             end)
 
@@ -5535,10 +5535,10 @@ local function CreateActionButtons(parent, spellTable, updateHeightFunc)
                 CellIndicatorsPreviewButton.indicators.actions:Display(actionButtons[i].animationType, actionButtons[i].animationColor)
             end)
             actionButtons[i].colorPicker:SetPoint("TOPLEFT", actionButtons[i].styleDropdown, "TOPRIGHT", 2, -1)
-            actionButtons[i].colorPicker:HookScript("OnEnter", function()
+            Cell.Polyfill.HookScript(actionButtons[i].colorPicker, "OnEnter", function()
                 actionButtons[i]:GetScript("OnEnter")(actionButtons[i])
             end)
-            actionButtons[i].colorPicker:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(actionButtons[i].colorPicker, "OnLeave", function()
                 actionButtons[i]:GetScript("OnLeave")(actionButtons[i])
             end)
 
@@ -5576,7 +5576,7 @@ local function CreateActionButtons(parent, spellTable, updateHeightFunc)
             end)
 
             -- spell tooltip
-            actionButtons[i]:HookScript("OnEnter", function(self)
+            Cell.Polyfill.HookScript(actionButtons[i], "OnEnter", function(self)
                 if not parent.popupEditBox:IsShown() then
                     local name = F.GetSpellInfo(self.spellId)
                     if not name then
@@ -5586,11 +5586,11 @@ local function CreateActionButtons(parent, spellTable, updateHeightFunc)
 
                     CellSpellTooltip:SetOwner(actionButtons[i], "ANCHOR_NONE")
                     CellSpellTooltip:SetPoint("TOPRIGHT", actionButtons[i], "TOPLEFT", -1, 0)
-                    CellSpellTooltip:SetSpellByID(self.spellId)
+                    Cell.Polyfill.SetSpellByID(CellSpellTooltip, self.spellId)
                     CellSpellTooltip:Show()
                 end
             end)
-            actionButtons[i]:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(actionButtons[i], "OnLeave", function()
                 if not parent.popupEditBox:IsShown() then
                     CellSpellTooltip:Hide()
                 end
@@ -5754,10 +5754,10 @@ local function CreateThresholdButtons(parent, thresholdTable, updateHeightFunc)
             thresholdButtons[i].eb = Cell.CreateEditBox(thresholdButtons[i], 35, 16, false, false, true)
             thresholdButtons[i].eb:SetPoint("TOPLEFT", 2, -2)
             thresholdButtons[i].eb:SetMaxLetters(2)
-            thresholdButtons[i].eb:HookScript("OnEnter", function()
+            Cell.Polyfill.HookScript(thresholdButtons[i].eb, "OnEnter", function()
                 thresholdButtons[i]:GetScript("OnEnter")(thresholdButtons[i])
             end)
-            thresholdButtons[i].eb:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(thresholdButtons[i].eb, "OnLeave", function()
                 thresholdButtons[i]:GetScript("OnLeave")(thresholdButtons[i])
             end)
 
@@ -5767,10 +5767,10 @@ local function CreateThresholdButtons(parent, thresholdTable, updateHeightFunc)
             thresholdButtons[i].confirmBtn:SetScript("OnHide", function()
                 thresholdButtons[i].confirmBtn:Hide()
             end)
-            thresholdButtons[i].confirmBtn:HookScript("OnEnter", function()
+            Cell.Polyfill.HookScript(thresholdButtons[i].confirmBtn, "OnEnter", function()
                 thresholdButtons[i]:GetScript("OnEnter")(thresholdButtons[i])
             end)
-            thresholdButtons[i].confirmBtn:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(thresholdButtons[i].confirmBtn, "OnLeave", function()
                 thresholdButtons[i]:GetScript("OnLeave")(thresholdButtons[i])
             end)
             thresholdButtons[i].confirmBtn:SetScript("OnClick", function()
@@ -5807,10 +5807,10 @@ local function CreateThresholdButtons(parent, thresholdTable, updateHeightFunc)
                 parent.func(thresholdTable)
             end)
             thresholdButtons[i].colorPicker:SetPoint("TOPLEFT", thresholdButtons[i].eb, "TOPRIGHT", P.Scale(30), P.Scale(-1))
-            thresholdButtons[i].colorPicker:HookScript("OnEnter", function()
+            Cell.Polyfill.HookScript(thresholdButtons[i].colorPicker, "OnEnter", function()
                 thresholdButtons[i]:GetScript("OnEnter")(thresholdButtons[i])
             end)
-            thresholdButtons[i].colorPicker:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(thresholdButtons[i].colorPicker, "OnLeave", function()
                 thresholdButtons[i]:GetScript("OnLeave")(thresholdButtons[i])
             end)
 
@@ -6035,7 +6035,7 @@ local function CreateSetting_PrivateAuraOptions(parent)
         -- callback
         function widget:SetFunc(func)
             widget.cb1.onClick = function(checked)
-                widget.cb2:SetEnabled(checked)
+                Cell.Polyfill.SetEnabled(widget.cb2, checked)
                 func({checked, widget.cb2:GetChecked()})
             end
             widget.cb2.onClick = function(checked)
@@ -6047,7 +6047,7 @@ local function CreateSetting_PrivateAuraOptions(parent)
         function widget:SetDBValue(t)
             widget.cb1:SetChecked(t[1])
             widget.cb2:SetChecked(t[2])
-            widget.cb2:SetEnabled(t[1])
+            Cell.Polyfill.SetEnabled(widget.cb2, t[1])
         end
     else
         widget = settingWidgets["privateAuraOptions"]

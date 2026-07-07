@@ -134,7 +134,7 @@ local function CreateDebuffsImportExportFrame()
                                 imported["instanceId"] = instanceId
                                 imported["bossId"] = bossId
                                 imported["data"] = data
-                                importBtn:SetEnabled(true)
+                                Cell.Polyfill.SetEnabled(importBtn, true)
                             else
                                 error = L["Error"]
                             end
@@ -152,7 +152,7 @@ local function CreateDebuffsImportExportFrame()
                     title:SetText(L["Import"]..": |cffff2222"..error)
                     instance:SetText(L["Instance Name"]..": |cffff2222"..L["Error"])
                     boss:SetText(L["Boss Name"]..": |cffff2222"..L["Error"])
-                    importBtn:SetEnabled(false)
+                    Cell.Polyfill.SetEnabled(importBtn, false)
                 end
             else
                 eb:SetText(exported)
@@ -198,7 +198,7 @@ function F.ShowRaidDebuffsImportFrame()
     importExportFrame:Show()
     isImport = true
     importBtn:Show()
-    importBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(importBtn, false)
     whichBossesBtn:Hide()
 
     exported = ""

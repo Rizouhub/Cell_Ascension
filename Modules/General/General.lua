@@ -74,19 +74,19 @@ local enableTooltipsCB, hideTooltipsInCombatCB, tooltipsAnchor, tooltipsAnchorTe
 
 local function UpdateTooltipsOptions()
     if strfind(CellDB["general"]["tooltipsPosition"][2], "Cursor") or CellDB["general"]["tooltipsPosition"][2] == "Default" then
-        tooltipsAnchor:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(tooltipsAnchor, false)
         tooltipsAnchorText:SetTextColor(0.4, 0.4, 0.4)
     else
-        tooltipsAnchor:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(tooltipsAnchor, true)
         tooltipsAnchorText:SetTextColor(1, 1, 1)
     end
 
     if CellDB["general"]["tooltipsPosition"][2] == "Cursor" or CellDB["general"]["tooltipsPosition"][2] == "Default" then
-        tooltipsX:SetEnabled(false)
-        tooltipsY:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(tooltipsX, false)
+        Cell.Polyfill.SetEnabled(tooltipsY, false)
     else
-        tooltipsX:SetEnabled(true)
-        tooltipsY:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(tooltipsX, true)
+        Cell.Polyfill.SetEnabled(tooltipsY, true)
     end
 end
 
@@ -96,12 +96,12 @@ local function CreateTooltipsPane()
 
     enableTooltipsCB = Cell.CreateCheckButton(tooltipsPane, L["Enabled"], function(checked, self)
         CellDB["general"]["enableTooltips"] = checked
-        hideTooltipsInCombatCB:SetEnabled(checked)
-        -- enableAuraTooltipsCB:SetEnabled(checked)
-        tooltipsAnchor:SetEnabled(checked)
-        tooltipsAnchoredTo:SetEnabled(checked)
-        tooltipsX:SetEnabled(checked)
-        tooltipsY:SetEnabled(checked)
+        Cell.Polyfill.SetEnabled(hideTooltipsInCombatCB, checked)
+        -- Cell.Polyfill.SetEnabled(enableAuraTooltipsCB, checked)
+        Cell.Polyfill.SetEnabled(tooltipsAnchor, checked)
+        Cell.Polyfill.SetEnabled(tooltipsAnchoredTo, checked)
+        Cell.Polyfill.SetEnabled(tooltipsX, checked)
+        Cell.Polyfill.SetEnabled(tooltipsY, checked)
         if checked then
             tooltipsAnchorText:SetTextColor(1, 1, 1)
             tooltipsAnchoredToText:SetTextColor(1, 1, 1)
@@ -122,7 +122,7 @@ local function CreateTooltipsPane()
     -- enableAuraTooltipsCB = Cell.CreateCheckButton(tooltipsPane, L["Enable Auras Tooltips"].." (pending)", function(checked, self)
     -- end)
     -- enableAuraTooltipsCB:SetPoint("TOPLEFT", hideTooltipsInCombatCB, "BOTTOMLEFT", 0, -7)
-    -- enableAuraTooltipsCB:SetEnabled(false)
+    -- Cell.Polyfill.SetEnabled(enableAuraTooltipsCB, false)
 
     -- position
     tooltipsAnchor = Cell.CreateDropdown(tooltipsPane, 137)
@@ -314,7 +314,7 @@ local function CreateMiscPane()
         Cell.vars.alwaysUpdateAuras = checked
     end, L["Ignore UNIT_AURA payloads"], L["This may help solve issues of indicators not updating correctly"])
     alwaysUpdateAurasCB:SetPoint("TOPLEFT", 5, -27)
-    alwaysUpdateAurasCB:SetEnabled(Cell.isMists)
+    Cell.Polyfill.SetEnabled(alwaysUpdateAurasCB, Cell.isMists)
 
     useCleuCB = Cell.CreateCheckButton(miscPane, L["Faster Health Updates"], function(checked, self)
         CellDB["general"]["useCleuHealthUpdater"] = checked
@@ -363,7 +363,7 @@ local function CreateFramePriorityWidget(parent)
 
         buttons[name].cb = Cell.CreateCheckButton(buttons[name], "", function(checked, self)
             CellDB["general"]["framePriority"][GetPriority(name)][2] = checked
-            buttons[name]:SetEnabled(checked)
+            Cell.Polyfill.SetEnabled(buttons[name], checked)
             buttons[name]._enabled = checked
             sort(CellDB["general"]["framePriority"], Comparator)
             f:Load(CellDB["general"]["framePriority"])
@@ -410,7 +410,7 @@ local function CreateFramePriorityWidget(parent)
             buttons[p[1]]:ClearAllPoints()
             buttons[p[1]]:SetPoint("TOPLEFT", (i-1)*(P.Scale(110)+P.Scale(3)), 0)
             buttons[p[1]]._enabled = p[2]
-            buttons[p[1]]:SetEnabled(p[2])
+            Cell.Polyfill.SetEnabled(buttons[p[1]], p[2])
             buttons[p[1]].cb:SetChecked(p[2])
             buttons[p[1]]._priority = i
         end
@@ -484,17 +484,17 @@ local function ShowTab(tab)
 
         -- tooltips
         enableTooltipsCB:SetChecked(CellDB["general"]["enableTooltips"])
-        hideTooltipsInCombatCB:SetEnabled(CellDB["general"]["enableTooltips"])
+        Cell.Polyfill.SetEnabled(hideTooltipsInCombatCB, CellDB["general"]["enableTooltips"])
         hideTooltipsInCombatCB:SetChecked(CellDB["general"]["hideTooltipsInCombat"])
-        -- enableAuraTooltipsCB:SetEnabled(CellDB["general"]["enableTooltips"])
+        -- Cell.Polyfill.SetEnabled(enableAuraTooltipsCB, CellDB["general"]["enableTooltips"])
         -- enableAuraTooltipsCB:SetChecked(CellDB["general"]["enableAurasTooltips"])
-        tooltipsAnchor:SetEnabled(CellDB["general"]["enableTooltips"])
+        Cell.Polyfill.SetEnabled(tooltipsAnchor, CellDB["general"]["enableTooltips"])
         tooltipsAnchor:SetSelectedValue(CellDB["general"]["tooltipsPosition"][1])
-        tooltipsAnchoredTo:SetEnabled(CellDB["general"]["enableTooltips"])
+        Cell.Polyfill.SetEnabled(tooltipsAnchoredTo, CellDB["general"]["enableTooltips"])
         tooltipsAnchoredTo:SetSelectedValue(CellDB["general"]["tooltipsPosition"][2])
-        tooltipsX:SetEnabled(CellDB["general"]["enableTooltips"])
+        Cell.Polyfill.SetEnabled(tooltipsX, CellDB["general"]["enableTooltips"])
         tooltipsX:SetValue(CellDB["general"]["tooltipsPosition"][4])
-        tooltipsY:SetEnabled(CellDB["general"]["enableTooltips"])
+        Cell.Polyfill.SetEnabled(tooltipsY, CellDB["general"]["enableTooltips"])
         tooltipsY:SetValue(CellDB["general"]["tooltipsPosition"][5])
         if CellDB["general"]["enableTooltips"] then
             tooltipsAnchorText:SetTextColor(1, 1, 1)

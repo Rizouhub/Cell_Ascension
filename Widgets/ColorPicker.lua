@@ -37,7 +37,7 @@ local function UpdateColor_HSBA(h, s, b, a, updateBrightness, updatePickers)
 
     if updateBrightness then
         local _r, _g, _b = F.ConvertHSBToRGB(h, s, 1)
-        brightness.tex:SetGradient("VERTICAL", CreateColor(0, 0, 0, 1), CreateColor(_r, _g, _b, 1))
+        Cell.Polyfill.SetGradient(brightness.tex, "VERTICAL", CreateColor(0, 0, 0, 1), CreateColor(_r, _g, _b, 1))
     end
 
     if updatePickers then
@@ -166,8 +166,8 @@ local function CreateColorPicker()
     current.alpha:SetPoint("BOTTOMRIGHT", P.Scale(-1), P.Scale(1))
 
     function current:SetColor(r, g, b, a)
-        current.solid:SetColorTexture(r, g, b)
-        current.alpha:SetColorTexture(r, g, b, a)
+        Cell.Polyfill.SetColorTexture(current.solid, r, g, b)
+        Cell.Polyfill.SetColorTexture(current.alpha, r, g, b, a)
     end
 
     --------------------------------------------------
@@ -187,8 +187,8 @@ local function CreateColorPicker()
     original.alpha:SetPoint("BOTTOMRIGHT", P.Scale(-1), P.Scale(1))
 
     function original:SetColor(r, g, b, a)
-        original.solid:SetColorTexture(r, g, b)
-        original.alpha:SetColorTexture(r, g, b, a)
+        Cell.Polyfill.SetColorTexture(original.solid, r, g, b)
+        Cell.Polyfill.SetColorTexture(original.alpha, r, g, b, a)
     end
 
     --------------------------------------------------
@@ -217,9 +217,9 @@ local function CreateColorPicker()
     for i = 1, 6 do
         hueSaturation[i] = hueSaturation:CreateTexture(name.."HS_Gradient"..i, "ARTWORK", nil, 0)
         hueSaturation[i]:SetTexture(Cell.vars.whiteTexture)
-        -- hueSaturation[i]:SetColorTexture(1, 1, 1, 1)
+        -- Cell.Polyfill.SetColorTexture(hueSaturation[i], 1, 1, 1, 1)
         -- hueSaturation[i]:SetVertexColor(1, 1, 1, 1)
-        hueSaturation[i]:SetGradient("HORIZONTAL", CreateColor(color[i].r, color[i].g, color[i].b, 1), CreateColor(color[i+1].r, color[i+1].g, color[i+1].b, 1))
+        Cell.Polyfill.SetGradient(hueSaturation[i], "HORIZONTAL", CreateColor(color[i].r, color[i].g, color[i].b, 1), CreateColor(color[i+1].r, color[i+1].g, color[i+1].b, 1))
 
         -- width
         hueSaturation[i]:SetWidth(sectionSize)
@@ -237,7 +237,7 @@ local function CreateColorPicker()
     local saturation = hueSaturation:CreateTexture(name.."HS_Saturation", "ARTWORK", nil, 1)
     saturation:SetBlendMode("BLEND")
     saturation:SetTexture(Cell.vars.whiteTexture)
-    saturation:SetGradient("VERTICAL", CreateColor(1, 1, 1, 1), CreateColor(1, 1, 1, 0))
+    Cell.Polyfill.SetGradient(saturation, "VERTICAL", CreateColor(1, 1, 1, 1), CreateColor(1, 1, 1, 0))
     saturation:SetAllPoints(hueSaturation)
 
     --------------------------------------------------
@@ -271,7 +271,7 @@ local function CreateColorPicker()
     brightness.tex:SetTexture(Cell.vars.whiteTexture)
 
     brightness.thumb1 = brightness:CreateTexture(nil, "ARTWORK")
-    -- brightness.thumb1:SetColorTexture(0, 1, 0, 1)
+    -- Cell.Polyfill.SetColorTexture(brightness.thumb1, 0, 1, 0, 1)
     P.Size(brightness.thumb1, 17, 1)
     brightness:SetThumbTexture(brightness.thumb1)
 
@@ -317,7 +317,7 @@ local function CreateColorPicker()
     alpha.tex:SetPoint("TOPLEFT", P.Scale(1), P.Scale(-1))
     alpha.tex:SetPoint("BOTTOMRIGHT", P.Scale(-1), P.Scale(1))
     alpha.tex:SetTexture(Cell.vars.whiteTexture)
-    alpha.tex:SetGradient("VERTICAL", CreateColor(0, 0, 0, 1), CreateColor(1, 1, 1, 1))
+    Cell.Polyfill.SetGradient(alpha.tex, "VERTICAL", CreateColor(0, 0, 0, 1), CreateColor(1, 1, 1, 1))
 
     alpha.thumb1 = alpha:CreateTexture(nil, "ARTWORK")
     P.Size(alpha.thumb1, 17, 1)

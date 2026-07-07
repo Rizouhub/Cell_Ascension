@@ -113,9 +113,9 @@ end
 
 local function VerticalCooldown_ShowCooldown(self, start, duration, _, icon, debuffType)
     if debuffType then
-        self.spark:SetColorTexture(I.GetDebuffTypeColor(debuffType))
+        Cell.Polyfill.SetColorTexture(self.spark, I.GetDebuffTypeColor(debuffType))
     else
-        self.spark:SetColorTexture(0.5, 0.5, 0.5)
+        Cell.Polyfill.SetColorTexture(self.spark, 0.5, 0.5, 0.5)
     end
 
     if self.icon then
@@ -141,7 +141,7 @@ local function Shared_CreateCooldown_Vertical(frame)
     P.Point(cooldown, "TOPLEFT", frame.icon)
     P.Point(cooldown, "BOTTOMRIGHT", frame.icon, "BOTTOMRIGHT", 0, CELL_BORDER_SIZE)
     cooldown:SetOrientation("VERTICAL")
-    cooldown:SetReverseFill(true)
+    Cell.Polyfill.SetReverseFill(cooldown, true)
     cooldown:SetStatusBarTexture(Cell.vars.whiteTexture)
 
     local texture = cooldown:GetStatusBarTexture()
@@ -156,7 +156,7 @@ local function Shared_CreateCooldown_Vertical(frame)
 
     local mask
     if not Cell.isWrath then
-        mask = cooldown:CreateMaskTexture()
+        mask = Cell.Polyfill.CreateMaskTexture(cooldown)
         mask:SetTexture(Cell.vars.whiteTexture, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
         mask:SetPoint("TOPLEFT")
         mask:SetPoint("BOTTOMRIGHT", texture)
@@ -169,7 +169,7 @@ local function Shared_CreateCooldown_Vertical(frame)
     icon:SetAllPoints(frame.icon)
     icon:SetVertexColor(1, 1, 1, 1)
     if mask then
-        icon:AddMaskTexture(mask)
+        Cell.Polyfill.AddMaskTexture(icon, mask)
     end
 end
 
@@ -185,7 +185,7 @@ local function Shared_CreateCooldown_Vertical_NoIcon(frame)
     P.Point(cooldown, "TOPLEFT", frame, CELL_BORDER_SIZE, -CELL_BORDER_SIZE)
     P.Point(cooldown, "BOTTOMRIGHT", frame, -CELL_BORDER_SIZE, CELL_BORDER_SIZE + CELL_BORDER_SIZE)
     cooldown:SetOrientation("VERTICAL")
-    cooldown:SetReverseFill(true)
+    Cell.Polyfill.SetReverseFill(cooldown, true)
     cooldown:SetStatusBarTexture(Cell.vars.whiteTexture)
 
     local texture = cooldown:GetStatusBarTexture()
@@ -210,13 +210,13 @@ local function Shared_CreateCooldown_Clock(frame)
     P.Point(cooldown, "TOPLEFT", frame, CELL_BORDER_SIZE, -CELL_BORDER_SIZE)
     P.Point(cooldown, "BOTTOMRIGHT", frame, -CELL_BORDER_SIZE, CELL_BORDER_SIZE)
     cooldown:SetReverse(true)
-    cooldown:SetDrawEdge(false)
-    cooldown:SetSwipeTexture(Cell.vars.whiteTexture)
-    cooldown:SetSwipeColor(0, 0, 0, 0.77)
+    Cell.Polyfill.SetDrawEdge(cooldown, false)
+    Cell.Polyfill.SetSwipeTexture(cooldown, Cell.vars.whiteTexture)
+    Cell.Polyfill.SetSwipeColor(cooldown, 0, 0, 0, 0.77)
     -- cooldown:SetEdgeTexture([[Interface\Cooldown\UI-HUD-ActionBar-SecondaryCooldown]])
 
     -- cooldown text
-    cooldown:SetHideCountdownNumbers(true)
+    Cell.Polyfill.SetHideCountdownNumbers(cooldown, true)
     -- disable omnicc
     cooldown.noCooldownCount = true
     -- prevent some dirty addons from adding cooldown text
@@ -331,7 +331,7 @@ local function Shared_SetupGlow(frame, glowOptions)
         frame:StartGlow()
         if not frame._sizeChangedHooked then
             frame._sizeChangedHooked = true
-            frame:HookScript("OnSizeChanged", function()
+            Cell.Polyfill.HookScript(frame, "OnSizeChanged", function()
                 frame:StartGlow()
             end)
         end
@@ -439,7 +439,7 @@ local function BorderIcon_SetCooldown(frame, start, duration, debuffType, textur
 
     if duration == 0 then
         frame.border:Show()
-        frame.border:SetColorTexture(r, g, b)
+        Cell.Polyfill.SetColorTexture(frame.border, r, g, b)
         frame.cooldown:Hide()
         frame.duration:Hide()
         frame:SetScript("OnUpdate", nil)
@@ -452,7 +452,7 @@ local function BorderIcon_SetCooldown(frame, start, duration, debuffType, textur
     else
         frame.border:Hide()
         frame.cooldown:Show()
-        frame.cooldown:SetSwipeColor(r, g, b)
+        Cell.Polyfill.SetSwipeColor(frame.cooldown, r, g, b)
         frame.cooldown:_SetCooldown(start, duration)
 
         if not frame.showDuration then
@@ -523,9 +523,9 @@ function I.CreateAura_BorderIcon(name, parent, borderSize)
     local cooldown = CreateFrame("Cooldown", name.."Cooldown", frame)
     frame.cooldown = cooldown
     cooldown:SetAllPoints(frame)
-    cooldown:SetSwipeTexture(Cell.vars.whiteTexture)
-    cooldown:SetSwipeColor(1, 1, 1)
-    cooldown:SetHideCountdownNumbers(true)
+    Cell.Polyfill.SetSwipeTexture(cooldown, Cell.vars.whiteTexture)
+    Cell.Polyfill.SetSwipeColor(cooldown, 1, 1, 1)
+    Cell.Polyfill.SetHideCountdownNumbers(cooldown, true)
     -- disable omnicc
     cooldown.noCooldownCount = true
     -- prevent some addons from adding cooldown text
@@ -548,12 +548,12 @@ function I.CreateAura_BorderIcon(name, parent, borderSize)
 
     local ag = frame:CreateAnimationGroup()
     frame.ag = ag
-    local t1 = ag:CreateAnimation("Translation")
+    local t1 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t1:SetOffset(0, 5)
     t1:SetDuration(0.1)
     t1:SetOrder(1)
     t1:SetSmoothing("OUT")
-    local t2 = ag:CreateAnimation("Translation")
+    local t2 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t2:SetOffset(0, -5)
     t2:SetDuration(0.1)
     t2:SetOrder(2)
@@ -683,12 +683,12 @@ function I.CreateAura_BarIcon(name, parent)
 
     local ag = frame:CreateAnimationGroup()
     frame.ag = ag
-    local t1 = ag:CreateAnimation("Translation")
+    local t1 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t1:SetOffset(0, 5)
     t1:SetDuration(0.1)
     t1:SetOrder(1)
     t1:SetSmoothing("OUT")
-    local t2 = ag:CreateAnimation("Translation")
+    local t2 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t2:SetOffset(0, -5)
     t2:SetDuration(0.1)
     t2:SetOrder(2)
@@ -1146,16 +1146,16 @@ local function Rect_OnUpdateColor(frame)
     if frame.colors[3][1] and frame._remain <= frame.colors[3][2] then
         if frame.state ~= 3 then
             frame.state = 3
-            frame.tex:SetColorTexture(frame.colors[3][3][1], frame.colors[3][3][2], frame.colors[3][3][3], frame.colors[3][3][4])
+            Cell.Polyfill.SetColorTexture(frame.tex, frame.colors[3][3][1], frame.colors[3][3][2], frame.colors[3][3][3], frame.colors[3][3][4])
         end
     elseif frame.colors[2][1] and frame._remain <= frame._duration * frame.colors[2][2] then
         if frame.state ~= 2 then
             frame.state = 2
-            frame.tex:SetColorTexture(frame.colors[2][3][1], frame.colors[2][3][2], frame.colors[2][3][3], frame.colors[2][3][4])
+            Cell.Polyfill.SetColorTexture(frame.tex, frame.colors[2][3][1], frame.colors[2][3][2], frame.colors[2][3][3], frame.colors[2][3][4])
         end
     elseif frame.state ~= 1 then
         frame.state = 1
-        frame.tex:SetColorTexture(frame.colors[1][1], frame.colors[1][2], frame.colors[1][3], frame.colors[1][4])
+        Cell.Polyfill.SetColorTexture(frame.tex, frame.colors[1][1], frame.colors[1][2], frame.colors[1][3], frame.colors[1][4])
     end
 end
 
@@ -1193,7 +1193,7 @@ end
 
 local function Rect_SetCooldown(frame, start, duration, debuffType, texture, count)
     if duration == 0 then
-        frame.tex:SetColorTexture(unpack(frame.colors[1]))
+        Cell.Polyfill.SetColorTexture(frame.tex, unpack(frame.colors[1]))
         frame:SetScript("OnUpdate", nil)
         frame.duration:Hide()
         frame._start = nil
@@ -1591,12 +1591,12 @@ local function Color_SetColors(self, colors)
         self.gradientTex:Hide()
     elseif colors[1] == "gradient-vertical" then
         self:SetScript("OnUpdate", nil)
-        self.gradientTex:SetGradient("VERTICAL", CreateColor(colors[2][1], colors[2][2], colors[2][3], colors[2][4]), CreateColor(colors[3][1], colors[3][2], colors[3][3], colors[3][4]))
+        Cell.Polyfill.SetGradient(self.gradientTex, "VERTICAL", CreateColor(colors[2][1], colors[2][2], colors[2][3], colors[2][4]), CreateColor(colors[3][1], colors[3][2], colors[3][3], colors[3][4]))
         self.gradientTex:Show()
         self.solidTex:Hide()
     elseif colors[1] == "gradient-horizontal" then
         self:SetScript("OnUpdate", nil)
-        self.gradientTex:SetGradient("HORIZONTAL", CreateColor(colors[2][1], colors[2][2], colors[2][3], colors[2][4]), CreateColor(colors[3][1], colors[3][2], colors[3][3], colors[3][4]))
+        Cell.Polyfill.SetGradient(self.gradientTex, "HORIZONTAL", CreateColor(colors[2][1], colors[2][2], colors[2][3], colors[2][4]), CreateColor(colors[3][1], colors[3][2], colors[3][3], colors[3][4]))
         self.gradientTex:Show()
         self.solidTex:Hide()
     elseif colors[1] == "debuff-type" then
@@ -1686,9 +1686,9 @@ local function Texture_SetTexture(texture, texTbl) -- texture, rotation, color
     if strfind(strlower(texTbl[1]), "^interface") then
         texture.tex:SetTexture(texTbl[1])
     else
-        texture.tex:SetAtlas(texTbl[1])
+        Cell.Polyfill.SetAtlas(texture.tex, texTbl[1])
     end
-    texture.tex:SetRotation(texTbl[2] * math.pi / 180)
+    Cell.Polyfill.SetRotation(texture.tex, texTbl[2] * math.pi / 180)
     texture.tex:SetVertexColor(unpack(texTbl[3]))
     texture.colorAlpha = texTbl[3][4]
 end
@@ -2049,7 +2049,7 @@ local function Block_SetCooldown_Duration(frame, start, duration, debuffType, te
         frame._elapsed = nil
         frame._threshold = nil
     else
-        -- frame.cooldown:SetSwipeColor(r, g, b)
+        -- Cell.Polyfill.SetSwipeColor(frame.cooldown, r, g, b)
         frame.cooldown:ShowCooldown(start, duration)
 
         if not frame.showDuration then
@@ -2115,7 +2115,7 @@ local function Block_SetCooldown_Stack(frame, start, duration, debuffType, textu
         frame._remain = nil
         frame._threshold = nil
     else
-        -- frame.cooldown:SetSwipeColor(r, g, b)
+        -- Cell.Polyfill.SetSwipeColor(frame.cooldown, r, g, b)
         frame.cooldown:ShowCooldown(start, duration)
 
         if not frame.showDuration then
@@ -2199,12 +2199,12 @@ function I.CreateAura_Block(name, parent)
 
     local ag = frame:CreateAnimationGroup()
     frame.ag = ag
-    local t1 = ag:CreateAnimation("Translation")
+    local t1 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t1:SetOffset(0, 5)
     t1:SetDuration(0.1)
     t1:SetOrder(1)
     t1:SetSmoothing("OUT")
-    local t2 = ag:CreateAnimation("Translation")
+    local t2 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t2:SetOffset(0, -5)
     t2:SetDuration(0.1)
     t2:SetOrder(2)
@@ -2373,7 +2373,7 @@ function I.CreateAura_Border(name, parent)
     P.Point(border, "TOPLEFT", CELL_BORDER_SIZE, -CELL_BORDER_SIZE)
     P.Point(border, "BOTTOMRIGHT", -CELL_BORDER_SIZE, CELL_BORDER_SIZE)
 
-    local mask = border:CreateMaskTexture()
+    local mask = Cell.Polyfill.CreateMaskTexture(border)
     border.mask = mask
     mask:SetTexture(Cell.vars.emptyTexture, "CLAMPTOWHITE","CLAMPTOWHITE")
 
@@ -2381,16 +2381,16 @@ function I.CreateAura_Border(name, parent)
     border.tex = tex
     tex:SetAllPoints()
     tex:SetTexture(Cell.vars.whiteTexture)
-    tex:AddMaskTexture(mask)
+    Cell.Polyfill.AddMaskTexture(tex, mask)
 
-    local mask2 = border:CreateMaskTexture()
+    local mask2 = Cell.Polyfill.CreateMaskTexture(border)
     border.mask2 = mask2
     mask2:SetTexture(Cell.vars.emptyTexture, "CLAMPTOWHITE","CLAMPTOWHITE")
 
     local tex2 = border:CreateTexture(nil, "ARTWORK", nil, -1)
     tex2:SetAllPoints()
-    tex2:SetColorTexture(0, 0, 0)
-    tex2:AddMaskTexture(mask2)
+    Cell.Polyfill.SetColorTexture(tex2, 0, 0, 0)
+    Cell.Polyfill.AddMaskTexture(tex2, mask2)
 
     border.SetCooldown = Border_SetCooldown
     border.SetFadeOut = Border_SetFadeOut

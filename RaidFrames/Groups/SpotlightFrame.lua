@@ -59,7 +59,7 @@ config:SetAttribute("_onclick", [[
 
     self:GetFrameRef("menu"):Hide()
 ]])
-config:HookScript("OnEnter", function()
+Cell.Polyfill.HookScript(config, "OnEnter", function()
     hoverFrame:GetScript("OnEnter")(hoverFrame)
     CellTooltip:SetOwner(config, "ANCHOR_NONE")
     CellTooltip:SetPoint(tooltipPoint, config, tooltipRelativePoint, tooltipX, tooltipY)
@@ -77,7 +77,7 @@ config:HookScript("OnEnter", function()
     end
     CellTooltip:Show()
 end)
-config:HookScript("OnLeave", function()
+Cell.Polyfill.HookScript(config, "OnLeave", function()
     hoverFrame:GetScript("OnLeave")(hoverFrame)
     CellTooltip:Hide()
 end)
@@ -273,7 +273,7 @@ for i = 1, 15 do
         end
     ]])
 
-    b:HookScript("OnAttributeChanged", function(self, name, value)
+    Cell.Polyfill.HookScript(b, "OnAttributeChanged", function(self, name, value)
         if name ~= "unit" then return end
 
         self.unit = value
@@ -537,7 +537,7 @@ end
 boss1target = Cell.CreateButton(menu, L["Boss1 Target"], "transparent-accent", {20, 20}, true, false, nil, nil, "SecureHandlerAttributeTemplate,SecureHandlerClickTemplate")
 P.Point(boss1target, "TOPLEFT", healer, "BOTTOMLEFT")
 P.Point(boss1target, "TOPRIGHT", healer, "BOTTOMRIGHT")
-boss1target:SetEnabled(not Cell.isVanilla)
+Cell.Polyfill.SetEnabled(boss1target, not Cell.isVanilla)
 boss1target:SetAttribute("_onclick", [[
     local menu = self:GetParent()
     local index = menu:GetAttribute("index")
@@ -689,19 +689,19 @@ menu:SetScript("OnEvent", function(self, event)
         end
         timer = C_Timer.NewTimer(1, UpdateAll)
     elseif event == "PLAYER_REGEN_DISABLED" then
-        unit:SetEnabled(false)
-        unitname:SetEnabled(false)
-        unittarget:SetEnabled(false)
-        unitpet:SetEnabled(false)
-        tank:SetEnabled(false)
-        healer:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(unit, false)
+        Cell.Polyfill.SetEnabled(unitname, false)
+        Cell.Polyfill.SetEnabled(unittarget, false)
+        Cell.Polyfill.SetEnabled(unitpet, false)
+        Cell.Polyfill.SetEnabled(tank, false)
+        Cell.Polyfill.SetEnabled(healer, false)
     elseif event == "PLAYER_REGEN_ENABLED" then
-        unit:SetEnabled(true)
-        unitname:SetEnabled(true)
-        unittarget:SetEnabled(true)
-        unitpet:SetEnabled(true)
-        tank:SetEnabled(true)
-        healer:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(unit, true)
+        Cell.Polyfill.SetEnabled(unitname, true)
+        Cell.Polyfill.SetEnabled(unittarget, true)
+        Cell.Polyfill.SetEnabled(unitpet, true)
+        Cell.Polyfill.SetEnabled(tank, true)
+        Cell.Polyfill.SetEnabled(healer, true)
         UpdateTanks()
         UpdateHealers()
         UpdateNames()

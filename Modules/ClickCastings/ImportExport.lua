@@ -80,18 +80,18 @@ local function CreateClickCastingImportExportFrame()
                         if success and data then
                             title:SetText(L["Import"]..": "..F.GetClassColorStr(class)..F.GetLocalizedClassName(class))
                             imported = data
-                            importBtn:SetEnabled(class == Cell.vars.playerClass)
+                            Cell.Polyfill.SetEnabled(importBtn, class == Cell.vars.playerClass)
                         else
                             title:SetText(L["Import"]..": |cffff2222"..L["Error"])
-                            importBtn:SetEnabled(false)
+                            Cell.Polyfill.SetEnabled(importBtn, false)
                         end
                     else -- incompatible version
                         title:SetText(L["Import"]..": |cffff2222"..L["Incompatible Version"])
-                        importBtn:SetEnabled(false)
+                        Cell.Polyfill.SetEnabled(importBtn, false)
                     end
                 else
                     title:SetText(L["Import"]..": |cffff2222"..L["Error"])
-                    importBtn:SetEnabled(false)
+                    Cell.Polyfill.SetEnabled(importBtn, false)
                 end
             else
                 eb:SetText(exported)
@@ -138,7 +138,7 @@ function F.ShowClickCastingImportFrame()
     importExportFrame:Show()
     isImport = true
     importBtn:Show()
-    importBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(importBtn, false)
 
     exported = ""
     title:SetText(L["Import"])

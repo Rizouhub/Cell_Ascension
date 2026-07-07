@@ -273,7 +273,7 @@ ProcessNext = function()
 
         tremove(queue, 1)
         progressBar.value = progressBar.value + 1
-        progressBar:SetSmoothedValue(progressBar.value)
+        Cell.Polyfill.SetSmoothedValue(progressBar, progressBar.value)
 
         -- NOTE: run next immediately
         if noAction then
@@ -313,7 +313,7 @@ local function CreateRaidRosterGrid(parent, index)
     local roleIconBg = grid:CreateTexture(nil, "BORDER")
     roleIconBg:SetPoint("TOPLEFT", 2, -2)
     roleIconBg:SetSize(13, 13)
-    roleIconBg:SetColorTexture(0, 0, 0, 1)
+    Cell.Polyfill.SetColorTexture(roleIconBg, 0, 0, 0, 1)
 
     local roleIcon = grid:CreateTexture(nil, "ARTWORK")
     roleIcon:SetPoint("TOPLEFT", roleIconBg, P.Scale(1), P.Scale(-1))
@@ -425,11 +425,11 @@ local function CreateRaidRosterGrid(parent, index)
         end
 
         if grid.isLeader then
-            roleIconBg:SetColorTexture(1, 0.84, 0, 1)
+            Cell.Polyfill.SetColorTexture(roleIconBg, 1, 0.84, 0, 1)
         elseif grid.isAssistant then
-            roleIconBg:SetColorTexture(0.7, 0.7, 0.7, 1)
+            Cell.Polyfill.SetColorTexture(roleIconBg, 0.7, 0.7, 0.7, 1)
         else
-            roleIconBg:SetColorTexture(0, 0, 0, 1)
+            Cell.Polyfill.SetColorTexture(roleIconBg, 0, 0, 0, 1)
         end
     end
 
@@ -442,7 +442,7 @@ local function CreateRaidRosterGrid(parent, index)
 
         nameText:SetText("")
         nameText:SetTextColor(1, 1, 1)
-        roleIconBg:SetColorTexture(0, 0, 0, 1)
+        Cell.Polyfill.SetColorTexture(roleIconBg, 0, 0, 0, 1)
         roleIconBg:Hide()
         roleIcon:Hide()
 

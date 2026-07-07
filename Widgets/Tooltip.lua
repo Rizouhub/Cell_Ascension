@@ -17,7 +17,7 @@ local function CreateTooltip(name, hasIcon)
         tooltip.iconBG = iconBG
         iconBG:SetSize(35, 35)
         iconBG:SetPoint("TOPRIGHT", tooltip, "TOPLEFT", -1, 0)
-        iconBG:SetColorTexture(Cell.GetAccentColorRGB())
+        Cell.Polyfill.SetColorTexture(iconBG, Cell.GetAccentColorRGB())
         iconBG:Hide()
 
         local icon = tooltip:CreateTexture(nil, "ARTWORK")
@@ -70,7 +70,7 @@ local function CreateTooltip(name, hasIcon)
         tooltip:SetBackdropBorderColor(Cell.GetAccentColorRGB())
         if hasIcon then
             P.Repoint(tooltip.icon)
-            tooltip.iconBG:SetColorTexture(Cell.GetAccentColorRGB())
+            Cell.Polyfill.SetColorTexture(tooltip.iconBG, Cell.GetAccentColorRGB())
         end
     end
 end
@@ -107,7 +107,7 @@ function F.ShowTooltips(anchor, tooltipType, unit, aura, filter)
     if tooltipType == "unit" then
         GameTooltip:SetUnit(unit)
     elseif tooltipType == "spell" and unit and aura then
-        -- GameTooltip:SetSpellByID(aura)
+        -- Cell.Polyfill.SetSpellByID(GameTooltip, aura)
         GameTooltip:SetUnitAura(unit, aura, filter)
     elseif tooltipType == "aura" and unit and aura then
         if filter == "HARMFUL" then

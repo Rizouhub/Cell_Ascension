@@ -160,9 +160,9 @@ local function CreateLayoutPreview()
 
     -- init raid preview
     layoutPreview.fadeIn = layoutPreview:CreateAnimationGroup()
-    local fadeIn = layoutPreview.fadeIn:CreateAnimation("alpha")
-    fadeIn:SetFromAlpha(0)
-    fadeIn:SetToAlpha(1)
+    local fadeIn = Cell.Polyfill.CreateAnimation(layoutPreview.fadeIn, "alpha")
+    Cell.Polyfill.SetFromAlpha(fadeIn, 0)
+    Cell.Polyfill.SetToAlpha(fadeIn, 1)
     fadeIn:SetDuration(0.5)
     fadeIn:SetSmoothing("OUT")
     fadeIn:SetScript("OnPlay", function()
@@ -170,9 +170,9 @@ local function CreateLayoutPreview()
     end)
 
     layoutPreview.fadeOut = layoutPreview:CreateAnimationGroup()
-    local fadeOut = layoutPreview.fadeOut:CreateAnimation("alpha")
-    fadeOut:SetFromAlpha(1)
-    fadeOut:SetToAlpha(0)
+    local fadeOut = Cell.Polyfill.CreateAnimation(layoutPreview.fadeOut, "alpha")
+    Cell.Polyfill.SetFromAlpha(fadeOut, 1)
+    Cell.Polyfill.SetToAlpha(fadeOut, 0)
     fadeOut:SetDuration(0.5)
     fadeOut:SetSmoothing("IN")
     fadeOut:SetScript("OnFinished", function()
@@ -187,7 +187,7 @@ local function CreateLayoutPreview()
 
         for j = 1, 5 do
             header[j] = header:CreateTexture(nil, "BACKGROUND")
-            header[j]:SetColorTexture(0, 0, 0)
+            Cell.Polyfill.SetColorTexture(header[j], 0, 0, 0)
             header[j]:SetAlpha(0.555)
             -- header[j]:SetSize(30, 20)
 
@@ -228,7 +228,7 @@ local function CreateLayoutPreview()
         local f = layoutPreview.combinedHeader:CreateTexture(nil, "BACKGROUND")
         layoutPreview.combinedHeader[i] = f
 
-        f:SetColorTexture(0, 0, 0)
+        Cell.Polyfill.SetColorTexture(f, 0, 0, 0)
         f:SetAlpha(0.555)
 
         f.tex = layoutPreview.combinedHeader:CreateTexture(nil, "ARTWORK")
@@ -508,9 +508,9 @@ local function CreateNPCPreview()
     npcPreviewName = npcPreviewAnchor:CreateFontString(nil, "OVERLAY", "Cell_Ascension_FONT_CLASS_TITLE")
 
     npcPreview.fadeIn = npcPreview:CreateAnimationGroup()
-    local fadeIn = npcPreview.fadeIn:CreateAnimation("alpha")
-    fadeIn:SetFromAlpha(0)
-    fadeIn:SetToAlpha(1)
+    local fadeIn = Cell.Polyfill.CreateAnimation(npcPreview.fadeIn, "alpha")
+    Cell.Polyfill.SetFromAlpha(fadeIn, 0)
+    Cell.Polyfill.SetToAlpha(fadeIn, 1)
     fadeIn:SetDuration(0.5)
     fadeIn:SetSmoothing("OUT")
     fadeIn:SetScript("OnPlay", function()
@@ -518,9 +518,9 @@ local function CreateNPCPreview()
     end)
 
     npcPreview.fadeOut = npcPreview:CreateAnimationGroup()
-    local fadeOut = npcPreview.fadeOut:CreateAnimation("alpha")
-    fadeOut:SetFromAlpha(1)
-    fadeOut:SetToAlpha(0)
+    local fadeOut = Cell.Polyfill.CreateAnimation(npcPreview.fadeOut, "alpha")
+    Cell.Polyfill.SetFromAlpha(fadeOut, 1)
+    Cell.Polyfill.SetToAlpha(fadeOut, 0)
     fadeOut:SetDuration(0.5)
     fadeOut:SetSmoothing("IN")
     fadeOut:SetScript("OnFinished", function()
@@ -530,7 +530,7 @@ local function CreateNPCPreview()
     npcPreview.header = CreateFrame("Frame", "CellNPCPreviewFrameHeader", npcPreview)
     for i = 1, 5 do
         npcPreview.header[i] = npcPreview.header:CreateTexture(nil, "BACKGROUND")
-        npcPreview.header[i]:SetColorTexture(0, 0, 0)
+        Cell.Polyfill.SetColorTexture(npcPreview.header[i], 0, 0, 0)
         npcPreview.header[i]:SetAlpha(0.555)
 
         npcPreview.header[i].tex = npcPreview.header:CreateTexture(nil, "ARTWORK")
@@ -756,9 +756,9 @@ local function CreatePetPreview()
     petPreviewName = petPreviewAnchor:CreateFontString(nil, "OVERLAY", "Cell_Ascension_FONT_CLASS_TITLE")
 
     petPreview.fadeIn = petPreview:CreateAnimationGroup()
-    local fadeIn = petPreview.fadeIn:CreateAnimation("alpha")
-    fadeIn:SetFromAlpha(0)
-    fadeIn:SetToAlpha(1)
+    local fadeIn = Cell.Polyfill.CreateAnimation(petPreview.fadeIn, "alpha")
+    Cell.Polyfill.SetFromAlpha(fadeIn, 0)
+    Cell.Polyfill.SetToAlpha(fadeIn, 1)
     fadeIn:SetDuration(0.5)
     fadeIn:SetSmoothing("OUT")
     fadeIn:SetScript("OnPlay", function()
@@ -766,9 +766,9 @@ local function CreatePetPreview()
     end)
 
     petPreview.fadeOut = petPreview:CreateAnimationGroup()
-    local fadeOut = petPreview.fadeOut:CreateAnimation("alpha")
-    fadeOut:SetFromAlpha(1)
-    fadeOut:SetToAlpha(0)
+    local fadeOut = Cell.Polyfill.CreateAnimation(petPreview.fadeOut, "alpha")
+    Cell.Polyfill.SetFromAlpha(fadeOut, 1)
+    Cell.Polyfill.SetToAlpha(fadeOut, 0)
     fadeOut:SetDuration(0.5)
     fadeOut:SetSmoothing("IN")
     fadeOut:SetScript("OnFinished", function()
@@ -779,7 +779,7 @@ local function CreatePetPreview()
 
     for i = 1, petNums do
         petPreview.header[i] = petPreview.header:CreateTexture(nil, "BACKGROUND")
-        petPreview.header[i]:SetColorTexture(0, 0, 0)
+        Cell.Polyfill.SetColorTexture(petPreview.header[i], 0, 0, 0)
         petPreview.header[i]:SetAlpha(0.555)
 
         petPreview.header[i].tex = petPreview.header:CreateTexture(nil, "ARTWORK")
@@ -1036,9 +1036,9 @@ local function CreateSpotlightPreview()
     spotlightPreviewName = spotlightPreviewAnchor:CreateFontString(nil, "OVERLAY", "Cell_Ascension_FONT_CLASS_TITLE")
 
     spotlightPreview.fadeIn = spotlightPreview:CreateAnimationGroup()
-    local fadeIn = spotlightPreview.fadeIn:CreateAnimation("alpha")
-    fadeIn:SetFromAlpha(0)
-    fadeIn:SetToAlpha(1)
+    local fadeIn = Cell.Polyfill.CreateAnimation(spotlightPreview.fadeIn, "alpha")
+    Cell.Polyfill.SetFromAlpha(fadeIn, 0)
+    Cell.Polyfill.SetToAlpha(fadeIn, 1)
     fadeIn:SetDuration(0.5)
     fadeIn:SetSmoothing("OUT")
     fadeIn:SetScript("OnPlay", function()
@@ -1046,9 +1046,9 @@ local function CreateSpotlightPreview()
     end)
 
     spotlightPreview.fadeOut = spotlightPreview:CreateAnimationGroup()
-    local fadeOut = spotlightPreview.fadeOut:CreateAnimation("alpha")
-    fadeOut:SetFromAlpha(1)
-    fadeOut:SetToAlpha(0)
+    local fadeOut = Cell.Polyfill.CreateAnimation(spotlightPreview.fadeOut, "alpha")
+    Cell.Polyfill.SetFromAlpha(fadeOut, 1)
+    Cell.Polyfill.SetToAlpha(fadeOut, 0)
     fadeOut:SetDuration(0.5)
     fadeOut:SetSmoothing("IN")
     fadeOut:SetScript("OnFinished", function()
@@ -1058,7 +1058,7 @@ local function CreateSpotlightPreview()
     spotlightPreview.header = CreateFrame("Frame", "CellSpotlightPreviewFrameHeader", spotlightPreview)
     for i = 1, 15 do
         spotlightPreview.header[i] = spotlightPreview.header:CreateTexture(nil, "BACKGROUND")
-        spotlightPreview.header[i]:SetColorTexture(0, 0, 0)
+        Cell.Polyfill.SetColorTexture(spotlightPreview.header[i], 0, 0, 0)
         spotlightPreview.header[i]:SetAlpha(0.555)
 
         spotlightPreview.header[i].tex = spotlightPreview.header:CreateTexture(nil, "ARTWORK")
@@ -1584,11 +1584,11 @@ local function CreateLayoutPane()
 
     UpdateButtonStates = function()
         if selectedLayout == "default" then
-            deleteBtn:SetEnabled(false)
-            renameBtn:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(deleteBtn, false)
+            Cell.Polyfill.SetEnabled(renameBtn, false)
         else
-            deleteBtn:SetEnabled(true)
-            renameBtn:SetEnabled(true)
+            Cell.Polyfill.SetEnabled(deleteBtn, true)
+            Cell.Polyfill.SetEnabled(renameBtn, true)
         end
     end
 
@@ -1661,7 +1661,7 @@ local function CreateAutoSwitchPane()
         end)
         typeSwitch:SetPoint("TOPLEFT", 5, -27)
 
-        typeSwitch:HookScript("OnEnter", function()
+        Cell.Polyfill.HookScript(typeSwitch, "OnEnter", function()
             CellTooltip:SetOwner(typeSwitch, "ANCHOR_NONE")
             CellTooltip:SetPoint("TOPLEFT", typeSwitch, "TOPRIGHT", 15, 0)
             CellTooltip:AddLine(L["Layout Auto Switch"])
@@ -1674,7 +1674,7 @@ local function CreateAutoSwitchPane()
             CellTooltip:Show()
         end)
 
-        typeSwitch:HookScript("OnLeave", function()
+        Cell.Polyfill.HookScript(typeSwitch, "OnLeave", function()
             CellTooltip:Hide()
         end)
     end
@@ -2048,9 +2048,9 @@ local function UpdateSliderStatus()
     groupSpacingSlider:Show()
 
     if selectedLayoutTable["main"]["maxColumns"] == 8 then
-        groupSpacingSlider:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(groupSpacingSlider, false)
     else
-        groupSpacingSlider:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(groupSpacingSlider, true)
     end
 end
 
@@ -2131,9 +2131,9 @@ local function CreateLayoutSetupPane()
     -- same size as main
     sameSizeAsMainCB = Cell.CreateCheckButton(layoutSetupPane, L["Use Same Size As Main"], function(checked, self)
         selectedLayoutTable[selectedPage]["sameSizeAsMain"] = checked
-        widthSlider:SetEnabled(not checked)
-        heightSlider:SetEnabled(not checked)
-        powerSizeSlider:SetEnabled(not checked)
+        Cell.Polyfill.SetEnabled(widthSlider, not checked)
+        Cell.Polyfill.SetEnabled(heightSlider, not checked)
+        Cell.Polyfill.SetEnabled(powerSizeSlider, not checked)
         -- update size and power
         UpdateSize()
         if selectedLayout == Cell.vars.currentLayout then
@@ -2146,13 +2146,13 @@ local function CreateLayoutSetupPane()
     sameArrangementAsMainCB = Cell.CreateCheckButton(layoutSetupPane, L["Use Same Arrangement As Main"], function(checked, self)
         selectedLayoutTable[selectedPage]["sameArrangementAsMain"] = checked
         if selectedPage == "spotlight" then
-            spotlightOrientationDropdown:SetEnabled(not checked)
+            Cell.Polyfill.SetEnabled(spotlightOrientationDropdown, not checked)
         else
-            orientationDropdown:SetEnabled(not checked)
+            Cell.Polyfill.SetEnabled(orientationDropdown, not checked)
         end
-        anchorDropdown:SetEnabled(not checked)
-        spacingXSlider:SetEnabled(not checked)
-        spacingYSlider:SetEnabled(not checked)
+        Cell.Polyfill.SetEnabled(anchorDropdown, not checked)
+        Cell.Polyfill.SetEnabled(spacingXSlider, not checked)
+        Cell.Polyfill.SetEnabled(spacingYSlider, not checked)
         UpdateArrangement()
     end)
     sameArrangementAsMainCB:SetPoint("TOPLEFT", sameSizeAsMainCB, "BOTTOMLEFT", 0, -8)
@@ -2324,9 +2324,9 @@ local function CreateLayoutSetupPane()
             selectedLayoutTable["main"]["maxColumns"] = value
         end
         if value == 8 then
-            groupSpacingSlider:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(groupSpacingSlider, false)
         else
-            groupSpacingSlider:SetEnabled(true)
+            Cell.Polyfill.SetEnabled(groupSpacingSlider, true)
         end
         if selectedLayout == Cell.vars.currentLayout then
             Cell.Fire("UpdateLayout", selectedLayout, "rows_columns")
@@ -2373,7 +2373,7 @@ local function CreateLayoutSetupPane()
 
     partyPetsCB = Cell.CreateCheckButton(pages.pet, L["Show Party/Arena Pets"], function(checked)
         selectedLayoutTable["pet"]["partyEnabled"] = checked
-        partyPetsDetachedCB:SetEnabled(checked)
+        Cell.Polyfill.SetEnabled(partyPetsDetachedCB, checked)
         if checked and selectedLayoutTable["pet"]["partyDetached"] then
             UpdatePetPreview()
         else
@@ -2431,7 +2431,7 @@ local function CreateLayoutSetupPane()
                 UpdateNPCPreview()
             end
         end
-        separateNpcCB:SetEnabled(checked)
+        Cell.Polyfill.SetEnabled(separateNpcCB, checked)
         if selectedLayout == Cell.vars.currentLayout then
             Cell.Fire("UpdateLayout", selectedLayout, "npc")
         end
@@ -2682,30 +2682,30 @@ LoadPageDB = function(page)
     end
 
     if page == "main" then
-        widthSlider:SetEnabled(true)
-        heightSlider:SetEnabled(true)
-        powerSizeSlider:SetEnabled(true)
-        orientationDropdown:SetEnabled(true)
-        anchorDropdown:SetEnabled(true)
-        spacingXSlider:SetEnabled(true)
-        spacingYSlider:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(widthSlider, true)
+        Cell.Polyfill.SetEnabled(heightSlider, true)
+        Cell.Polyfill.SetEnabled(powerSizeSlider, true)
+        Cell.Polyfill.SetEnabled(orientationDropdown, true)
+        Cell.Polyfill.SetEnabled(anchorDropdown, true)
+        Cell.Polyfill.SetEnabled(spacingXSlider, true)
+        Cell.Polyfill.SetEnabled(spacingYSlider, true)
     else
-        widthSlider:SetEnabled(not selectedLayoutTable[page]["sameSizeAsMain"])
-        heightSlider:SetEnabled(not selectedLayoutTable[page]["sameSizeAsMain"])
-        powerSizeSlider:SetEnabled(not selectedLayoutTable[page]["sameSizeAsMain"])
-        anchorDropdown:SetEnabled(not selectedLayoutTable[page]["sameArrangementAsMain"])
-        spacingXSlider:SetEnabled(not selectedLayoutTable[page]["sameArrangementAsMain"])
-        spacingYSlider:SetEnabled(not selectedLayoutTable[page]["sameArrangementAsMain"])
+        Cell.Polyfill.SetEnabled(widthSlider, not selectedLayoutTable[page]["sameSizeAsMain"])
+        Cell.Polyfill.SetEnabled(heightSlider, not selectedLayoutTable[page]["sameSizeAsMain"])
+        Cell.Polyfill.SetEnabled(powerSizeSlider, not selectedLayoutTable[page]["sameSizeAsMain"])
+        Cell.Polyfill.SetEnabled(anchorDropdown, not selectedLayoutTable[page]["sameArrangementAsMain"])
+        Cell.Polyfill.SetEnabled(spacingXSlider, not selectedLayoutTable[page]["sameArrangementAsMain"])
+        Cell.Polyfill.SetEnabled(spacingYSlider, not selectedLayoutTable[page]["sameArrangementAsMain"])
     end
 
     if page == "spotlight" then
         orientationDropdown:Hide()
         spotlightOrientationDropdown:Show()
-        spotlightOrientationDropdown:SetEnabled(not selectedLayoutTable[page]["sameArrangementAsMain"])
+        Cell.Polyfill.SetEnabled(spotlightOrientationDropdown, not selectedLayoutTable[page]["sameArrangementAsMain"])
     else
         orientationDropdown:Show()
         spotlightOrientationDropdown:Hide()
-        orientationDropdown:SetEnabled(not selectedLayoutTable[page]["sameArrangementAsMain"])
+        Cell.Polyfill.SetEnabled(orientationDropdown, not selectedLayoutTable[page]["sameArrangementAsMain"])
     end
 end
 
@@ -2756,12 +2756,12 @@ LoadLayoutDB = function(layout, dontShowPreview)
     hideSelfCB:SetChecked(selectedLayoutTable["main"]["hideSelf"])
     soloPetCB:SetChecked(selectedLayoutTable["pet"]["soloEnabled"])
     partyPetsCB:SetChecked(selectedLayoutTable["pet"]["partyEnabled"])
-    partyPetsDetachedCB:SetEnabled(selectedLayoutTable["pet"]["partyEnabled"])
+    Cell.Polyfill.SetEnabled(partyPetsDetachedCB, selectedLayoutTable["pet"]["partyEnabled"])
     partyPetsDetachedCB:SetChecked(selectedLayoutTable["pet"]["partyDetached"])
     raidPetsCB:SetChecked(selectedLayoutTable["pet"]["raidEnabled"])
     showNpcCB:SetChecked(selectedLayoutTable["npc"]["enabled"])
     separateNpcCB:SetChecked(selectedLayoutTable["npc"]["separate"])
-    separateNpcCB:SetEnabled(selectedLayoutTable["npc"]["enabled"])
+    Cell.Polyfill.SetEnabled(separateNpcCB, selectedLayoutTable["npc"]["enabled"])
     spotlightCB:SetChecked(selectedLayoutTable["spotlight"]["enabled"])
     hidePlaceholderCB:SetChecked(selectedLayoutTable["spotlight"]["hidePlaceholder"])
 

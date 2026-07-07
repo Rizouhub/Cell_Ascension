@@ -37,11 +37,11 @@ local function CreateRTPane()
     -- battle res
     resCB = Cell.CreateCheckButton(rtPane, L["Battle Res Timer"], function(checked, self)
         CellDB["tools"]["battleResTimer"][1] = checked
-        resDetachCB:SetEnabled(checked)
+        Cell.Polyfill.SetEnabled(resDetachCB, checked)
         Cell.Fire("UpdateTools", "battleResTimer")
     end, L["Battle Res Timer"], L["Only show during encounter or in mythic+"])
     resCB:SetPoint("TOPLEFT", rtPane, "TOPLEFT", 5, -27)
-    resCB:SetEnabled(Cell.isRetail)
+    Cell.Polyfill.SetEnabled(resCB, Cell.isRetail)
 
     resDetachCB = Cell.CreateCheckButton(rtPane, L["Detached"], function(checked, self)
         CellDB["tools"]["battleResTimer"][2] = checked
@@ -55,7 +55,7 @@ local function CreateRTPane()
         Cell.Fire("UpdateTools", "deathReport")
     end)
     reportCB:SetPoint("TOPLEFT", resCB, "BOTTOMLEFT", 0, -35)
-    reportCB:HookScript("OnEnter", function()
+    Cell.Polyfill.HookScript(reportCB, "OnEnter", function()
         CellTooltip:SetOwner(reportCB, "ANCHOR_TOPLEFT", 0, 2)
         CellTooltip:AddLine(L["Death Report"].." |cffff2727"..L["HIGH CPU USAGE"])
         CellTooltip:AddLine("|cffff2727" .. L["Disabled in battlegrounds and arenas"])
@@ -64,18 +64,18 @@ local function CreateRTPane()
         CellTooltip:AddLine("|cffffffff" .. L["Current"]..": |cFFFFB5C5"..(CellDB["tools"]["deathReport"][2]==0 and L["all"] or string.format(L["first %d"], CellDB["tools"]["deathReport"][2])))
         CellTooltip:Show()
     end)
-    reportCB:HookScript("OnLeave", function()
+    Cell.Polyfill.HookScript(reportCB, "OnLeave", function()
         CellTooltip:Hide()
     end)
 
     -- buff tracker
     buffCB = Cell.CreateCheckButton(rtPane, L["Buff Tracker"], function(checked, self)
         CellDB["tools"]["buffTracker"][1] = checked
-        buffDropdown:SetEnabled(checked)
-        sizeEditBox:SetEnabled(checked)
+        Cell.Polyfill.SetEnabled(buffDropdown, checked)
+        Cell.Polyfill.SetEnabled(sizeEditBox, checked)
         if buffButtons then
             for buff, b in pairs(buffButtons) do
-                b:SetEnabled(checked)
+                Cell.Polyfill.SetEnabled(b, checked)
             end
         end
         Cell.Fire("UpdateTools", "buffTracker")
@@ -197,9 +197,9 @@ local function CreateRTPane()
     -- ready & pull
     readyPullCB = Cell.CreateCheckButton(rtPane, L["ReadyCheck and PullTimer buttons"], function(checked, self)
         CellDB["tools"]["readyAndPull"][1] = checked
-        styleDropdown:SetEnabled(checked)
-        pullDropdown:SetEnabled(checked)
-        secEditBox:SetEnabled(checked)
+        Cell.Polyfill.SetEnabled(styleDropdown, checked)
+        Cell.Polyfill.SetEnabled(pullDropdown, checked)
+        Cell.Polyfill.SetEnabled(secEditBox, checked)
         Cell.Fire("UpdateTools", "buttons")
     end, L["ReadyCheck and PullTimer buttons"], L["Only show when you have permission to do this"], L["readyCheckTips"], L["pullTimerTips"])
     readyPullCB:SetPoint("TOPLEFT", buffCB, "BOTTOMLEFT", 0, -43)
@@ -301,8 +301,8 @@ local function CreateRTPane()
     -- marks bar
     marksBarCB = Cell.CreateCheckButton(rtPane, L["Marks Bar"], function(checked, self)
         CellDB["tools"]["marks"][1] = checked
-        marksDropdown:SetEnabled(checked)
-        marksShowSoloCB:SetEnabled(checked)
+        Cell.Polyfill.SetEnabled(marksDropdown, checked)
+        Cell.Polyfill.SetEnabled(marksShowSoloCB, checked)
         Cell.Fire("UpdateTools", "marks")
     end, L["Marks Bar"], L["Only show when you have permission to do this"], L["marksTips"])
     marksBarCB:SetPoint("TOPLEFT", readyPullCB, "BOTTOMLEFT", 0, -43)
@@ -383,10 +383,10 @@ local function CreateRTPane()
     region:SetPoint("BOTTOM", marksShowSoloCB, 0, -5)
     region:SetPoint("RIGHT", -5, 0)
 
-    fadeOutToolsCB:HookScript("OnEnter", function()
+    Cell.Polyfill.HookScript(fadeOutToolsCB, "OnEnter", function()
         LCG.PixelGlow_Start(region, Cell.GetAccentColorTable(1), 27, 0.1, 17, 1)
     end)
-    fadeOutToolsCB:HookScript("OnLeave", function()
+    Cell.Polyfill.HookScript(fadeOutToolsCB, "OnLeave", function()
         LCG.PixelGlow_Stop(region)
     end)
 end
@@ -410,7 +410,7 @@ local function ShowUtilitySettings(which)
         -- raid tools
         resCB:SetChecked(CellDB["tools"]["battleResTimer"][1])
         resDetachCB:SetChecked(CellDB["tools"]["battleResTimer"][2])
-        resDetachCB:SetEnabled(Cell.isRetail and CellDB["tools"]["battleResTimer"][1])
+        Cell.Polyfill.SetEnabled(resDetachCB, Cell.isRetail and CellDB["tools"]["battleResTimer"][1])
         reportCB:SetChecked(CellDB["tools"]["deathReport"][1])
 
         buffCB:SetChecked(CellDB["tools"]["buffTracker"][1])
@@ -419,7 +419,7 @@ local function ShowUtilitySettings(which)
         Cell.SetEnabled(CellDB["tools"]["buffTracker"][1], buffDropdown, sizeEditBox)
         if buffButtons then
             for buff, b in pairs(buffButtons) do
-                b:SetEnabled(CellDB["tools"]["buffTracker"][1])
+                Cell.Polyfill.SetEnabled(b, CellDB["tools"]["buffTracker"][1])
                 b:SetAlpha(CellDB["tools"]["buffTracker"][5][buff] and 1 or 0.25)
             end
         end
@@ -430,7 +430,7 @@ local function ShowUtilitySettings(which)
         secEditBox:SetText(CellDB["tools"]["readyAndPull"][3][2])
         Cell.SetEnabled(CellDB["tools"]["readyAndPull"][1], styleDropdown, pullDropdown, secEditBox)
 
-        marksDropdown:SetEnabled(CellDB["tools"]["marks"][1])
+        Cell.Polyfill.SetEnabled(marksDropdown, CellDB["tools"]["marks"][1])
         marksBarCB:SetChecked(CellDB["tools"]["marks"][1])
         marksDropdown:SetSelectedValue(CellDB["tools"]["marks"][3])
         marksShowSoloCB:SetChecked(CellDB["tools"]["marks"][2])

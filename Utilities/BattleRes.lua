@@ -23,7 +23,7 @@ local point, relativePoint, onShow, onHide
 local loaded = false
 
 battleResFrame.onMenuShow = battleResFrame:CreateAnimationGroup()
-battleResFrame.onMenuShow.trans = battleResFrame.onMenuShow:CreateAnimation("translation")
+battleResFrame.onMenuShow.trans = Cell.Polyfill.CreateAnimation(battleResFrame.onMenuShow, "translation")
 battleResFrame.onMenuShow.trans:SetDuration(0.3)
 battleResFrame.onMenuShow.trans:SetSmoothing("OUT")
 battleResFrame.onMenuShow:SetScript("OnPlay", function()
@@ -54,7 +54,7 @@ function battleResFrame:OnMenuShow()
 end
 
 battleResFrame.onMenuHide = battleResFrame:CreateAnimationGroup()
-battleResFrame.onMenuHide.trans = battleResFrame.onMenuHide:CreateAnimation("translation")
+battleResFrame.onMenuHide.trans = Cell.Polyfill.CreateAnimation(battleResFrame.onMenuHide, "translation")
 battleResFrame.onMenuHide.trans:SetDuration(0.3)
 battleResFrame.onMenuHide.trans:SetSmoothing("OUT")
 battleResFrame.onMenuHide:SetScript("OnPlay", function()

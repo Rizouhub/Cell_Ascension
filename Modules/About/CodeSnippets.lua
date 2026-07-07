@@ -68,7 +68,7 @@ local function CreateCodeSnippetsFrame()
     local runBtn = Cell.CreateButton(bottomPane, L["Run"], "red", {200, 20})
     bottomPane.runBtn = runBtn
     runBtn:SetPoint("BOTTOMLEFT")
-    runBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(runBtn, false)
     runBtn:SetScript("OnClick", function()
         local errorMsg = RunSnippet(codePane:GetText())
         if errorMsg then
@@ -88,22 +88,22 @@ local function CreateCodeSnippetsFrame()
     local cancelBtn = Cell.CreateButton(bottomPane, L["Cancel"], "red", {200, 20})
     bottomPane.cancelBtn = cancelBtn
     cancelBtn:SetPoint("BOTTOMRIGHT")
-    cancelBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(cancelBtn, false)
     cancelBtn:SetScript("OnClick", function()
         codePane:SetText(CellDB["snippets"][selected]["code"])
-        cancelBtn:SetEnabled(false)
-        bottomPane.saveBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(cancelBtn, false)
+        Cell.Polyfill.SetEnabled(bottomPane.saveBtn, false)
     end)
 
     local saveBtn = Cell.CreateButton(bottomPane, L["Save"], "red", {200, 20})
     bottomPane.saveBtn = saveBtn
     saveBtn:SetPoint("BOTTOMLEFT", runBtn, "BOTTOMRIGHT", 10, 0)
     saveBtn:SetPoint("BOTTOMRIGHT", cancelBtn, "BOTTOMLEFT", -10, 0)
-    saveBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(saveBtn, false)
     saveBtn:SetScript("OnClick", function()
         CellDB["snippets"][selected]["code"] = codePane:GetText()
-        saveBtn:SetEnabled(false)
-        bottomPane.cancelBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(saveBtn, false)
+        Cell.Polyfill.SetEnabled(bottomPane.cancelBtn, false)
     end)
 
     -- current line number
@@ -113,17 +113,17 @@ local function CreateCodeSnippetsFrame()
     -- code
     codePane = Cell.CreateScrollEditBox(codeSnippetsFrame, nil, 3)
     codePane.scrollFrame:SetScrollStep(1000)
-    codePane.eb:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(codePane.eb, false)
     codePane.eb:SetFontObject(ChatFontNormal)
     Cell.StylizeFrame(codePane.scrollFrame, {0.115, 0.115, 0.115, 0.9})
     codePane:SetPoint("TOPLEFT", topPane, "BOTTOMLEFT", 0, -10)
     codePane:SetPoint("BOTTOMRIGHT", bottomPane, "TOPRIGHT", 0, 10)
     -- codePane.eb:SetSpacing(3)
 
-    codePane.eb:HookScript("OnTextChanged", function(self, userChanged)
+    Cell.Polyfill.HookScript(codePane.eb, "OnTextChanged", function(self, userChanged)
         local changed = CellDB["snippets"][selected]["code"] ~= codePane:GetText()
-        saveBtn:SetEnabled(changed)
-        cancelBtn:SetEnabled(changed)
+        Cell.Polyfill.SetEnabled(saveBtn, changed)
+        Cell.Polyfill.SetEnabled(cancelBtn, changed)
     end)
 
     codePane.eb:SetScript("OnEditFocusGained", function()
@@ -134,7 +134,7 @@ local function CreateCodeSnippetsFrame()
     end)
 
     codePane.OriginalGetText = codePane.eb.GetText -- NOTE: FAIAP overrides GetText
-    codePane.eb:HookScript("OnCursorChanged", function(self, x, y)
+    Cell.Polyfill.HookScript(codePane.eb, "OnCursorChanged", function(self, x, y)
         if not codePane.eb:HasFocus() then return end
 
         local cursorPosition = codePane.eb:GetCursorPosition()
@@ -187,10 +187,10 @@ LoadList = function()
             CellDB["snippets"][0]["autorun"] = checked
         end)
         buttons[0].cb:SetPoint("LEFT", 3, 0)
-        buttons[0].cb:HookScript("OnEnter", function()
+        Cell.Polyfill.HookScript(buttons[0].cb, "OnEnter", function()
             buttons[0]:GetScript("OnEnter")(buttons[0])
         end)
-        buttons[0].cb:HookScript("OnLeave", function()
+        Cell.Polyfill.HookScript(buttons[0].cb, "OnLeave", function()
             buttons[0]:GetScript("OnLeave")(buttons[0])
         end)
 
@@ -231,10 +231,10 @@ LoadList = function()
                 CellDB["snippets"][i]["autorun"] = checked
             end)
             buttons[i].cb:SetPoint("LEFT", 3, 0)
-            buttons[i].cb:HookScript("OnEnter", function()
+            Cell.Polyfill.HookScript(buttons[i].cb, "OnEnter", function()
                 buttons[i]:GetScript("OnEnter")(buttons[i])
             end)
-            buttons[i].cb:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(buttons[i].cb, "OnLeave", function()
                 buttons[i]:GetScript("OnLeave")(buttons[i])
             end)
 
@@ -277,7 +277,7 @@ LoadList = function()
 
             -- tooltip
             buttons[i].ShowTooltip = function()
-                if buttons[i].label:IsTruncated() then
+                if Cell.Polyfill.IsTruncated(buttons[i].label) then
                     CellTooltip:SetOwner(buttons[i], "ANCHOR_NONE")
                     CellTooltip:SetPoint("BOTTOMLEFT", buttons[i], "TOPLEFT", 0, 1)
                     CellTooltip:AddLine(buttons[i].label:GetText())
@@ -353,10 +353,10 @@ LoadSnippet = function(index)
         selected = index
         forceLoadSelected = false
         codePane:SetText(CellDB["snippets"][index]["code"])
-        codePane:SetEnabled(true)
-        bottomPane.runBtn:SetEnabled(true)
-        bottomPane.saveBtn:SetEnabled(false)
-        bottomPane.cancelBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(codePane, true)
+        Cell.Polyfill.SetEnabled(bottomPane.runBtn, true)
+        Cell.Polyfill.SetEnabled(bottomPane.saveBtn, false)
+        Cell.Polyfill.SetEnabled(bottomPane.cancelBtn, false)
         renameEB:Hide()
         errorPopup:Hide()
     end

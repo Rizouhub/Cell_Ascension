@@ -337,7 +337,7 @@ local function SetCooldown(frame, start, duration, icon, count)
 
     frame.border:Show()
     frame.cooldown:Show()
-    frame.cooldown:SetSwipeColor(unpack(Cell.vars.targetedSpellsGlow[2]))
+    Cell.Polyfill.SetSwipeColor(frame.cooldown, unpack(Cell.vars.targetedSpellsGlow[2]))
     frame.cooldown:SetCooldown(start, duration)
     frame.icon:SetTexture(icon)
     frame:Show()

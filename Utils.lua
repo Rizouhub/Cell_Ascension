@@ -507,7 +507,7 @@ end
 function F.FitWidth(fs, text, alignment)
     fs:SetText(text)
 
-    if fs:IsTruncated() then
+    if Cell.Polyfill.IsTruncated(fs) then
         for i = 1, string.utf8len(text) do
             if strlower(alignment) == "right" then
                 fs:SetText("..."..string.utf8sub(text, i))
@@ -515,7 +515,7 @@ function F.FitWidth(fs, text, alignment)
                 fs:SetText(string.utf8sub(text, i).."...")
             end
 
-            if not fs:IsTruncated() then
+            if not Cell.Polyfill.IsTruncated(fs) then
                 break
             end
         end

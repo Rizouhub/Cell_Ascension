@@ -55,14 +55,14 @@ dumb:SetScript("OnDragStop", function()
     separateAnchor:StopMovingOrSizing()
     P.SavePosition(separateAnchor, Cell.vars.currentLayoutTable["npc"]["position"])
 end)
-dumb:HookScript("OnEnter", function()
+Cell.Polyfill.HookScript(dumb, "OnEnter", function()
     hoverFrame:GetScript("OnEnter")(hoverFrame)
     CellTooltip:SetOwner(dumb, "ANCHOR_NONE")
     CellTooltip:SetPoint(tooltipPoint, dumb, tooltipRelativePoint, tooltipX, tooltipY)
     CellTooltip:AddLine(L["Friendly NPC Frame"])
     CellTooltip:Show()
 end)
-dumb:HookScript("OnLeave", function()
+Cell.Polyfill.HookScript(dumb, "OnLeave", function()
     hoverFrame:GetScript("OnLeave")(hoverFrame)
     CellTooltip:Hide()
 end)
@@ -238,7 +238,7 @@ end)
 
 for i = 6, 8 do
     local button = Cell.unitButtons.npc[i]
-    button.helper:HookScript("OnShow", function()
+    Cell.Polyfill.HookScript(button.helper, "OnShow", function()
         local guid = UnitGUID(button.states.unit)
         if not guid then return end
 
@@ -249,7 +249,7 @@ for i = 6, 8 do
         B.UpdateAll(button)
     end)
 
-    button.helper:HookScript("OnHide", function()
+    Cell.Polyfill.HookScript(button.helper, "OnHide", function()
         boss678_guidToButton[boss678_buttonToGuid[i] or ""] = nil
         boss678_buttonToGuid[i] = nil
 
@@ -262,7 +262,7 @@ for i = 6, 8 do
         end
     end)
 
-    button.helper:HookScript("OnUpdate", function(self, elapsed)
+    Cell.Polyfill.HookScript(button.helper, "OnUpdate", function(self, elapsed)
         button.helper.elapsed = (button.helper.elapsed or 0) + elapsed
         button.helper.elapsed2 = (button.helper.elapsed2 or 0) + elapsed
         button.helper.elapsed3 = (button.helper.elapsed3 or 0) + elapsed

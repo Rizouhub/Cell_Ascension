@@ -173,148 +173,18 @@ end
 
 
 -- Texture:SetGradient polyfill to support CreateColor tables on 3.3.5a
-do
-    local tex = UIParent:CreateTexture()
-    local mt = getmetatable(tex)
-
-    if mt and mt.__index then
-        local origSetGradient = mt.__index.SetGradient
-        local origSetGradientAlpha = mt.__index.SetGradientAlpha
-
-        local function unpackColor(c)
-            if type(c) ~= "table" then return end
-            if c.GetRGBA then
-                return c:GetRGBA()
-            end
-            return c.r, c.g, c.b, c.a or 1
-        end
-
-        -- accept either (orientation, color1, color2) or the classic numeric signature
-        if origSetGradient and not mt.__index._CellSetGradientPolyfill then
-            function mt.__index:SetGradient(orientation, ...)
-                local c1, c2 = ...
-                if type(c1) == "table" and type(c2) == "table" then
-                    local r1, g1, b1, a1 = unpackColor(c1)
-                    local r2, g2, b2, a2 = unpackColor(c2)
-                    if origSetGradientAlpha then
-                        return origSetGradientAlpha(self, orientation, r1, g1, b1, a1, r2, g2, b2, a2)
-                    end
-                end
-                return origSetGradient(self, orientation, ...)
-            end
-            mt.__index._CellSetGradientPolyfill = true
-        end
-
-        if origSetGradientAlpha and not mt.__index._CellSetGradientAlphaPolyfill then
-            function mt.__index:SetGradientAlpha(orientation, ...)
-                local args = {...}
-                if #args == 2 and type(args[1]) == "table" and type(args[2]) == "table" then
-                    local r1, g1, b1, a1 = unpackColor(args[1])
-                    local r2, g2, b2, a2 = unpackColor(args[2])
-                    return origSetGradientAlpha(self, orientation, r1, g1, b1, a1, r2, g2, b2, a2)
-                end
-                return origSetGradientAlpha(self, orientation, ...)
-            end
-            mt.__index._CellSetGradientAlphaPolyfill = true
-        end
-
-        -- Texture:SetColorTexture polyfill for WotLK 3.3.5
-        -- In retail, SetColorTexture(r, g, b, a) creates a solid color texture
-        -- In WotLK, we use SetTexture with the RGBA values directly
-        if not mt.__index.SetColorTexture then
-            function mt.__index:SetColorTexture(r, g, b, a)
-                -- In WotLK, SetTexture with 4 numeric args creates a solid color
-                self:SetTexture(r or 1, g or 1, b or 1, a or 1)
-            end
-        end
-
-        -- Wrap Texture:SetAtlas to handle missing atlases in WotLK 3.3.5
-        -- WotLK has fewer atlases than retail, so we need to gracefully handle missing ones
-        if mt.__index.SetAtlas and not mt.__index._CellSetAtlasWrapped then
-            local originalSetAtlas = mt.__index.SetAtlas
-            function mt.__index:SetAtlas(atlasName, useAtlasSize, filterMode)
-                -- Try to call the original SetAtlas
-                local success = pcall(originalSetAtlas, self, atlasName, useAtlasSize, filterMode)
-                if not success then
-                    -- Atlas doesn't exist in WotLK, use a fallback
-                    -- Set to a blank/transparent texture to avoid errors
-                    self:SetTexture(nil)
-                end
-            end
-            mt.__index._CellSetAtlasWrapped = true
-        end
-    end
-end
 
 
 -- Mouse click / motion polyfill for Wrath
-do
-    local region = CreateFrame("Frame")
-    local mt = getmetatable(region)
-    if not mt or not mt.__index then return end
-
-    local idx = mt.__index
-
-    -- Retail: ScriptRegion:SetMouseClickEnabled(bool)
-    if not idx.SetMouseClickEnabled then
-        function idx:SetMouseClickEnabled(enabled)
-            -- Wrath only has EnableMouse(bool) for both hover+click
-            if self.EnableMouse then
-                self:EnableMouse(not not enabled)
-            end
-        end
-    end
-
-    -- Retail: ScriptRegion:SetMouseMotionEnabled(bool)
-    if not idx.SetMouseMotionEnabled then
-        function idx:SetMouseMotionEnabled(enabled)
-            if self.EnableMouse then
-                self:EnableMouse(not not enabled)
-            end
-        end
-    end
-end
 
 
 
 
--- FontString IsTruncated polyfill for WotLK
-do
-    local fs = UIParent:CreateFontString()
-    local mt = getmetatable(fs)
-
-    if mt and mt.__index and not mt.__index.IsTruncated then
-        function mt.__index:IsTruncated()
-            -- Check if text width exceeds the font string's width
-            local stringWidth = self:GetStringWidth()
-            local frameWidth = self:GetWidth()
-
-            -- If width is 0, assume not truncated
-            if frameWidth == 0 then
-                return false
-            end
-
-            -- Check if string width exceeds available width
-            return stringWidth > frameWidth
-        end
-    end
-end
 
 -------------------------------------------------
 -- FontString SetRotation polyfill for WotLK
 -- Text rotation doesn't exist in WotLK, so this is a no-op
 -------------------------------------------------
-do
-    local fs = UIParent:CreateFontString()
-    local mt = getmetatable(fs)
-
-    if mt and mt.__index and not mt.__index.SetRotation then
-        function mt.__index:SetRotation(angle)
-            -- WotLK doesn't support text rotation, no-op to prevent errors
-            -- Alternative: use vertical text with newlines at the call site
-        end
-    end
-end
 
 -------------------------------------------------
 -- CreateColor polyfill for WotLK
@@ -588,145 +458,12 @@ end
 -------------------------------------------------
 -- StatusBar smoothing helpers polyfill
 -------------------------------------------------
-do
-    local sb = CreateFrame("StatusBar")
-    local mt = getmetatable(sb)
-
-    if mt and mt.__index then
-        if not mt.__index.SetSmoothedValue then
-            function mt.__index:SetSmoothedValue(value)
-                if self.SetValue then
-                    self:SetValue(value)
-                end
-            end
-        end
-
-        if not mt.__index.SetMinMaxSmoothedValue then
-            function mt.__index:SetMinMaxSmoothedValue(minVal, maxVal)
-                if self.SetMinMaxValues then
-                    self:SetMinMaxValues(minVal, maxVal)
-                end
-            end
-        end
-
-        if not mt.__index.ResetSmoothedValue then
-            function mt.__index:ResetSmoothedValue()
-                if self.GetValue and self.SetValue then
-                    self:SetValue(self:GetValue())
-                end
-            end
-        end
-    end
-end
 
 
 
--- Alpha animation SetFromAlpha / SetToAlpha polyfill for 3.3.5a
-do
-    -- create a sample alpha animation to grab its metatable
-    local f  = CreateFrame("Frame")
-    local ag = f:CreateAnimationGroup()
-    local a  = ag:CreateAnimation("Alpha")
-    local mt = getmetatable(a)
-
-    if mt and mt.__index and not mt.__index.SetFromAlpha then
-        -- weak tables to remember from/to per animation
-        local alphaFrom = setmetatable({}, { __mode = "k" })
-        local alphaTo   = setmetatable({}, { __mode = "k" })
-
-        function mt.__index:SetFromAlpha(value)
-            alphaFrom[self] = value
-            local to = alphaTo[self]
-            -- On WotLK, Alpha uses SetChange; approximate from/to with delta
-            if to ~= nil and self.SetChange then
-                self:SetChange(to - value)
-            end
-        end
-
-        function mt.__index:SetToAlpha(value)
-            alphaTo[self] = value
-            local from = alphaFrom[self]
-            if from ~= nil and self.SetChange then
-                self:SetChange(value - from)
-            end
-        end
-    end
-end
 
 -- HookScript polyfill for 3.3.5a
 
--- 1) Real hook for Frames (they have GetScript/SetScript)
-do
-    local f  = CreateFrame("Frame")
-    local mt = getmetatable(f)
-
-    if mt and mt.__index and not mt.__index.HookScript then
-        function mt.__index:HookScript(scriptType, handler)
-            if not self or type(scriptType) ~= "string" or type(handler) ~= "function" then
-                return
-            end
-
-            -- Only makes sense if this object actually supports scripts
-            local getScript = self.GetScript
-            local setScript = self.SetScript
-            if type(getScript) ~= "function" or type(setScript) ~= "function" then
-                return
-            end
-
-            local prev = getScript(self, scriptType)
-            if prev then
-                setScript(self, scriptType, function(...)
-                    prev(...)
-                    handler(...)
-                end)
-            else
-                setScript(self, scriptType, handler)
-            end
-        end
-    end
-end
-
--- 2) Delegate Texture:HookScript to its parent frame
-do
-    local tex = UIParent:CreateTexture()
-    local mt  = getmetatable(tex)
-
-    if mt and mt.__index and not mt.__index.HookScript then
-        function mt.__index:HookScript(scriptType, handler)
-            if type(scriptType) ~= "string" or type(handler) ~= "function" then
-                return
-            end
-
-            local parent = self:GetParent()
-            if parent then
-                -- If parent already has a proper HookScript (either native or from the frame polyfill), use it
-                if type(parent.HookScript) == "function" then
-                    parent:HookScript(scriptType, handler)
-                    return
-                end
-
-                -- If parent only has SetScript/GetScript, hook manually
-                local getScript = parent.GetScript
-                local setScript = parent.SetScript
-                if type(getScript) == "function" and type(setScript) == "function" then
-                    local prev = getScript(parent, scriptType)
-                    if prev then
-                        setScript(parent, scriptType, function(...)
-                            prev(...)
-                            handler(...)
-                        end)
-                    else
-                        setScript(parent, scriptType, handler)
-                    end
-                    return
-                end
-            end
-
-            -- Worst case: no scripts anywhere, just fire once so stuff like blink:Play() runs at least once
-            handler(self)
-        end
-    end
-end
 
 
 
@@ -752,43 +489,6 @@ do
 end
 
 
--- Cooldown swipe API polyfill for 3.3.5a (no-op)
-do
-    local cd = CreateFrame("Cooldown")
-    local mt = getmetatable(cd)
-
-    if mt and mt.__index then
-        if not mt.__index.SetSwipeTexture then
-            function mt.__index:SetSwipeTexture(texture)
-                -- No swipe layer in WotLK, ignore
-            end
-        end
-
-        if not mt.__index.SetSwipeColor then
-            function mt.__index:SetSwipeColor(r, g, b, a)
-                -- Ignore
-            end
-        end
-
-        if not mt.__index.SetDrawEdge then
-            function mt.__index:SetDrawEdge(flag)
-                -- Ignore
-            end
-        end
-
-        if not mt.__index.SetDrawBling then
-            function mt.__index:SetDrawBling(flag)
-                -- Ignore
-            end
-        end
-
-        if not mt.__index.SetHideCountdownNumbers then
-            function mt.__index:SetHideCountdownNumbers(flag)
-                -- Just ignore; WotLK cooldown text is separate anyway
-            end
-        end
-    end
-end
 
 
 -- Cooldown OnCooldownDone polyfill for 3.3.5a (ignore unsupported script type)
@@ -797,151 +497,20 @@ do
 end
 
 
--- StatusBar:SetReverseFill polyfill for 3.3.5a (no-op)
-do
-    local f = CreateFrame("StatusBar")
-    local mt = getmetatable(f)
-    if mt and mt.__index and not mt.__index.SetReverseFill then
-        function mt.__index:SetReverseFill(reverse)
-            -- 3.3.5 has no reverse fill; ignore request
-        end
-    end
-end
 
 
 -------------------------------------------------
 -- FlipBook / ParentKey / ChildKey polyfills
 -------------------------------------------------
 
--- Textures: SetParentKey is Retail-only
-do
-    local tex = UIParent:CreateTexture()
-    local mt  = getmetatable(tex)
-
-    if mt and mt.__index and not mt.__index.SetParentKey then
-        function mt.__index:SetParentKey(key)
-            -- Retail uses this to bind the texture to a named child
-            -- of a flipbook animation. WotLK has no concept of this,
-            -- so just ignore it.
-        end
-    end
-end
-
--- Animations: ChildKey + FlipBook-specific methods
-do
-    local f  = CreateFrame("Frame")
-    local ag = f:CreateAnimationGroup()
-    local a  = ag:CreateAnimation("Alpha")
-    local mt = getmetatable(a)
-
-    if mt and mt.__index then
-        if not mt.__index.SetChildKey then
-            function mt.__index:SetChildKey(key)
-                -- No child-key routing in WotLK. Ignore.
-            end
-        end
-
-        if not mt.__index.SetFlipBookFrames then
-            function mt.__index:SetFlipBookFrames(frames)
-                -- No flipbook system; ignore.
-            end
-        end
-
-        if not mt.__index.SetFlipBookFrameWidth then
-            function mt.__index:SetFlipBookFrameWidth(width)
-                -- Ignore.
-            end
-        end
-
-        if not mt.__index.SetFlipBookFrameHeight then
-            function mt.__index:SetFlipBookFrameHeight(height)
-                -- Ignore.
-            end
-        end
-
-        if not mt.__index.SetFlipBookRows then
-            function mt.__index:SetFlipBookRows(rows)
-                -- Ignore; 3.3.5 doesn't know rows/columns.
-            end
-        end
-
-        if not mt.__index.SetFlipBookColumns then
-            function mt.__index:SetFlipBookColumns(columns)
-                -- Ignore.
-            end
-        end
-    end
-end
-
-
--- AnimationGroup: map "FlipBook" → "Alpha" so CreateAnimation doesn't explode
-do
-    local f  = CreateFrame("Frame")
-    local ag = f:CreateAnimationGroup()
-    local mt = getmetatable(ag)
-
-    if mt and mt.__index and type(mt.__index.CreateAnimation) == "function"
-       and not mt.__index._CellFlipBookShim
-    then
-        local origCreateAnimation = mt.__index.CreateAnimation
-
-        function mt.__index:CreateAnimation(animType, ...)
-            if animType == "FlipBook" then
-                -- 3.3.5 only knows Alpha/Translation/Scale/Rotation.
-                animType = "Alpha"
-            end
-            return origCreateAnimation(self, animType, ...)
-        end
-
-        mt.__index._CellFlipBookShim = true
-    end
-end
-
-
--- CreateMaskTexture polyfill for 3.3.5a (Frame / StatusBar / Cooldown / Texture)
-do
-    local function addCreateMaskTexture(obj)
-        local mt = getmetatable(obj)
-        if not mt or type(mt.__index) ~= "table" then
-            return
-        end
-
-        if not mt.__index.CreateMaskTexture then
-            function mt.__index:CreateMaskTexture()
-                -- 3.3.5a has no real mask textures; fake it with a hidden Frame (empty)
-                -- We use a Frame instead of Texture to avoid the "white box" issue if SetTexture is called.
-                local mask = CreateFrame("Frame", nil, self)
-                mask:SetAllPoints(self)
-                mask:EnableMouse(false) -- Ensure it doesn't block clicks
-                
-                -- Add dummy methods that Actions.lua expects on a Texture/Mask
-                mask.SetTexture = function() end
-                mask.SetRotated = function() end
-                
-                return mask
-            end
-        end
-    end
-
-    -- Patch the types we care about
-    addCreateMaskTexture(CreateFrame("Frame"))
-    addCreateMaskTexture(CreateFrame("StatusBar"))
-    addCreateMaskTexture(CreateFrame("Cooldown"))
-    addCreateMaskTexture(UIParent:CreateTexture())
-end
 
 
 
--- Texture:AddMaskTexture polyfill for 3.3.5a (no-op)
-do
-    local t = UIParent:CreateTexture()
-    local mt = getmetatable(t)
-    if mt and mt.__index and not mt.__index.AddMaskTexture then
-        function mt.__index:AddMaskTexture(mask)
-            -- Ignore; real masking doesn't exist on 3.3.5
-        end
-    end
-end
+
+
+
+
+
 
 -- C_Timer - completely replace with working implementation for WotLK 3.3.5
 -- WotLK has a broken C_Timer that causes errors in C_TimerAugment.lua
@@ -1406,26 +975,6 @@ if not C_TooltipInfo then
     end
 end
 
--- GameTooltip:SetSpellByID polyfill for WotLK 3.3.5a
-do
-    local tooltip = CreateFrame("GameTooltip")
-    local mt = getmetatable(tooltip)
-    if mt and mt.__index then
-        -- FORCE overwrite to ensure we control it
-        mt.__index.SetSpellByID = function(self, spellID)
-            if not spellID then return end
-            -- Try to get link
-            local link = GetSpellLink(spellID)
-            if link then
-                self:SetHyperlink(link)
-            else
-                -- Fallback to SetSpell if link usually fails (though link is better)
-                -- Or just clear if no link
-                self:ClearLines()
-            end
-        end
-    end
-end
 
 -- SOUNDKIT
 Cell.SOUNDKIT = {
@@ -1803,57 +1352,12 @@ end
 -- In retail, frames/widgets have SetEnabled(bool) to enable/disable
 -- In WotLK, use Enable() and Disable() methods instead
 -------------------------------------------------
-do
-    local function addSetEnabled(obj)
-        if not obj then return end
-        local mt = getmetatable(obj)
-        if mt and mt.__index and not mt.__index.SetEnabled then
-            function mt.__index:SetEnabled(enabled)
-                if enabled then
-                    if self.Enable then
-                        self:Enable()
-                    end
-                else
-                    if self.Disable then
-                        self:Disable()
-                    end
-                end
-            end
-        end
-    end
-
-    -- Add to various frame types (wrapped in pcall for safety)
-    local function safeAdd(frameType)
-        local ok, frame = pcall(CreateFrame, frameType)
-        if ok and frame then
-            addSetEnabled(frame)
-        end
-    end
-
-    safeAdd("Frame")
-    safeAdd("Slider")
-    safeAdd("Button")
-    safeAdd("CheckButton")
-end
 
 -------------------------------------------------
 -- SimpleHTML GetContentHeight polyfill for WotLK
 -- In retail, SimpleHTML frames have GetContentHeight() to get rendered height
 -- In WotLK, we approximate this with GetHeight()
 -------------------------------------------------
-do
-    -- Create a test SimpleHTML frame to get its metatable
-    local testHTML = CreateFrame("SimpleHTML")
-    local mt = getmetatable(testHTML)
-
-    if mt and mt.__index and not mt.__index.GetContentHeight then
-        function mt.__index:GetContentHeight()
-            -- WotLK: SimpleHTML doesn't have GetContentHeight
-            -- Fall back to GetHeight() which should give us the frame height
-            return self:GetHeight() or 0
-        end
-    end
-end
 
 -------------------------------------------------
 -- Slider OnValueChanged userChanged parameter polyfill for WotLK
@@ -1870,104 +1374,7 @@ end
 -------------------------------------------------
 
 -------------------------------------------------
--- DEBUG: Track font modifications to find root cause
--------------------------------------------------
-do
-    local debugLog = {}
-    local fs = UIParent:CreateFontString()
-    local mt = getmetatable(fs)
 
-    if mt and mt.__index and not mt.__index._CellDebugHooked then
-        local origSetFont = mt.__index.SetFont
-        local origSetFontObject = mt.__index.SetFontObject
-
-        -- Hook SetFont to track who's modifying fonts
-        mt.__index.SetFont = function(self, path, size, flags)
-            local parent = self:GetParent()
-            local parentName = parent and parent:GetName() or ""
-            local selfName = self:GetName() or ""
-            local caller = debugstack(2, 3, 0)
-
-            -- ONLY alert if Cell is modifying NotPlater/Quartz/XPerl frames
-            local isTargetAddon = parentName:match("Quartz") or parentName:match("NotPlater") or
-                                 parentName:match("XPerl") or selfName:match("Quartz") or
-                                 selfName:match("NotPlater") or selfName:match("XPerl")
-
-            if isTargetAddon and caller:match("Cell_Ascension") then
-                print(string.format("|cFFFF0000[Cell Debug]|r Cell modifying %s addon!",
-                    parentName:match("Quartz") and "Quartz" or parentName:match("NotPlater") and "NotPlater" or "XPerl"))
-                print("  Parent: " .. (parentName ~= "" and parentName or "nil"))
-                print("  Self: " .. (selfName ~= "" and selfName or "nil"))
-                print("  Size: " .. tostring(size))
-                print("  Stack:\n" .. caller)
-
-                table.insert(debugLog, {
-                    time = GetTime(),
-                    parent = parentName,
-                    self = selfName,
-                    path = path,
-                    size = size,
-                    flags = flags or "none",
-                    caller = caller
-                })
-            end
-
-            return origSetFont(self, path, size, flags)
-        end
-
-        -- Hook SetFontObject
-        mt.__index.SetFontObject = function(self, fontObj)
-            local parent = self:GetParent()
-            local parentName = parent and parent:GetName() or ""
-            local selfName = self:GetName() or ""
-            local caller = debugstack(2, 3, 0)
-
-            -- ONLY alert if Cell is modifying NotPlater/Quartz/XPerl frames
-            local isTargetAddon = parentName:match("Quartz") or parentName:match("NotPlater") or
-                                 parentName:match("XPerl") or selfName:match("Quartz") or
-                                 selfName:match("NotPlater") or selfName:match("XPerl")
-
-            if isTargetAddon and caller:match("Cell_Ascension") then
-                print(string.format("|cFFFF0000[Cell Debug]|r Cell SetFontObject on %s addon!",
-                    parentName:match("Quartz") and "Quartz" or parentName:match("NotPlater") and "NotPlater" or "XPerl"))
-                print("  Parent: " .. (parentName ~= "" and parentName or "nil"))
-                print("  Self: " .. (selfName ~= "" and selfName or "nil"))
-                print("  FontObj: " .. tostring(fontObj))
-                print("  Stack:\n" .. caller)
-            end
-
-            return origSetFontObject(self, fontObj)
-        end
-
-        mt.__index._CellDebugHooked = true
-
-        -- Export debug log
-        _G.CellDebugFontLog = debugLog
-
-        -- Slash command
-        SLASH_CELLDEBUG1 = "/celldebug"
-        SlashCmdList["CELLDEBUG"] = function(msg)
-            if msg == "fonts" then
-                print("=== Cell Font Debug Log (" .. #debugLog .. " entries) ===")
-                for i = math.max(1, #debugLog - 20), #debugLog do
-                    local e = debugLog[i]
-                    print(string.format("[%.2f] %s.%s size=%s",
-                        e.time, e.parent, e.self, tostring(e.size)))
-                    if e.caller:match("Cell_Ascension") then
-                        print("  |cFFFF0000FROM CELL:|r " .. e.caller:match("[^\n]+"))
-                    end
-                end
-            elseif msg == "clear" then
-                wipe(debugLog)
-                print("Debug log cleared")
-            else
-                print("Cell Debug: /celldebug fonts | clear")
-            end
-        end
-
-        -- print("|cFF00FF00[Cell]|r Debug logging active. Use /celldebug fonts")
-    end
-end
 
 -- Fonts
 -- NOTE: Font objects are created in Widgets/Widgets.lua and Indicators/Built-in.lua
@@ -1979,29 +1386,6 @@ end
 -- In retail, frames in restricted execution have :Run() to execute Lua snippets
 -- In WotLK, this doesn't exist, so we polyfill it
 -------------------------------------------------
-do
-    local frame = CreateFrame("Frame")
-    local mt = getmetatable(frame)
-
-    if mt and mt.__index and not mt.__index.Run then
-        function mt.__index:Run(snippet)
-            if not snippet then return end
-
-            -- In restricted execution, we need to execute the snippet
-            -- Using loadstring with the restricted environment
-            local func, err = loadstring(snippet)
-            if func then
-                -- Set the environment to use 'self' as the frame
-                setfenv(func, setmetatable({self = self}, {__index = _G}))
-                local success, execErr = pcall(func)
-                if not success then
-                    -- Silently fail in restricted context, just like retail
-                    return
-                end
-            end
-        end
-    end
-end
 
 -------------------------------------------------
 -- Ensure CellMainFrame is always shown
@@ -2170,26 +1554,6 @@ end)
 -- Ensures compatibility with DetailsWotlkPort and other addons
 -- This prevents conflicts when other addons expect animation type to be a string
 -------------------------------------------------
-do
-    local ag = UIParent:CreateAnimationGroup()
-    local mt = getmetatable(ag)
-
-    if mt and mt.__index and not mt.__index._CellAnimationPolyfillApplied then
-        local origCreateAnimation = mt.__index.CreateAnimation
-
-        if origCreateAnimation then
-            function mt.__index:CreateAnimation(animationType, ...)
-                -- Ensure animationType is always a string to prevent conflicts with other addon polyfills
-                -- Some addons (like DetailsWotlkPort) expect this to never be nil
-                animationType = animationType or "Animation"
-
-                return origCreateAnimation(self, animationType, ...)
-            end
-
-            mt.__index._CellAnimationPolyfillApplied = true
-        end
-    end
-end
 
 -------------------------------------------------
 -- Fix LibCustomGlow AutoCastGlow info initialization
@@ -2294,186 +1658,6 @@ do
             return orig_GetClickCastingSpellList(class)
         end
     end
-
-    -- Fix 4: Animation system missing SetScaleFrom/To, SetFromAlpha/ToAlpha
-    local function PatchAnimationSystem()
-        if Cell._AnimationSystemPatched then return end
-        Cell._AnimationSystemPatched = true
-
-        local f = CreateFrame("Frame")
-        local ag = f:CreateAnimationGroup()
-        local mt = getmetatable(ag)
-        local orig_CreateAnimation = mt.__index.CreateAnimation
-
-        -- Hook AnimationGroup:Play to ensure "From" values are applied
-        if not mt.__index._CellPlayHook then
-            local orig_Play = mt.__index.Play
-            mt.__index.Play = function(self)
-                -- Apply "From" state for all custom-tracked animations
-                if self._cellAnimations then
-                    for _, anim in ipairs(self._cellAnimations) do
-                        if anim._ApplyFromState then
-                            anim:_ApplyFromState()
-                        end
-                    end
-                end
-                
-                if orig_Play then 
-                    orig_Play(self) 
-                end
-            end
-            mt.__index._CellPlayHook = true
-        end
-
-        mt.__index.CreateAnimation = function(self, type, name, inherits)
-            -- DetailsWotlkPort crashes if name is nil, so we must provide a default
-            if not name then name = type end
-            
-            local anim = orig_CreateAnimation(self, type, name, inherits)
-            
-            -- Track animation in the group
-            if not self._cellAnimations then self._cellAnimations = {} end
-            table.insert(self._cellAnimations, anim)
-
-            if type == "Alpha" then
-                anim.SetFromAlpha = function(self, from)
-                    self._fromAlpha = from
-                    self:_UpdateAlpha()
-                end
-                anim.SetToAlpha = function(self, to)
-                    self._toAlpha = to
-                    self:_UpdateAlpha()
-                end
-                anim._UpdateAlpha = function(self)
-                    local from = self._fromAlpha or 1
-                    local to = self._toAlpha or 1
-                    -- Calculate change for WotLK
-                    if self.SetChange then
-                        self:SetChange(to - from)
-                    end
-                end
-                anim._ApplyFromState = function(self)
-                    if self._fromAlpha then
-                        local region = self:GetParent():GetParent()
-                        if region and region.SetAlpha then
-                            region:SetAlpha(self._fromAlpha)
-                        end
-                    end
-                    -- Re-apply change in case it was lost
-                    self:_UpdateAlpha()
-                end
-                
-                anim:HookScript("OnPlay", function()
-                    anim:_ApplyFromState()
-                end)
-
-            elseif type == "Scale" then
-                anim.SetScaleFrom = function(self, x, y)
-                    self._fromX = x
-                    self._fromY = y
-                    self:_UpdateScale()
-                end
-                anim.SetScaleTo = function(self, x, y)
-                    self._toX = x
-                    self._toY = y
-                    self:_UpdateScale()
-                end
-                anim._UpdateScale = function(self)
-                    local fromX = self._fromX or 1
-                    local fromY = self._fromY or 1
-                    local toX = self._toX or 1
-                    local toY = self._toY or 1
-                    
-                    if fromX == 0 then fromX = 0.001 end
-                    if fromY == 0 then fromY = 0.001 end
-                    
-                    if self.SetScale then
-                        self:SetScale(toX / fromX, toY / fromY)
-                    end
-                end
-                anim._ApplyFromState = function(self)
-                     -- Apply initial scale to the target region
-                    if self._fromX or self._fromY then
-                        local region = self:GetParent():GetParent()
-                        if region and region.SetScale then
-                            local startScale = math.max(self._fromX or 0, self._fromY or 0)
-                            if startScale <= 0.001 then startScale = 0.001 end -- Prevent 0 scale issues
-                            region:SetScale(startScale)
-                        end
-                    end
-                    -- Re-apply change
-                    self:_UpdateScale()
-                end
-                
-                anim:HookScript("OnPlay", function()
-                    anim:_ApplyFromState()
-                end)
-            end
-            
-            return anim
-        end
-    end
-
-    -- Fix 5: LibCustomGlow acUpdate crash (attempt to perform arithmetic on field 'space' (a nil value))
-    local function PatchLibCustomGlow()
-        local lib = LibStub and LibStub("LibCustomGlow-1.0-Cell", true)
-        if not lib then return end
-        if Cell._LibCustomGlowPatched then return end
-        Cell._LibCustomGlowPatched = true
-
-        local function SafeAcUpdate(self, elapsed)
-            local width, height = self:GetSize()
-            if width ~= self.info.width or height ~= self.info.height or not self.info.space then
-                if width * height == 0 then return end -- Avoid division by zero
-                self.info.width = width
-                self.info.height = height
-                self.info.perimeter = 2 * (width + height)
-                self.info.bottomlim = height * 2 + width
-                self.info.rightlim = height + width
-                self.info.space = self.info.perimeter / self.info.N
-            end
-        
-            local texIndex = 0
-            for k = 1, 4 do
-                self.timer[k] = self.timer[k] + elapsed / (self.info.period * k)
-                if self.timer[k] > 1 or self.timer[k] < -1 then
-                    self.timer[k] = self.timer[k] % 1
-                end
-                for i = 1, self.info.N do
-                    texIndex = texIndex + 1
-                    if self.textures[texIndex] then
-                        local position = (self.info.space * i + self.info.perimeter * self.timer[k]) % self.info.perimeter
-                        if position > self.info.bottomlim then
-                            self.textures[texIndex]:SetPoint("CENTER", self, "BOTTOMRIGHT", -position + self.info.bottomlim, 0)
-                        elseif position > self.info.rightlim then
-                            self.textures[texIndex]:SetPoint("CENTER", self, "TOPRIGHT", 0, -position + self.info.rightlim)
-                        elseif position > self.info.height then
-                            self.textures[texIndex]:SetPoint("CENTER", self, "TOPLEFT", position - self.info.height, 0)
-                        else
-                            self.textures[texIndex]:SetPoint("CENTER", self, "BOTTOMLEFT", 0, position)
-                        end
-                    end
-                end
-            end
-        end
-
-        local orig_AutoCastGlow_Start = lib.AutoCastGlow_Start
-        lib.AutoCastGlow_Start = function(r, color, N, frequency, scale, xOffset, yOffset, key, frameLevel)
-            orig_AutoCastGlow_Start(r, color, N, frequency, scale, xOffset, yOffset, key, frameLevel)
-            
-            key = key or ""
-            local f = r["_AutoCastGlow" .. key]
-            if f then
-                f:SetScript("OnUpdate", SafeAcUpdate)
-            end
-        end
-        
-        -- Also update the startList entry
-        if lib.startList then
-            lib.startList["Autocast Shine"] = lib.AutoCastGlow_Start
-        end
-    end
-
     -- Add to the event handler
     local f = CreateFrame("Frame")
     f:RegisterEvent("ADDON_LOADED")
@@ -2482,12 +1666,9 @@ do
             PatchCreateScrollFrame()
             PatchBindingListButton()
             PatchGetClickCastingSpellList()
-            PatchAnimationSystem()
-            PatchLibCustomGlow()
             self:UnregisterEvent("ADDON_LOADED")
         end
     end)
-
 end
 
 -------------------------------------------------
@@ -2513,4 +1694,321 @@ end
 if not BackdropTemplateMixin then
     -- Create an empty mixin (backdrop functions already exist natively in Wrath)
     BackdropTemplateMixin = {}
+end
+
+
+-------------------------------------------------
+-- Cell.Polyfill Safe Namespace
+-- Replaces tainted mt.__index global modifications
+-------------------------------------------------
+
+Cell.Polyfill = Cell.Polyfill or {}
+local Polyfill = Cell.Polyfill
+
+function Polyfill.SetEnabled(frame, enabled)
+    if not frame then return end
+    if enabled then
+        if frame.Enable then frame:Enable() end
+    else
+        if frame.Disable then frame:Disable() end
+    end
+end
+
+function Polyfill.SetGradient(texture, orientation, ...)
+    if not texture or not texture.SetGradient then return end
+    local c1, c2 = ...
+    if type(c1) == "table" and type(c2) == "table" then
+        local r1, g1, b1, a1 = c1.r or c1[1] or 1, c1.g or c1[2] or 1, c1.b or c1[3] or 1, c1.a or c1[4] or 1
+        local r2, g2, b2, a2 = c2.r or c2[1] or 1, c2.g or c2[2] or 1, c2.b or c2[3] or 1, c2.a or c2[4] or 1
+        if texture.SetGradientAlpha then
+            return texture:SetGradientAlpha(orientation, r1, g1, b1, a1, r2, g2, b2, a2)
+        end
+    end
+    return texture:SetGradient(orientation, ...)
+end
+
+function Polyfill.SetGradientAlpha(texture, orientation, ...)
+    if not texture or not texture.SetGradientAlpha then return end
+    local args = {...}
+    if #args == 2 and type(args[1]) == "table" and type(args[2]) == "table" then
+        local c1, c2 = args[1], args[2]
+        local r1, g1, b1, a1 = c1.r or c1[1] or 1, c1.g or c1[2] or 1, c1.b or c1[3] or 1, c1.a or c1[4] or 1
+        local r2, g2, b2, a2 = c2.r or c2[1] or 1, c2.g or c2[2] or 1, c2.b or c2[3] or 1, c2.a or c2[4] or 1
+        return texture:SetGradientAlpha(orientation, r1, g1, b1, a1, r2, g2, b2, a2)
+    end
+    return texture:SetGradientAlpha(orientation, ...)
+end
+
+function Polyfill.SetColorTexture(texture, r, g, b, a)
+    if not texture then return end
+    if texture.SetColorTexture then
+        texture:SetColorTexture(r, g, b, a)
+    elseif texture.SetTexture then
+        texture:SetTexture(r or 1, g or 1, b or 1, a or 1)
+    end
+end
+
+function Polyfill.SetAtlas(texture, atlasName, useAtlasSize, filterMode)
+    if not texture then return end
+    if texture.SetAtlas then
+        local success = pcall(texture.SetAtlas, texture, atlasName, useAtlasSize, filterMode)
+        if not success and texture.SetTexture then
+            texture:SetTexture(nil)
+        end
+    end
+end
+
+function Polyfill.SetMouseClickEnabled(region, enabled)
+    if not region then return end
+    if region.SetMouseClickEnabled then
+        region:SetMouseClickEnabled(enabled)
+    elseif region.EnableMouse then
+        region:EnableMouse(not not enabled)
+    end
+end
+
+function Polyfill.SetMouseMotionEnabled(region, enabled)
+    if not region then return end
+    if region.SetMouseMotionEnabled then
+        region:SetMouseMotionEnabled(enabled)
+    elseif region.EnableMouse then
+        region:EnableMouse(not not enabled)
+    end
+end
+
+function Polyfill.IsTruncated(fs)
+    if not fs then return false end
+    if fs.IsTruncated then
+        return fs:IsTruncated()
+    end
+    if fs.GetStringWidth and fs.GetWidth then
+        local w1 = fs:GetStringWidth()
+        local w2 = fs:GetWidth()
+        if w2 == 0 then return false end
+        return w1 > w2
+    end
+    return false
+end
+
+function Polyfill.SetRotation(fs, angle)
+    if not fs then return end
+    if fs.SetRotation then
+        fs:SetRotation(angle)
+    end
+end
+
+function Polyfill.SetSmoothedValue(sb, value)
+    if not sb then return end
+    if sb.SetSmoothedValue then
+        sb:SetSmoothedValue(value)
+    elseif sb.SetValue then
+        sb:SetValue(value)
+    end
+end
+
+function Polyfill.SetMinMaxSmoothedValue(sb, minVal, maxVal)
+    if not sb then return end
+    if sb.SetMinMaxSmoothedValue then
+        sb:SetMinMaxSmoothedValue(minVal, maxVal)
+    elseif sb.SetMinMaxValues then
+        sb:SetMinMaxValues(minVal, maxVal)
+    end
+end
+
+function Polyfill.ResetSmoothedValue(sb)
+    if not sb then return end
+    if sb.ResetSmoothedValue then
+        sb:ResetSmoothedValue()
+    elseif sb.GetValue and sb.SetValue then
+        sb:SetValue(sb:GetValue())
+    end
+end
+
+-- Animation alpha/scale Polyfills
+function Polyfill.SetFromAlpha(anim, value)
+    if not anim then return end
+    if anim.SetFromAlpha then
+        anim:SetFromAlpha(value)
+    else
+        anim._fromAlpha = value
+        if anim.SetChange and anim._toAlpha then
+            anim:SetChange(anim._toAlpha - value)
+        end
+    end
+end
+
+function Polyfill.SetToAlpha(anim, value)
+    if not anim then return end
+    if anim.SetToAlpha then
+        anim:SetToAlpha(value)
+    else
+        anim._toAlpha = value
+        if anim.SetChange and anim._fromAlpha then
+            anim:SetChange(value - anim._fromAlpha)
+        end
+    end
+end
+
+function Polyfill.SetScaleFrom(anim, x, y)
+    if not anim then return end
+    anim._fromX = x
+    anim._fromY = y
+    local toX = anim._toX or 1
+    local toY = anim._toY or 1
+    local fX = x == 0 and 0.001 or x
+    local fY = y == 0 and 0.001 or y
+    if anim.SetScale then
+        anim:SetScale(toX / fX, toY / fY)
+    end
+end
+
+function Polyfill.SetScaleTo(anim, x, y)
+    if not anim then return end
+    anim._toX = x
+    anim._toY = y
+    local fromX = anim._fromX or 1
+    local fromY = anim._fromY or 1
+    local fX = fromX == 0 and 0.001 or fromX
+    local fY = fromY == 0 and 0.001 or fromY
+    if anim.SetScale then
+        anim:SetScale(x / fX, y / fY)
+    end
+end
+
+function Polyfill.HookScript(frame, scriptType, handler)
+    if not frame or not scriptType or not handler then return end
+    
+    if type(frame.HookScript) == "function" then
+        frame:HookScript(scriptType, handler)
+        return
+    end
+    
+    local getScript = frame.GetScript
+    local setScript = frame.SetScript
+    if type(getScript) == "function" and type(setScript) == "function" then
+        local prev = getScript(frame, scriptType)
+        if prev then
+            setScript(frame, scriptType, function(...)
+                prev(...)
+                handler(...)
+            end)
+        else
+            setScript(frame, scriptType, handler)
+        end
+    end
+end
+
+function Polyfill.SetSwipeTexture(cd, texture) end
+function Polyfill.SetSwipeColor(cd, r, g, b, a) end
+function Polyfill.SetDrawEdge(cd, flag) end
+function Polyfill.SetDrawBling(cd, flag) end
+function Polyfill.SetHideCountdownNumbers(cd, flag) end
+
+function Polyfill.SetReverseFill(sb, reverse)
+    if not sb then return end
+    if sb.SetReverseFill then
+        sb:SetReverseFill(reverse)
+    end
+end
+
+function Polyfill.SetParentKey(tex, key) end
+function Polyfill.SetChildKey(anim, key) end
+function Polyfill.SetFlipBookFrames(anim, frames) end
+function Polyfill.SetFlipBookFrameWidth(anim, w) end
+function Polyfill.SetFlipBookFrameHeight(anim, h) end
+function Polyfill.SetFlipBookRows(anim, r) end
+function Polyfill.SetFlipBookColumns(anim, c) end
+
+function Polyfill.CreateAnimation(ag, animType, name, inherits)
+    if not ag then return end
+    if animType == "FlipBook" then
+        animType = "Alpha"
+    end
+    if not name then name = animType end
+    
+    local anim
+    if ag.CreateAnimation then
+        anim = ag:CreateAnimation(animType, name, inherits)
+    end
+    
+    if anim then
+        -- Attach our custom play hook
+        if not ag._cellAnimations then ag._cellAnimations = {} end
+        table.insert(ag._cellAnimations, anim)
+        
+        if not ag._CellPlayHook then
+            local orig_Play = ag.Play
+            ag.Play = function(self)
+                if self._cellAnimations then
+                    for _, a in ipairs(self._cellAnimations) do
+                        if a._fromAlpha then
+                            local region = a:GetParent() and a:GetParent():GetParent()
+                            if region and region.SetAlpha then region:SetAlpha(a._fromAlpha) end
+                        end
+                        if a._fromX or a._fromY then
+                            local region = a:GetParent() and a:GetParent():GetParent()
+                            if region and region.SetScale then 
+                                local s = math.max(a._fromX or 0, a._fromY or 0)
+                                region:SetScale(s == 0 and 0.001 or s) 
+                            end
+                        end
+                    end
+                end
+                if orig_Play then orig_Play(self) end
+            end
+            ag._CellPlayHook = true
+        end
+    end
+    
+    return anim
+end
+
+function Polyfill.CreateMaskTexture(frame)
+    if not frame then return end
+    if frame.CreateMaskTexture then
+        return frame:CreateMaskTexture()
+    end
+    local mask = CreateFrame("Frame", nil, frame)
+    mask:SetAllPoints(frame)
+    if mask.EnableMouse then mask:EnableMouse(false) end
+    mask.SetTexture = function() end
+    mask.SetRotated = function() end
+    return mask
+end
+
+function Polyfill.AddMaskTexture(texture, mask) end
+
+function Polyfill.SetSpellByID(tooltip, spellID)
+    if not tooltip or not spellID then return end
+    if tooltip.SetSpellByID then
+        tooltip:SetSpellByID(spellID)
+        return
+    end
+    local link = GetSpellLink(spellID)
+    if link and tooltip.SetHyperlink then
+        tooltip:SetHyperlink(link)
+    elseif tooltip.ClearLines then
+        tooltip:ClearLines()
+    end
+end
+
+function Polyfill.GetContentHeight(html)
+    if not html then return 0 end
+    if html.GetContentHeight then
+        return html:GetContentHeight()
+    end
+    return html.GetHeight and html:GetHeight() or 0
+end
+
+function Polyfill.Run(frame, snippet)
+    if not frame or not snippet then return end
+    if frame.Run then
+        frame:Run(snippet)
+        return
+    end
+    local func = loadstring(snippet)
+    if func then
+        setfenv(func, setmetatable({self = frame}, {__index = _G}))
+        pcall(func)
+    end
 end

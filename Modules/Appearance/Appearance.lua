@@ -112,7 +112,7 @@ local function CreateCellPane()
                     popup:SetPoint("TOPLEFT", appearanceTab, 117, -77)
                 end
                 CellDB["appearance"]["accentColor"][1] = "class_color"
-                accentColorPicker:SetEnabled(false)
+                Cell.Polyfill.SetEnabled(accentColorPicker, false)
             end
         },
         {
@@ -126,7 +126,7 @@ local function CreateCellPane()
                     popup:SetPoint("TOPLEFT", appearanceTab, 117, -77)
                 end
                 CellDB["appearance"]["accentColor"][1] = "custom"
-                accentColorPicker:SetEnabled(true)
+                Cell.Polyfill.SetEnabled(accentColorPicker, true)
             end
         },
     })
@@ -326,7 +326,7 @@ local function CreatePreviewButtons()
     previewButton.previewHealthText = previewButton.widgets.indicatorFrame:CreateFontString(nil, "OVERLAY", "Cell_Ascension_FONT_WIDGET")
     previewButton.previewHealthText:SetPoint("CENTER")
 
-    previewButton.widgets.healthBar:SetMinMaxSmoothedValue(0, 100)
+    Cell.Polyfill.SetMinMaxSmoothedValue(previewButton.widgets.healthBar, 0, 100)
     previewButton.widgets.healthBar:SetMinMaxValues(0, 100)
 
     previewButton.widgets.powerBar:SetMinMaxValues(0, 1)
@@ -375,7 +375,7 @@ local function CreatePreviewButtons()
     previewButton:SetScript("OnShow", function()
         previewButton.perc = 1
         previewButton.widgets.healthBar:SetValue(100)
-        -- previewButton.widgets.healthBar:SetSmoothedValue(100)
+        -- Cell.Polyfill.SetSmoothedValue(previewButton.widgets.healthBar, 100)
         previewButton.previewHealthText:SetText("100%")
 
         local health, healthPercent, healthPercentOld, currentState = 100, 1, 1, 1
@@ -397,7 +397,7 @@ local function CreatePreviewButtons()
                     -- print(abs(diff))
                 end
             elseif CellDB["appearance"]["barAnimation"] == "Smooth" then
-                previewButton.widgets.healthBar:SetSmoothedValue(health)
+                Cell.Polyfill.SetSmoothedValue(previewButton.widgets.healthBar, health)
             else
                 previewButton.widgets.healthBar:SetValue(health)
             end
@@ -823,14 +823,14 @@ local function CreateIconOptionsFrame()
 end
 
 local function UpdateCheckButtons()
-    predCustomCB:SetEnabled(CellDB["appearance"]["healPrediction"][1])
-    predColorPicker:SetEnabled(CellDB["appearance"]["healPrediction"][1] and CellDB["appearance"]["healPrediction"][2])
-    shieldColorPicker:SetEnabled(CellDB["appearance"]["shield"][1])
-    reverseCB:SetEnabled(CellDB["appearance"]["shield"][1])
+    Cell.Polyfill.SetEnabled(predCustomCB, CellDB["appearance"]["healPrediction"][1])
+    Cell.Polyfill.SetEnabled(predColorPicker, CellDB["appearance"]["healPrediction"][1] and CellDB["appearance"]["healPrediction"][2])
+    Cell.Polyfill.SetEnabled(shieldColorPicker, CellDB["appearance"]["shield"][1])
+    Cell.Polyfill.SetEnabled(reverseCB, CellDB["appearance"]["shield"][1])
     -- WotLK 3.3.5a: Keep heal absorb controls hidden (don't enable/show them)
-    -- absorbColorPicker:SetEnabled(CellDB["appearance"]["healAbsorb"][1])
-    -- invertColorCB:SetEnabled(CellDB["appearance"]["healAbsorb"][1])
-    oversColorPicker:SetEnabled(CellDB["appearance"]["overshield"][1])
+    -- Cell.Polyfill.SetEnabled(absorbColorPicker, CellDB["appearance"]["healAbsorb"][1])
+    -- Cell.Polyfill.SetEnabled(invertColorCB, CellDB["appearance"]["healAbsorb"][1])
+    Cell.Polyfill.SetEnabled(oversColorPicker, CellDB["appearance"]["overshield"][1])
 
     -- WotLK 3.3.5a: Keep heal absorb controls hidden
     -- if CellDB["appearance"]["healAbsorbInvertColor"] then
@@ -871,7 +871,7 @@ local function UpdateColorPickers()
         thresholdCP1:Show()
         thresholdCP2:Show()
         thresholdCP3:Show()
-        thresholdCP3:SetEnabled(CellDB["appearance"]["barColor"][1] == "threshold1")
+        Cell.Polyfill.SetEnabled(thresholdCP3, CellDB["appearance"]["barColor"][1] == "threshold1")
         thresholdDropdown:Show()
         colorThresholdDropdown2:Show()
         lossColorDropdown:ClearAllPoints()
@@ -892,7 +892,7 @@ local function UpdateColorPickers()
         thresholdLossCP1:Show()
         thresholdLossCP2:Show()
         thresholdLossCP3:Show()
-        thresholdLossCP1:SetEnabled(CellDB["appearance"]["lossColor"][1] == "threshold1")
+        Cell.Polyfill.SetEnabled(thresholdLossCP1, CellDB["appearance"]["lossColor"][1] == "threshold1")
         thresholdLossDropdown1:Show()
         thresholdLossDropdown2:Show()
         powerColorDropdown:ClearAllPoints()
@@ -987,7 +987,7 @@ local function CreateUnitButtonStylePane()
             end,
         },
     })
-    barColorDropdown:HookScript("OnEnter", function()
+    Cell.Polyfill.HookScript(barColorDropdown, "OnEnter", function()
         CellTooltip:SetOwner(barColorDropdown, "ANCHOR_NONE")
         CellTooltip:SetPoint("BOTTOMLEFT", barColorDropdown, "TOPLEFT", 0, 1)
         CellTooltip:AddDoubleLine(L["Color Thresholds"].." |cffff2727"..L["HIGH CPU USAGE"], "|cff7777770% -> 100%")
@@ -996,7 +996,7 @@ local function CreateUnitButtonStylePane()
         CellTooltip:AddDoubleLine("|cffffb5c5"..L["Color Thresholds"].." C:", "|cffffffff"..L["Color"].."1 |cff777777->|r "..L["Color"].."2 |cff777777->|r "..L["Class Color (dark)"])
         CellTooltip:Show()
     end)
-    barColorDropdown:HookScript("OnLeave", function()
+    Cell.Polyfill.HookScript(barColorDropdown, "OnLeave", function()
         CellTooltip:Hide()
     end)
 
@@ -1017,7 +1017,7 @@ local function CreateUnitButtonStylePane()
     -- full hp color
     fullColorCB = Cell.CreateCheckButton(unitButtonPane, "", function(checked, self)
         CellDB["appearance"]["fullColor"][1] = checked
-        fullColorPicker:SetEnabled(checked)
+        Cell.Polyfill.SetEnabled(fullColorPicker, checked)
         Cell.Fire("UpdateAppearance", "fullColor")
     end, L["Enable Full Health Color"])
     -- fullColorCB:SetPoint("TOPLEFT", barColorPicker, "TOPRIGHT", 2, 0)
@@ -1159,7 +1159,7 @@ local function CreateUnitButtonStylePane()
             end,
         },
     })
-    lossColorDropdown:HookScript("OnEnter", function()
+    Cell.Polyfill.HookScript(lossColorDropdown, "OnEnter", function()
         CellTooltip:SetOwner(lossColorDropdown, "ANCHOR_NONE")
         CellTooltip:SetPoint("BOTTOMLEFT", lossColorDropdown, "TOPLEFT", 0, 1)
         CellTooltip:AddDoubleLine(L["Color Thresholds"].." |cffff2727"..L["HIGH CPU USAGE"], "|cff7777770% -> 100%")
@@ -1168,7 +1168,7 @@ local function CreateUnitButtonStylePane()
         CellTooltip:AddDoubleLine("|cffffb5c5"..L["Color Thresholds"].." C:", "|cffffffff"..L["Class Color (dark)"].." |cff777777->|r "..L["Color"].."2 |cff777777->|r "..L["Color"].."3")
         CellTooltip:Show()
     end)
-    lossColorDropdown:HookScript("OnLeave", function()
+    Cell.Polyfill.HookScript(lossColorDropdown, "OnLeave", function()
         CellTooltip:Hide()
     end)
 
@@ -1257,7 +1257,7 @@ local function CreateUnitButtonStylePane()
     -- death color
     deathColorCB = Cell.CreateCheckButton(unitButtonPane, "", function(checked, self)
         CellDB["appearance"]["deathColor"][1] = checked
-        deathColorPicker:SetEnabled(checked)
+        Cell.Polyfill.SetEnabled(deathColorPicker, checked)
         Cell.Fire("UpdateAppearance", "deathColor")
     end, L["Enable Death Color"])
     -- deathColorCB:SetPoint("TOPLEFT", lossColorPicker, "TOPRIGHT", 2, 0)
@@ -1457,7 +1457,7 @@ local function CreateUnitButtonStylePane()
     --     F.EnableLibHealComm(checked)
     -- end, L["LibHealComm needs to be installed"])
     -- useLibCB:SetPoint("TOPLEFT", predCustomCB, "BOTTOMLEFT", 0, -7)
-    -- useLibCB:SetEnabled(Cell.isVanilla or Cell.isCata)
+    -- Cell.Polyfill.SetEnabled(useLibCB, Cell.isVanilla or Cell.isCata)
 
     -- WotLK 3.3.5a: Heal absorbs don't exist in WotLK, hide these settings
     -- heal absorb
@@ -1467,7 +1467,7 @@ local function CreateUnitButtonStylePane()
         Cell.Fire("UpdateAppearance", "shields")
     end)
     absorbCB:SetPoint("TOPLEFT", predCB, "BOTTOMLEFT", 0, -28)
-    absorbCB:SetEnabled(true)
+    Cell.Polyfill.SetEnabled(absorbCB, true)
     absorbCB:Hide()  -- WotLK: Hide this setting
 
     absorbColorPicker = Cell.CreateColorPicker(unitButtonPane, L["Heal Absorb"], true, function(r, g, b, a)
@@ -1498,7 +1498,7 @@ local function CreateUnitButtonStylePane()
     -- WotLK: Position at same level as Heal Prediction (not as a child)
     -- Place below predCustomCB but align with predCB's left edge
     shieldCB:SetPoint("TOPLEFT", predCB, "BOTTOMLEFT", 0, -35)
-    shieldCB:SetEnabled(not Cell.isVanilla)
+    Cell.Polyfill.SetEnabled(shieldCB, not Cell.isVanilla)
 
     shieldColorPicker = Cell.CreateColorPicker(unitButtonPane, L["Shield Texture"], true, function(r, g, b, a)
         CellDB["appearance"]["shield"][2][1] = r
@@ -1523,7 +1523,7 @@ local function CreateUnitButtonStylePane()
         Cell.Fire("UpdateAppearance", "shields")
     end)
     oversCB:SetPoint("TOPLEFT", shieldCB, "BOTTOMLEFT", 0, -28)
-    oversCB:SetEnabled(not Cell.isVanilla)
+    Cell.Polyfill.SetEnabled(oversCB, not Cell.isVanilla)
 
     oversColorPicker = Cell.CreateColorPicker(unitButtonPane, L["Overshield Texture"], true, function(r, g, b, a)
         CellDB["appearance"]["overshield"][2][1] = r
@@ -1623,14 +1623,14 @@ LoadButtonStyle = function()
 
     fullColorCB:SetChecked(CellDB["appearance"]["fullColor"][1])
     fullColorPicker:SetColor(CellDB["appearance"]["fullColor"][2])
-    fullColorPicker:SetEnabled(CellDB["appearance"]["fullColor"][1])
+    Cell.Polyfill.SetEnabled(fullColorPicker, CellDB["appearance"]["fullColor"][1])
 
     lossColorDropdown:SetSelectedValue(CellDB["appearance"]["lossColor"][1])
     lossColorPicker:SetColor(CellDB["appearance"]["lossColor"][2])
 
     deathColorCB:SetChecked(CellDB["appearance"]["deathColor"][1])
     deathColorPicker:SetColor(CellDB["appearance"]["deathColor"][2])
-    deathColorPicker:SetEnabled(CellDB["appearance"]["deathColor"][1])
+    Cell.Polyfill.SetEnabled(deathColorPicker, CellDB["appearance"]["deathColor"][1])
 
     powerColorDropdown:SetSelectedValue(CellDB["appearance"]["powerColor"][1])
     powerColorPicker:SetColor(CellDB["appearance"]["powerColor"][2])
@@ -1702,7 +1702,7 @@ LoadData = function()
     strataDropdown:SetSelected(CellDB["appearance"]["strata"])
     accentColorDropdown:SetSelectedValue(CellDB["appearance"]["accentColor"][1])
     accentColorPicker:SetColor(CellDB["appearance"]["accentColor"][2])
-    accentColorPicker:SetEnabled(CellDB["appearance"]["accentColor"][1] == "custom")
+    Cell.Polyfill.SetEnabled(accentColorPicker, CellDB["appearance"]["accentColor"][1] == "custom")
     optionsFontSizeOffset:SetValue(CellDB["appearance"]["optionsFontSizeOffset"])
     useGameFontCB:SetChecked(CellDB["appearance"]["useGameFont"])
 

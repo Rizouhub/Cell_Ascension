@@ -192,7 +192,7 @@ function Cell.SetEnabled(isEnabled, ...)
                 w:SetDesaturated(true)
             end
         elseif w.SetEnabled then
-            w:SetEnabled(isEnabled)
+            Cell.Polyfill.SetEnabled(w, isEnabled)
         elseif isEnabled then
             w:Show()
         else
@@ -263,11 +263,11 @@ function Cell.CreateSeparator(text, parent, width, color)
 
     local line = parent:CreateTexture()
     P.Size(line, width, 1)
-    line:SetColorTexture(unpack(color.t))
+    Cell.Polyfill.SetColorTexture(line, unpack(color.t))
     P.Point(line, "TOPLEFT", fs, "BOTTOMLEFT", 0, -2)
     local shadow = parent:CreateTexture()
     P.Size(shadow, width, 1)
-    shadow:SetColorTexture(0, 0, 0, 1)
+    Cell.Polyfill.SetColorTexture(shadow, 0, 0, 0, 1)
     P.Point(shadow, "TOPLEFT", line, "TOPLEFT", 1, -1)
 
     return fs
@@ -284,13 +284,13 @@ function Cell.CreateTitledPane(parent, text, width, height, color)
     local line = pane:CreateTexture()
     pane.line = line
     P.Height(line, 1)
-    line:SetColorTexture(color.r, color.g, color.b, color.a)
+    Cell.Polyfill.SetColorTexture(line, color.r, color.g, color.b, color.a)
     line:SetPoint("TOPLEFT", pane, "TOPLEFT", 0, P.Scale(-17))
     line:SetPoint("TOPRIGHT", pane, "TOPRIGHT", 0, P.Scale(-17))
 
     local shadow = pane:CreateTexture()
     P.Height(shadow, 1)
-    shadow:SetColorTexture(0, 0, 0, 1)
+    Cell.Polyfill.SetColorTexture(shadow, 0, 0, 0, 1)
     shadow:SetPoint("TOPLEFT", line, "TOPLEFT", P.Scale(1), P.Scale(-1))
     shadow:SetPoint("TOPRIGHT", line, "TOPRIGHT", P.Scale(1), P.Scale(-1))
 
@@ -416,10 +416,10 @@ function Cell.SetTooltips(widget, anchor, x, y, ...)
     if not widget._tooltipsInited then
         widget._tooltipsInited = true
 
-        widget:HookScript("OnEnter", function()
+        Cell.Polyfill.HookScript(widget, "OnEnter", function()
             ShowTooltips(widget, anchor, x, y, widget.tooltips)
         end)
-        widget:HookScript("OnLeave", function()
+        Cell.Polyfill.HookScript(widget, "OnLeave", function()
             CellTooltip:Hide()
         end)
     end
@@ -595,7 +595,7 @@ function Cell.CreateButton(parent, text, buttonColor, size, noBorder, noBackgrou
             bg:SetDrawLayer("BACKGROUND", -8)
             b.bg = bg
             bg:SetAllPoints(b)
-            bg:SetColorTexture(0.115, 0.115, 0.115, 1)
+            Cell.Polyfill.SetColorTexture(bg, 0.115, 0.115, 0.115, 1)
         end
 
         b:SetBackdropBorderColor(0, 0, 0, 1)
@@ -637,7 +637,7 @@ function Cell.CreateButton(parent, text, buttonColor, size, noBorder, noBackgrou
         b.tex:SetPoint(unpack(point))
         b.tex:SetSize(unpack(texSize))
         if isAtlas then
-            b.tex:SetAtlas(tex)
+            Cell.Polyfill.SetAtlas(b.tex, tex)
         else
             b.tex:SetTexture(tex)
         end
@@ -662,12 +662,12 @@ function Cell.CreateButton(parent, text, buttonColor, size, noBorder, noBackgrou
             b:SetScript("OnMouseUp", b.onMouseUp)
         end
         -- enable / disable
-        b:HookScript("OnEnable", function()
+        Cell.Polyfill.HookScript(b, "OnEnable", function()
             b.tex:SetVertexColor(1, 1, 1)
             b:SetScript("OnMouseDown", b.onMouseDown)
             b:SetScript("OnMouseUp", b.onMouseUp)
         end)
-        b:HookScript("OnDisable", function()
+        Cell.Polyfill.HookScript(b, "OnDisable", function()
             b.tex:SetVertexColor(0.4, 0.4, 0.4)
             b:SetScript("OnMouseDown", nil)
             b:SetScript("OnMouseUp", nil)
@@ -753,7 +753,7 @@ function Cell.CreateTipsButton(parent, size, points, ...)
 
     local lines = {...}
 
-    tips:HookScript("OnEnter", function()
+    Cell.Polyfill.HookScript(tips, "OnEnter", function()
         CellTooltip:SetOwner(tips, "ANCHOR_NONE")
 
         for i, line in pairs(lines) do
@@ -779,7 +779,7 @@ function Cell.CreateTipsButton(parent, size, points, ...)
         CellTooltip:Show()
     end)
 
-    tips:HookScript("OnLeave", function()
+    Cell.Polyfill.HookScript(tips, "OnLeave", function()
         CellTooltip:Hide()
     end)
 end
@@ -813,12 +813,12 @@ function Cell.CreateCheckButton(parent, label, onClick, ...)
     cb:SetBackdropBorderColor(0, 0, 0, 1)
 
     local checkedTexture = cb:CreateTexture(nil, "ARTWORK")
-    checkedTexture:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.7)
+    Cell.Polyfill.SetColorTexture(checkedTexture, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.7)
     checkedTexture:SetPoint("TOPLEFT", P.Scale(1), P.Scale(-1))
     checkedTexture:SetPoint("BOTTOMRIGHT", P.Scale(-1), P.Scale(1))
 
     local highlightTexture = cb:CreateTexture(nil, "ARTWORK")
-    highlightTexture:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.1)
+    Cell.Polyfill.SetColorTexture(highlightTexture, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.1)
     highlightTexture:SetPoint("TOPLEFT", P.Scale(1), P.Scale(-1))
     highlightTexture:SetPoint("BOTTOMRIGHT", P.Scale(-1), P.Scale(1))
 
@@ -828,13 +828,13 @@ function Cell.CreateCheckButton(parent, label, onClick, ...)
 
     cb:SetScript("OnEnable", function()
         cb.label:SetTextColor(1, 1, 1)
-        checkedTexture:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.7)
+        Cell.Polyfill.SetColorTexture(checkedTexture, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.7)
         cb:SetBackdropBorderColor(0, 0, 0, 1)
     end)
 
     cb:SetScript("OnDisable", function()
         cb.label:SetTextColor(0.4, 0.4, 0.4)
-        checkedTexture:SetColorTexture(0.4, 0.4, 0.4)
+        Cell.Polyfill.SetColorTexture(checkedTexture, 0.4, 0.4, 0.4)
         cb:SetBackdropBorderColor(0, 0, 0, 0.4)
     end)
 
@@ -872,7 +872,7 @@ function Cell.CreateColorPicker(parent, label, hasOpacity, onChange, onConfirm)
     cp.label:SetPoint("LEFT", cp, "RIGHT", 5, 0)
 
     cp.mask = cp:CreateTexture(nil, "ARTWORK")
-    cp.mask:SetColorTexture(0.15, 0.15, 0.15, 0.7)
+    Cell.Polyfill.SetColorTexture(cp.mask, 0.15, 0.15, 0.15, 0.7)
     cp.mask:SetPoint("TOPLEFT", P.Scale(1), P.Scale(-1))
     cp.mask:SetPoint("BOTTOMRIGHT", P.Scale(-1), P.Scale(1))
     cp.mask:Hide()
@@ -1097,7 +1097,7 @@ function Cell.CreateScrollEditBox(parent, onTextChanged, scrollStep)
     end
 
     function frame:SetEnabled(enabled)
-        frame.eb:SetEnabled(enabled)
+        Cell.Polyfill.SetEnabled(frame.eb, enabled)
     end
 
     return frame
@@ -1169,13 +1169,13 @@ function Cell.CreateSlider(name, parent, low, high, width, step, onValueChangedF
     highText:SetPoint("BOTTOM", currentEditBox)
 
     local tex = slider:CreateTexture(nil, "ARTWORK")
-    tex:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.7)
+    Cell.Polyfill.SetColorTexture(tex, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.7)
     tex:SetSize(8, 8)
     slider:SetThumbTexture(tex)
 
     local valueBeforeClick
     slider.onEnter = function()
-        tex:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 1)
+        Cell.Polyfill.SetColorTexture(tex, accentColor.t[1], accentColor.t[2], accentColor.t[3], 1)
         valueBeforeClick = slider:GetValue()
         if #tooltips > 0 then
             ShowTooltips(slider, "ANCHOR_TOPLEFT", 0, 3, tooltips)
@@ -1183,7 +1183,7 @@ function Cell.CreateSlider(name, parent, low, high, width, step, onValueChangedF
     end
     slider:SetScript("OnEnter", slider.onEnter)
     slider.onLeave = function()
-        tex:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.7)
+        Cell.Polyfill.SetColorTexture(tex, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.7)
         CellTooltip:Hide()
     end
     slider:SetScript("OnLeave", slider.onLeave)
@@ -1212,7 +1212,7 @@ function Cell.CreateSlider(name, parent, low, high, width, step, onValueChangedF
     end)
 
     -- local valueBeforeClick
-    -- slider:HookScript("OnEnter", function(self, button, isMouseOver)
+    -- Cell.Polyfill.HookScript(slider, "OnEnter", function(self, button, isMouseOver)
     --     valueBeforeClick = slider:GetValue()
     -- end)
 
@@ -1259,20 +1259,20 @@ function Cell.CreateSlider(name, parent, low, high, width, step, onValueChangedF
 
     slider:SetScript("OnDisable", function()
         label:SetTextColor(0.4, 0.4, 0.4)
-        currentEditBox:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(currentEditBox, false)
         slider:SetScript("OnEnter", nil)
         slider:SetScript("OnLeave", nil)
-        tex:SetColorTexture(0.4, 0.4, 0.4, 0.7)
+        Cell.Polyfill.SetColorTexture(tex, 0.4, 0.4, 0.4, 0.7)
         lowText:SetTextColor(0.4, 0.4, 0.4)
         highText:SetTextColor(0.4, 0.4, 0.4)
     end)
 
     slider:SetScript("OnEnable", function()
         label:SetTextColor(1, 1, 1)
-        currentEditBox:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(currentEditBox, true)
         slider:SetScript("OnEnter", slider.onEnter)
         slider:SetScript("OnLeave", slider.onLeave)
-        tex:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.7)
+        Cell.Polyfill.SetColorTexture(tex, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.7)
         lowText:SetTextColor(unpack(colors.grey.t))
         highText:SetTextColor(unpack(colors.grey.t))
     end)
@@ -1309,9 +1309,9 @@ function Cell.CreateSwitch(parent, size, leftText, leftValue, rightText, rightVa
 
     local highlight = switch:CreateTexture(nil, "ARTWORK")
     if class == "PRIEST" and not accentColorOverride then
-        highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
+        Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
     else
-        highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
+        Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
     end
 
     local function UpdateHighlight(which)
@@ -1328,7 +1328,7 @@ function Cell.CreateSwitch(parent, size, leftText, leftValue, rightText, rightVa
     end
 
     local ag = highlight:CreateAnimationGroup()
-    local t1 = ag:CreateAnimation("Translation")
+    local t1 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t1:SetOffset(highlight:GetWidth(), 0)
     t1:SetDuration(0.2)
     t1:SetSmoothing("IN_OUT")
@@ -1369,17 +1369,17 @@ function Cell.CreateSwitch(parent, size, leftText, leftValue, rightText, rightVa
 
     switch:SetScript("OnEnter", function()
         if class == "PRIEST" and not accentColorOverride then
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.55)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.55)
         else
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.65)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.65)
         end
     end)
 
     switch:SetScript("OnLeave", function()
         if class == "PRIEST" and not accentColorOverride then
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
         else
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
         end
     end)
 
@@ -1393,9 +1393,9 @@ function Cell.CreateTripleSwitch(parent, size, func)
 
     local highlight = switch:CreateTexture(nil, "ARTWORK")
     if class == "PRIEST" and not accentColorOverride then
-        highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
+        Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
     else
-        highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
+        Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
     end
 
     local function UpdateHighlight(which)
@@ -1415,7 +1415,7 @@ function Cell.CreateTripleSwitch(parent, size, func)
     end
 
     local ag = highlight:CreateAnimationGroup()
-    local t1 = ag:CreateAnimation("Translation")
+    local t1 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     -- t1:SetOffset(highlight:GetWidth(), 0)
     t1:SetDuration(0.2)
     t1:SetSmoothing("IN_OUT")
@@ -1462,17 +1462,17 @@ function Cell.CreateTripleSwitch(parent, size, func)
 
     switch:SetScript("OnEnter", function()
         if class == "PRIEST" and not accentColorOverride then
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.55)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.55)
         else
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.65)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.65)
         end
     end)
 
     switch:SetScript("OnLeave", function()
         if class == "PRIEST" and not accentColorOverride then
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
         else
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
         end
     end)
 
@@ -1486,9 +1486,9 @@ function Cell.CreateFourfoldSwitch(parent, size, func)
 
     local highlight = switch:CreateTexture(nil, "ARTWORK")
     if class == "PRIEST" and not accentColorOverride then
-        highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
+        Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
     else
-        highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
+        Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
     end
 
     local function UpdateHighlight(value)
@@ -1511,7 +1511,7 @@ function Cell.CreateFourfoldSwitch(parent, size, func)
     end
 
     local ag = highlight:CreateAnimationGroup()
-    local t1 = ag:CreateAnimation("Translation")
+    local t1 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     -- t1:SetOffset(highlight:GetWidth(), 0)
     t1:SetDuration(0.2)
     t1:SetSmoothing("IN_OUT")
@@ -1550,17 +1550,17 @@ function Cell.CreateFourfoldSwitch(parent, size, func)
 
     switch:SetScript("OnEnter", function()
         if class == "PRIEST" and not accentColorOverride then
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.55)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.55)
         else
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.65)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.65)
         end
     end)
 
     switch:SetScript("OnLeave", function()
         if class == "PRIEST" and not accentColorOverride then
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.35)
         else
-            highlight:SetColorTexture(accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
+            Cell.Polyfill.SetColorTexture(highlight, accentColor.t[1], accentColor.t[2], accentColor.t[3], 0.45)
         end
     end)
 
@@ -1600,7 +1600,7 @@ function Cell.CreateStatusBar(name, parent, width, height, maxValue, smooth, fun
     function bar:SetMaxValue(m)
         maxValue = m
         if smooth then
-            bar:SetMinMaxSmoothedValue(0, m)
+            Cell.Polyfill.SetMinMaxSmoothedValue(bar, 0, m)
         else
             bar:SetMinMaxValues(0, m)
         end
@@ -1608,7 +1608,7 @@ function Cell.CreateStatusBar(name, parent, width, height, maxValue, smooth, fun
 
     function bar:Reset()
         if smooth then
-            bar:SetSmoothedValue(0)
+            Cell.Polyfill.SetSmoothedValue(bar, 0)
         else
             bar:SetValue(0)
         end
@@ -1810,18 +1810,18 @@ function Cell.CreateConfirmPopup(parent, width, text, onAccept, onReject, mask, 
         end
         parent.confirmPopup.editBox:Show()
         -- disable yes if editBox empty
-        parent.confirmPopup.button1:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(parent.confirmPopup.button1, false)
         parent.confirmPopup.editBox:SetScript("OnTextChanged", function()
             if not parent.confirmPopup.editBox:GetText() or strtrim(parent.confirmPopup.editBox:GetText()) == "" then
-                parent.confirmPopup.button1:SetEnabled(false)
+                Cell.Polyfill.SetEnabled(parent.confirmPopup.button1, false)
             else
-                parent.confirmPopup.button1:SetEnabled(true)
+                Cell.Polyfill.SetEnabled(parent.confirmPopup.button1, true)
             end
         end)
     elseif parent.confirmPopup.editBox then
         parent.confirmPopup.editBox:Hide()
         parent.confirmPopup.editBox:SetScript("OnTextChanged", nil)
-        parent.confirmPopup.button1:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(parent.confirmPopup.button1, true)
     end
 
     if dropdowns then
@@ -1993,7 +1993,7 @@ function Cell.CreatePopupEditBox(parent, func, multiLine)
         tipsBackground:SetPoint("TOPLEFT", eb, "BOTTOMLEFT")
         tipsBackground:SetPoint("TOPRIGHT", eb, "BOTTOMRIGHT")
         tipsBackground:SetPoint("BOTTOM", tipsText, 0, -2)
-        tipsBackground:SetColorTexture(0.115, 0.115, 0.115, 0.9)
+        Cell.Polyfill.SetColorTexture(tipsBackground, 0.115, 0.115, 0.115, 0.9)
         tipsBackground:Hide()
 
         function eb:SetTips(text)
@@ -2204,7 +2204,7 @@ local function CreateItemButtons(items, itemTable, itemParent, level)
                 b.iconBg = b:CreateTexture(nil, "BORDER")
                 P.Size(b.iconBg, 16, 16)
                 b.iconBg:SetPoint("TOPLEFT", P.Scale(5), P.Scale(-1))
-                b.iconBg:SetColorTexture(0, 0, 0, 1)
+                Cell.Polyfill.SetColorTexture(b.iconBg, 0, 0, 0, 1)
 
                 b.icon = b:CreateTexture(nil, "ARTWORK")
                 b.icon:SetPoint("TOPLEFT", b.iconBg, P.Scale(1), P.Scale(-1))
@@ -2327,7 +2327,7 @@ local function CreateItemButtons_Scroll(items, itemTable, limit, level)
                 b.iconBg = b:CreateTexture(nil, "BORDER")
                 P.Size(b.iconBg, 16, 16)
                 b.iconBg:SetPoint("TOPLEFT", P.Scale(5), P.Scale(-1))
-                b.iconBg:SetColorTexture(0, 0, 0, 1)
+                Cell.Polyfill.SetColorTexture(b.iconBg, 0, 0, 0, 1)
 
                 b.icon = b:CreateTexture(nil, "ARTWORK")
                 b.icon:SetPoint("TOPLEFT", b.iconBg, P.Scale(1), P.Scale(-1))
@@ -2508,21 +2508,21 @@ function Cell.CreateScrollTextFrame(parent, s, timePerScroll, scrollStep, delayT
 
     -- alpha changing animation
     local fadeIn = text:CreateAnimationGroup()
-    local alpha = fadeIn:CreateAnimation("Alpha")
-    alpha:SetFromAlpha(0)
-    alpha:SetToAlpha(1)
+    local alpha = Cell.Polyfill.CreateAnimation(fadeIn, "Alpha")
+    Cell.Polyfill.SetFromAlpha(alpha, 0)
+    Cell.Polyfill.SetToAlpha(alpha, 1)
     alpha:SetDuration(0.5)
 
     local fadeOutIn = text:CreateAnimationGroup()
-    local alpha1 = fadeOutIn:CreateAnimation("Alpha")
+    local alpha1 = Cell.Polyfill.CreateAnimation(fadeOutIn, "Alpha")
     alpha1:SetStartDelay(delayTime)
-    alpha1:SetFromAlpha(1)
-    alpha1:SetToAlpha(0)
+    Cell.Polyfill.SetFromAlpha(alpha1, 1)
+    Cell.Polyfill.SetToAlpha(alpha1, 0)
     alpha1:SetDuration(0.5)
     alpha1:SetOrder(1)
-    local alpha2 = fadeOutIn:CreateAnimation("Alpha")
-    alpha2:SetFromAlpha(0)
-    alpha2:SetToAlpha(1)
+    local alpha2 = Cell.Polyfill.CreateAnimation(fadeOutIn, "Alpha")
+    Cell.Polyfill.SetFromAlpha(alpha2, 0)
+    Cell.Polyfill.SetToAlpha(alpha2, 1)
     alpha2:SetDuration(0.5)
     alpha2:SetOrder(2)
     alpha2:SetStartDelay(0.1)
@@ -2844,11 +2844,11 @@ list:SetScript("OnHide", function() list:Hide() end)
 -- close dropdown
 function Cell.RegisterForCloseDropdown(f)
     if f:GetObjectType() == "Button" or f:GetObjectType() == "CheckButton" then
-        f:HookScript("OnClick", function()
+        Cell.Polyfill.HookScript(f, "OnClick", function()
             list:Hide()
         end)
     elseif f:GetObjectType() == "Slider" then
-        f:HookScript("OnValueChanged", function()
+        Cell.Polyfill.HookScript(f, "OnValueChanged", function()
             list:Hide()
         end)
     end
@@ -3077,7 +3077,7 @@ function Cell.CreateDropdown(parent, width, dropdownType, isMini, isHorizontal)
                 fs:SetPoint("RIGHT", -5, 0)
             end
 
-            b:SetEnabled(not item.disabled)
+            Cell.Polyfill.SetEnabled(b, not item.disabled)
 
             -- texture
             if item.texture then
@@ -3163,7 +3163,7 @@ function Cell.CreateDropdown(parent, width, dropdownType, isMini, isHorizontal)
     end
 
     function menu:SetEnabled(f)
-        menu.button:SetEnabled(f)
+        Cell.Polyfill.SetEnabled(menu.button, f)
         if f then
             menu.text:SetTextColor(1, 1, 1)
         else
@@ -3181,7 +3181,7 @@ function Cell.CreateDropdown(parent, width, dropdownType, isMini, isHorizontal)
     end)
 
     -- scripts
-    menu.button:HookScript("OnClick", function()
+    Cell.Polyfill.HookScript(menu.button, "OnClick", function()
         if list.menu ~= menu then -- list shown by other dropdown
             LoadItems()
             list:Show()
@@ -3321,7 +3321,7 @@ local function CreateGrid(parent, text, width)
     end
 
     function grid:IsTruncated()
-        return grid.text:IsTruncated()
+        return Cell.Polyfill.IsTruncated(grid.text)
     end
 
     grid:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -3391,15 +3391,15 @@ function Cell.CreateBindingListButton(parent, modifier, bindKey, bindType, bindA
     actionGrid:SetPoint("BOTTOMLEFT", typeGrid, "BOTTOMRIGHT", P.Scale(-1), 0)
     actionGrid:SetPoint("BOTTOMRIGHT")
 
-    actionGrid:HookScript("OnEnter", function()
-        if actionGrid:IsTruncated() then
+    Cell.Polyfill.HookScript(actionGrid, "OnEnter", function()
+        if Cell.Polyfill.IsTruncated(actionGrid) then
             CellTooltip:SetOwner(actionGrid, "ANCHOR_TOPLEFT", 0, P.Scale(1))
             CellTooltip:AddLine(L["Action"])
             CellTooltip:AddLine("|cffffffff" .. (actionGrid:GetText() or ""))
             CellTooltip:Show()
         end
     end)
-    actionGrid:HookScript("OnLeave", function()
+    Cell.Polyfill.HookScript(actionGrid, "OnLeave", function()
         CellTooltip:Hide()
     end)
 
@@ -3407,7 +3407,7 @@ function Cell.CreateBindingListButton(parent, modifier, bindKey, bindType, bindA
     local spellIconBg = actionGrid:CreateTexture(nil, "BORDER")
     P.Size(spellIconBg, 16, 16)
     spellIconBg:SetPoint("TOPLEFT", P.Scale(2), P.Scale(-2))
-    spellIconBg:SetColorTexture(0, 0, 0, 1)
+    Cell.Polyfill.SetColorTexture(spellIconBg, 0, 0, 0, 1)
     spellIconBg:Hide()
 
     local spellIcon = actionGrid:CreateTexture(nil, "OVERLAY")
@@ -3594,7 +3594,7 @@ function Cell.CreateReceivingFrame(parent)
         end)
 
         -- NOTE: you cannot send to yourself
-        requestBtn:SetEnabled(playerName ~= Cell.vars.playerNameFull)
+        Cell.Polyfill.SetEnabled(requestBtn, playerName ~= Cell.vars.playerNameFull)
         importBtn:Hide()
         dataLabel:Hide()
         dataText:Hide()
@@ -3637,7 +3637,7 @@ function Cell.CreateReceivingFrame(parent)
 
     function f:ShowProgress(done, total)
         progressBar:SetMaxValue(total)
-        progressBar:SetSmoothedValue(done)
+        Cell.Polyfill.SetSmoothedValue(progressBar, done)
     end
 
     function f:ShowImport(status, received, func)
@@ -3648,7 +3648,7 @@ function Cell.CreateReceivingFrame(parent)
         Cell.ChangeSizeWithAnimation(importBtn, 125, 20, 7)
         progressBar:Hide()
         importBtn:Show()
-        importBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(importBtn, false)
 
         if status then
             if received["type"] == "Debuffs" then
@@ -3676,7 +3676,7 @@ function Cell.CreateReceivingFrame(parent)
                         dataLabel:Show()
                         dataText:Show()
                         infoMsg:Show()
-                        importBtn:SetEnabled(isCompatible)
+                        Cell.Polyfill.SetEnabled(importBtn, isCompatible)
                         if func then func() end
                     end)
                 end)
@@ -3715,7 +3715,7 @@ function Cell.CreateReceivingFrame(parent)
                         dataLabel:Show()
                         dataText:Show()
                         infoMsg:Show()
-                        importBtn:SetEnabled(isCompatible)
+                        Cell.Polyfill.SetEnabled(importBtn, isCompatible)
                         if func then func() end
                     end)
                 end)

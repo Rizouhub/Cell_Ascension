@@ -834,17 +834,17 @@ local function CreateQuickAssistPane()
 
         CellSpellTooltip:SetOwner(qaPopup, "ANCHOR_NONE")
         CellSpellTooltip:SetPoint("TOPLEFT", qaPopup, "BOTTOMLEFT", 0, -1)
-        CellSpellTooltip:SetSpellByID(spellId, icon)
+        Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId, icon)
         CellSpellTooltip:Show()
     end)
 
-    qaPopup:HookScript("OnHide", function()
+    Cell.Polyfill.HookScript(qaPopup, "OnHide", function()
         CellSpellTooltip:Hide()
     end)
 
     -- dualPopup --------------------------------------------------------------------
     qaDualPopup = Cell.CreateDualPopupEditBox(qaPane, "ID", L["Duration"], true)
-    qaDualPopup.left:HookScript("OnTextChanged", function(self)
+    Cell.Polyfill.HookScript(qaDualPopup.left, "OnTextChanged", function(self)
         local spellId = tonumber(self:GetText())
         if not spellId then
             CellSpellTooltip:Hide()
@@ -859,11 +859,11 @@ local function CreateQuickAssistPane()
 
         CellSpellTooltip:SetOwner(self, "ANCHOR_NONE")
         CellSpellTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -1)
-        CellSpellTooltip:SetSpellByID(spellId, icon)
+        Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId, icon)
         CellSpellTooltip:Show()
     end)
 
-    qaDualPopup:HookScript("OnHide", function()
+    Cell.Polyfill.HookScript(qaDualPopup, "OnHide", function()
         CellSpellTooltip:Hide()
     end)
 end
@@ -3040,16 +3040,16 @@ local function CreateMyBuffWidget(parent, index)
         end
     end)
 
-    b:HookScript("OnEnter", function(self)
+    Cell.Polyfill.HookScript(b, "OnEnter", function(self)
         if self.id and self.icon then
             CellSpellTooltip:SetOwner(self, "ANCHOR_NONE")
             CellSpellTooltip:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
-            CellSpellTooltip:SetSpellByID(self.id, self.icon)
+            Cell.Polyfill.SetSpellByID(CellSpellTooltip, self.id, self.icon)
             CellSpellTooltip:Show()
         end
     end)
 
-    b:HookScript("OnLeave", function(self)
+    Cell.Polyfill.HookScript(b, "OnLeave", function(self)
         CellSpellTooltip:Hide()
     end)
 
@@ -3456,16 +3456,16 @@ LoadList = function(parent, buttons, addBtn, t, separator)
                 buttons[i].duration:SetPoint("BOTTOMRIGHT")
             end
 
-            buttons[i]:HookScript("OnEnter", function(self)
+            Cell.Polyfill.HookScript(buttons[i], "OnEnter", function(self)
                 if self.id and self.icon then
                     CellSpellTooltip:SetOwner(self, "ANCHOR_NONE")
                     CellSpellTooltip:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
-                    CellSpellTooltip:SetSpellByID(self.id, self.icon)
+                    Cell.Polyfill.SetSpellByID(CellSpellTooltip, self.id, self.icon)
                     CellSpellTooltip:Show()
                 end
             end)
 
-            buttons[i]:HookScript("OnLeave", function(self)
+            Cell.Polyfill.HookScript(buttons[i], "OnLeave", function(self)
                 CellSpellTooltip:Hide()
             end)
 

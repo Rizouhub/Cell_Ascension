@@ -42,7 +42,7 @@ local function CreateIndicatorsImportFrame()
     -- buttons
     local importBtn = Cell.CreateButton(importFrame, L["Import"], "green", {67, 20})
     importBtn:SetPoint("BOTTOMLEFT", 5, 5)
-    importBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(importBtn, false)
     importBtn:SetScript("OnClick", function()
         -- lower frame level
         importFrame:SetFrameLevel(Cell.frames.indicatorsTab:GetFrameLevel() + 20)
@@ -139,7 +139,7 @@ local function CreateIndicatorsImportFrame()
     -- content
     local function Failed(reason)
         title:SetText(L["Import"].." > "..toLayoutName..": |cffff2222"..reason)
-        importBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(importBtn, false)
         listFrame.scrollFrame:Reset()
     end
 
@@ -172,7 +172,7 @@ local function CreateIndicatorsImportFrame()
 
                         if builtIn + custom == count then
                             title:SetText(L["Import"].." > "..toLayoutName..": |cff90EE90"..builtIn.." "..L["built-in(s)"].."|r, |cffFFB5C5"..custom.." "..L["custom(s)"].."|r")
-                            importBtn:SetEnabled(true)
+                            Cell.Polyfill.SetEnabled(importBtn, true)
                             imported = data
 
                             -- create buttons, update list
@@ -195,8 +195,8 @@ local function CreateIndicatorsImportFrame()
                                     b:GetFontString():SetPoint("RIGHT", b.typeIcon, "LEFT", -2, 0)
                                 end
 
-                                b:HookScript("OnEnter", function()
-                                    if b:GetFontString():IsTruncated() then
+                                Cell.Polyfill.HookScript(b, "OnEnter", function()
+                                    if Cell.Polyfill.IsTruncated(b:GetFontString()) then
                                         CellTooltip:SetOwner(b, "ANCHOR_NONE")
                                         CellTooltip:SetPoint("RIGHT", b, "LEFT", -1, 0)
                                         CellTooltip:AddLine(b:GetText())
@@ -204,7 +204,7 @@ local function CreateIndicatorsImportFrame()
                                     end
                                 end)
 
-                                b:HookScript("OnLeave", function()
+                                Cell.Polyfill.HookScript(b, "OnLeave", function()
                                     CellTooltip:Hide()
                                 end)
 
@@ -249,7 +249,7 @@ local function CreateIndicatorsImportFrame()
         Cell.frames.indicatorsTab.mask:Hide()
         textArea:SetText("")
         listFrame.scrollFrame:Reset()
-        importBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(importBtn, false)
     end)
 
     importFrame:SetScript("OnShow", function()

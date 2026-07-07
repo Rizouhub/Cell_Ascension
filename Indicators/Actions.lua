@@ -93,36 +93,36 @@ local function CreateAnimationGroup_TypeA()
     tex:SetTexture(Cell.vars.whiteTexture)
 
     -- mask
-    local mask = canvas:CreateMaskTexture()
+    local mask = Cell.Polyfill.CreateMaskTexture(canvas)
     mask:SetTexture(Cell.vars.whiteTexture, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
     mask:SetAllPoints(canvas)
     canvas:EnableMouse(false)
     f:EnableMouse(false)
     -- mask:SetSnapToPixelGrid(true)
-    tex:AddMaskTexture(mask)
+    Cell.Polyfill.AddMaskTexture(tex, mask)
 
     -- animation
     local ag = f:CreateAnimationGroup()
     canvas.ag = ag
 
-    local a1 = ag:CreateAnimation("Alpha")
+    local a1 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a1.duration = 0.6
-    a1:SetFromAlpha(0)
-    a1:SetToAlpha(1)
+    Cell.Polyfill.SetFromAlpha(a1, 0)
+    Cell.Polyfill.SetToAlpha(a1, 1)
     a1:SetOrder(1)
     a1:SetDuration(a1.duration)
     a1:SetSmoothing("OUT")
 
-    local t1 = ag:CreateAnimation("Translation")
+    local t1 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t1.duration = 0.6
     t1:SetOrder(1)
     t1:SetSmoothing("OUT")
     t1:SetDuration(t1.duration)
 
-    local a2 = ag:CreateAnimation("Alpha")
+    local a2 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a2.duration = 0.5
-    a2:SetFromAlpha(1)
-    a2:SetToAlpha(0)
+    Cell.Polyfill.SetFromAlpha(a2, 1)
+    Cell.Polyfill.SetToAlpha(a2, 0)
     a2:SetDuration(a2.duration)
     a2:SetOrder(2)
     -- a2:SetSmoothing("IN")
@@ -145,8 +145,8 @@ local function CreateAnimationGroup_TypeA()
             f:SetWidth(15)
 
             t1:SetOffset(canvas:GetWidth(), 0)
-            -- tex:SetGradient("HORIZONTAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, 1))
-            -- tex:SetGradientAlpha("HORIZONTAL", r, g, b, 0, r, g, b, 1)
+            -- Cell.Polyfill.SetGradient(tex, "HORIZONTAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, 1))
+            -- Cell.Polyfill.SetGradientAlpha(tex, "HORIZONTAL", r, g, b, 0, r, g, b, 1)
             tex:SetVertexColor(r, g, b, 1)
         else
             f:SetPoint("TOPLEFT", canvas, "BOTTOMLEFT")
@@ -154,8 +154,8 @@ local function CreateAnimationGroup_TypeA()
             f:SetHeight(15)
 
             t1:SetOffset(0, canvas:GetHeight())
-            -- tex:SetGradient("VERTICAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, 1))
-            -- tex:SetGradientAlpha("VERTICAL", r, g, b, 0, r, g, b, 1)
+            -- Cell.Polyfill.SetGradient(tex, "VERTICAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, 1))
+            -- Cell.Polyfill.SetGradientAlpha(tex, "VERTICAL", r, g, b, 0, r, g, b, 1)
             tex:SetVertexColor(r, g, b, 1)
         end
 
@@ -193,40 +193,40 @@ local function CreateAnimationGroup_TypeB()
     local tex = f:CreateTexture(nil, "ARTWORK")
     tex:SetPoint("BOTTOMRIGHT")
     tex:SetWidth(WIDTH)
-    -- tex:SetRotation(45 * math.pi / 180, CreateVector2D(1, 0))
+    -- Cell.Polyfill.SetRotation(tex, 45 * math.pi / 180, CreateVector2D(1, 0))
     if tex.SetRotation then
-        tex:SetRotation(45 * math.pi / 180) -- WotLK SetRotation takes radians, no pivot vector
+        Cell.Polyfill.SetRotation(tex, 45 * math.pi / 180) -- WotLK SetRotation takes radians, no pivot vector
     end
 
     -- mask
-    local mask = canvas:CreateMaskTexture()
+    local mask = Cell.Polyfill.CreateMaskTexture(canvas)
     mask:SetTexture(Cell.vars.whiteTexture, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
     mask:SetAllPoints(canvas)
     canvas:EnableMouse(false)
     f:EnableMouse(false)
     -- mask:SetSnapToPixelGrid(true)
-    tex:AddMaskTexture(mask)
+    Cell.Polyfill.AddMaskTexture(tex, mask)
 
     -- animation
     local ag = f:CreateAnimationGroup()
     canvas.ag = ag
 
-    local a1 = ag:CreateAnimation("Alpha")
+    local a1 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a1.duration = 0.35
-    a1:SetFromAlpha(0)
-    a1:SetToAlpha(0.7)
+    Cell.Polyfill.SetFromAlpha(a1, 0)
+    Cell.Polyfill.SetToAlpha(a1, 0.7)
     a1:SetDuration(a1.duration)
     -- a1:SetSmoothing("IN")
 
-    local t1 = ag:CreateAnimation("Translation")
+    local t1 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t1.duration = 0.7
     t1:SetSmoothing("IN_OUT")
     t1:SetDuration(t1.duration)
 
-    -- local a2 = ag:CreateAnimation("Alpha")
+    -- local a2 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     -- a2.duration = 0.3
-    -- a2:SetFromAlpha(0.7)
-    -- a2:SetToAlpha(0)
+    -- Cell.Polyfill.SetFromAlpha(a2, 0.7)
+    -- Cell.Polyfill.SetToAlpha(a2, 0)
     -- a2:SetDuration(a2.duration)
     -- a2:SetStartDelay(t1.duration - a2.duration)
 
@@ -247,7 +247,7 @@ local function CreateAnimationGroup_TypeB()
 
         t1:SetOffset(canvas:GetWidth() + math.tan(math.pi / 4) * canvas:GetHeight() + WIDTH / math.cos(math.pi / 4), 0)
         tex:SetHeight(canvas:GetHeight() / math.sin(math.pi / 4) + WIDTH)
-        -- tex:SetColorTexture(r, g, b)
+        -- Cell.Polyfill.SetColorTexture(tex, r, g, b)
         tex:SetTexture(Cell.vars.whiteTexture)
         tex:SetVertexColor(r, g, b, 1)
 
@@ -284,24 +284,24 @@ local function CreateAnimationGroup_TypeC()
     local ag = f:CreateAnimationGroup()
     canvas.ag = ag
 
-    local a1 = ag:CreateAnimation("Alpha")
+    local a1 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a1.duration = 0.5
-    a1:SetFromAlpha(0)
-    a1:SetToAlpha(1)
+    Cell.Polyfill.SetFromAlpha(a1, 0)
+    Cell.Polyfill.SetToAlpha(a1, 1)
     a1:SetOrder(1)
     a1:SetDuration(a1.duration)
     a1:SetSmoothing("OUT")
 
-    local t1 = ag:CreateAnimation("Translation")
+    local t1 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t1.duration = 0.5
     t1:SetOrder(1)
     t1:SetSmoothing("OUT")
     t1:SetDuration(t1.duration)
 
-    local a2 = ag:CreateAnimation("Alpha")
+    local a2 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a2.duration = 0.5
-    a2:SetFromAlpha(1)
-    a2:SetToAlpha(0)
+    Cell.Polyfill.SetFromAlpha(a2, 1)
+    Cell.Polyfill.SetToAlpha(a2, 0)
     a2:SetDuration(a2.duration)
     a2:SetOrder(2)
     a2:SetSmoothing("IN")
@@ -336,8 +336,8 @@ local function CreateAnimationGroup_TypeC()
 
         f:SetWidth(canvas:GetHeight() / 2)
         t1:SetOffset(0, canvas:GetHeight() / 2)
-        -- tex:SetGradient("VERTICAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, 1))
-        -- tex:SetGradientAlpha("VERTICAL", r, g, b, 0, r, g, b, 1)
+        -- Cell.Polyfill.SetGradient(tex, "VERTICAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, 1))
+        -- Cell.Polyfill.SetGradientAlpha(tex, "VERTICAL", r, g, b, 0, r, g, b, 1)
         tex:SetVertexColor(r, g, b, 1)
 
         if ag:IsPlaying() then
@@ -367,16 +367,16 @@ local function CreateAnimationGroup_TypeD()
     tex:SetPoint("CENTER")
 
     -- mask1
-    local mask1 = f:CreateMaskTexture()
+    local mask1 = Cell.Polyfill.CreateMaskTexture(f)
     mask1:SetAllPoints(tex)
     mask1:SetTexture("Interface/AddOns/Cell/Media/Shapes/circle_filled_256", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-    tex:AddMaskTexture(mask1)
+    Cell.Polyfill.AddMaskTexture(tex, mask1)
 
     -- mask2
-    local mask2 = canvas:CreateMaskTexture()
+    local mask2 = Cell.Polyfill.CreateMaskTexture(canvas)
     mask2:SetTexture(Cell.vars.whiteTexture, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
     mask2:SetAllPoints(canvas)
-    tex:AddMaskTexture(mask2)
+    Cell.Polyfill.AddMaskTexture(tex, mask2)
 
     canvas:EnableMouse(false)
     f:EnableMouse(false)
@@ -385,25 +385,25 @@ local function CreateAnimationGroup_TypeD()
     local ag = f:CreateAnimationGroup()
     canvas.ag = ag
 
-    local a1 = ag:CreateAnimation("Alpha")
+    local a1 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a1.duration = 0.3
-    a1:SetFromAlpha(0)
-    a1:SetToAlpha(1)
+    Cell.Polyfill.SetFromAlpha(a1, 0)
+    Cell.Polyfill.SetToAlpha(a1, 1)
     a1:SetOrder(1)
     a1:SetDuration(a1.duration)
     a1:SetSmoothing("OUT")
 
-    local s1 = ag:CreateAnimation("Scale")
+    local s1 = Cell.Polyfill.CreateAnimation(ag, "Scale")
     s1.duration = 0.5
-    s1:SetScaleFrom(0, 0)
-    s1:SetScaleTo(1, 1)
+    Cell.Polyfill.SetScaleFrom(s1, 0, 0)
+    Cell.Polyfill.SetScaleTo(s1, 1, 1)
     s1:SetOrder(1)
     s1:SetDuration(s1.duration)
 
-    local a2 = ag:CreateAnimation("Alpha")
+    local a2 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a2.duration = 0.5
-    a2:SetFromAlpha(1)
-    a2:SetToAlpha(0)
+    Cell.Polyfill.SetFromAlpha(a2, 1)
+    Cell.Polyfill.SetToAlpha(a2, 0)
     a2:SetDuration(a2.duration)
     a2:SetOrder(2)
     a2:SetSmoothing("IN")
@@ -426,7 +426,7 @@ local function CreateAnimationGroup_TypeD()
 
         local l = math.sqrt((parent:GetParent():GetHeight() / 2) ^ 2 + (parent:GetParent():GetWidth() / 2) ^ 2) * 2
         tex:SetSize(l, l)
-        -- tex:SetColorTexture(r, g, b, 0.6)
+        -- Cell.Polyfill.SetColorTexture(tex, r, g, b, 0.6)
         tex:SetTexture(Cell.vars.whiteTexture)
         tex:SetVertexColor(r, g, b, 0.6)
 
@@ -459,12 +459,12 @@ local function CreateAnimationGroup_TypeE()
     tex:SetTexture("Interface/AddOns/Cell/Media/Icons/arrow.tga")
 
     -- mask
-    local mask = canvas:CreateMaskTexture()
+    local mask = Cell.Polyfill.CreateMaskTexture(canvas)
     mask:SetTexture(Cell.vars.whiteTexture, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
     mask:SetAllPoints(canvas)
     -- frame:SetSnapToPixelGrid(false)
     -- frame:SetTexelSnappingBias(0)
-    tex:AddMaskTexture(mask)
+    Cell.Polyfill.AddMaskTexture(tex, mask)
 
     canvas:EnableMouse(false)
     f:EnableMouse(false)
@@ -473,20 +473,20 @@ local function CreateAnimationGroup_TypeE()
     local ag = f:CreateAnimationGroup()
     canvas.ag = ag
 
-    -- local a1 = ag:CreateAnimation("Alpha")
-    -- a1:SetFromAlpha(0)
-    -- a1:SetToAlpha(0.7)
+    -- local a1 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
+    -- Cell.Polyfill.SetFromAlpha(a1, 0)
+    -- Cell.Polyfill.SetToAlpha(a1, 0.7)
     -- a1:SetDuration(0.3)
     -- a1:SetSmoothing("OUT")
 
-    local t1 = ag:CreateAnimation("Translation")
+    local t1 = Cell.Polyfill.CreateAnimation(ag, "Translation")
     t1.duration = 0.8
     t1:SetSmoothing("IN_OUT")
     t1:SetDuration(t1.duration)
 
-    -- local a2 = ag:CreateAnimation("Alpha")
-    -- a2:SetFromAlpha(0.7)
-    -- a2:SetToAlpha(0)
+    -- local a2 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
+    -- Cell.Polyfill.SetFromAlpha(a2, 0.7)
+    -- Cell.Polyfill.SetToAlpha(a2, 0)
     -- a2:SetDuration(0.3)
     -- a2:SetStartDelay(0.5)
     -- a2:SetSmoothing("IN")
@@ -538,16 +538,16 @@ local function CreateAnimationGroup_TypeF()
     tex:SetPoint("CENTER")
 
     -- mask1
-    local mask1 = f:CreateMaskTexture()
+    local mask1 = Cell.Polyfill.CreateMaskTexture(f)
     mask1:SetAllPoints(tex)
     mask1:SetTexture("Interface/AddOns/Cell/Media/Shapes/heart_filled_256", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-    tex:AddMaskTexture(mask1)
+    Cell.Polyfill.AddMaskTexture(tex, mask1)
 
     -- mask2
-    local mask2 = canvas:CreateMaskTexture()
+    local mask2 = Cell.Polyfill.CreateMaskTexture(canvas)
     mask2:SetTexture(Cell.vars.whiteTexture, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
     mask2:SetAllPoints(canvas)
-    tex:AddMaskTexture(mask2)
+    Cell.Polyfill.AddMaskTexture(tex, mask2)
 
     canvas:EnableMouse(false)
     f:EnableMouse(false)
@@ -556,25 +556,25 @@ local function CreateAnimationGroup_TypeF()
     local ag = f:CreateAnimationGroup()
     canvas.ag = ag
 
-    local a1 = ag:CreateAnimation("Alpha")
+    local a1 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a1.duration = 0.3
-    a1:SetFromAlpha(0)
-    a1:SetToAlpha(1)
+    Cell.Polyfill.SetFromAlpha(a1, 0)
+    Cell.Polyfill.SetToAlpha(a1, 1)
     a1:SetOrder(1)
     a1:SetDuration(a1.duration)
     a1:SetSmoothing("OUT")
 
-    local s1 = ag:CreateAnimation("Scale")
+    local s1 = Cell.Polyfill.CreateAnimation(ag, "Scale")
     s1.duration = 0.5
-    s1:SetScaleFrom(0, 0)
-    s1:SetScaleTo(1, 1)
+    Cell.Polyfill.SetScaleFrom(s1, 0, 0)
+    Cell.Polyfill.SetScaleTo(s1, 1, 1)
     s1:SetOrder(1)
     s1:SetDuration(s1.duration)
 
-    local a2 = ag:CreateAnimation("Alpha")
+    local a2 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a2.duration = 0.5
-    a2:SetFromAlpha(1)
-    a2:SetToAlpha(0)
+    Cell.Polyfill.SetFromAlpha(a2, 1)
+    Cell.Polyfill.SetToAlpha(a2, 0)
     a2:SetDuration(a2.duration)
     a2:SetOrder(2)
     a2:SetSmoothing("IN")
@@ -597,7 +597,7 @@ local function CreateAnimationGroup_TypeF()
 
         local l = max(parent:GetParent():GetWidth(), parent:GetParent():GetHeight()) * 2
         tex:SetSize(l, l)
-        -- tex:SetColorTexture(r, g, b, 0.6)
+        -- Cell.Polyfill.SetColorTexture(tex, r, g, b, 0.6)
         tex:SetTexture(Cell.vars.whiteTexture)
         tex:SetVertexColor(r, g, b, 0.6)
 
@@ -636,18 +636,18 @@ local function CreateAnimationGroup_TypeG()
     local ag = f:CreateAnimationGroup()
     canvas.ag = ag
 
-    local a1 = ag:CreateAnimation("Alpha")
+    local a1 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a1.duration = 0.5
-    a1:SetFromAlpha(0)
-    a1:SetToAlpha(1)
+    Cell.Polyfill.SetFromAlpha(a1, 0)
+    Cell.Polyfill.SetToAlpha(a1, 1)
     a1:SetOrder(1)
     a1:SetDuration(a1.duration)
     a1:SetSmoothing("OUT")
 
-    local a2 = ag:CreateAnimation("Alpha")
+    local a2 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
     a2.duration = 0.5
-    a2:SetFromAlpha(1)
-    a2:SetToAlpha(0)
+    Cell.Polyfill.SetFromAlpha(a2, 1)
+    Cell.Polyfill.SetToAlpha(a2, 0)
     a2:SetDuration(a2.duration)
     a2:SetOrder(2)
     a2:SetSmoothing("IN")
@@ -666,8 +666,8 @@ local function CreateAnimationGroup_TypeG()
 
         f:SetHeight(canvas:GetHeight() / 2)
         
-        -- tex:SetGradient("VERTICAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, 1))
-        -- tex:SetGradientAlpha("VERTICAL", r, g, b, 0, r, g, b, 1)
+        -- Cell.Polyfill.SetGradient(tex, "VERTICAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, 1))
+        -- Cell.Polyfill.SetGradientAlpha(tex, "VERTICAL", r, g, b, 0, r, g, b, 1)
         tex:SetVertexColor(r, g, b, 1)
 
         a1:SetDuration(a1.duration / parent.speed)

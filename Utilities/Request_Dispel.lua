@@ -179,11 +179,11 @@ local function CreateDRPane()
 
         CellSpellTooltip:SetOwner(popup, "ANCHOR_NONE")
         CellSpellTooltip:SetPoint("TOPLEFT", popup, "BOTTOMLEFT", 0, -1)
-        CellSpellTooltip:SetSpellByID(spellId, tex)
+        Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId, tex)
         CellSpellTooltip:Show()
     end)
 
-    popup:HookScript("OnHide", function()
+    Cell.Polyfill.HookScript(popup, "OnHide", function()
         CellSpellTooltip:Hide()
     end)
 
@@ -291,7 +291,7 @@ LoadList = function(scrollToBottom)
             debuffItems[i].spellIconBg = debuffItems[i]:CreateTexture(nil, "BORDER")
             debuffItems[i].spellIconBg:SetSize(16, 16)
             debuffItems[i].spellIconBg:SetPoint("TOPLEFT", 2, -2)
-            debuffItems[i].spellIconBg:SetColorTexture(0, 0, 0, 1)
+            Cell.Polyfill.SetColorTexture(debuffItems[i].spellIconBg, 0, 0, 0, 1)
             debuffItems[i].spellIconBg:Hide()
 
             debuffItems[i].spellIcon = debuffItems[i]:CreateTexture(nil, "OVERLAY")
@@ -329,7 +329,7 @@ LoadList = function(scrollToBottom)
             end)
 
             -- tooltip
-            debuffItems[i]:HookScript("OnEnter", function(self)
+            Cell.Polyfill.HookScript(debuffItems[i], "OnEnter", function(self)
                 if not drDebuffsList.popupEditBox:IsShown() then
                     local name, icon = F.GetSpellInfo(self.spellId)
                     if not name then
@@ -339,11 +339,11 @@ LoadList = function(scrollToBottom)
 
                     CellSpellTooltip:SetOwner(debuffItems[i], "ANCHOR_NONE")
                     CellSpellTooltip:SetPoint("TOPRIGHT", debuffItems[i], "TOPLEFT", -1, 0)
-                    CellSpellTooltip:SetSpellByID(self.spellId, icon)
+                    Cell.Polyfill.SetSpellByID(CellSpellTooltip, self.spellId, icon)
                     CellSpellTooltip:Show()
                 end
             end)
-            debuffItems[i]:HookScript("OnLeave", function()
+            Cell.Polyfill.HookScript(debuffItems[i], "OnLeave", function()
                 if not drDebuffsList.popupEditBox:IsShown() then
                     CellSpellTooltip:Hide()
                 end
@@ -408,23 +408,23 @@ function U.CreateDispelRequestText(parent)
 
     local tex = drText:CreateTexture(nil, "ARTWORK")
     -- tex:SetTexture("Interface/AddOns/Cell/Media/FlipBooks/dispel.png")
-    --tex:SetAtlas("UI-HUD-ActionBar-GCD-Flipbook")
+    --Cell.Polyfill.SetAtlas(tex, "UI-HUD-ActionBar-GCD-Flipbook")
     --tex:SetTexture("interface/hud/uiactionbarfx")
     --tex:SetTexCoord(0.412598, 0.458496, 0.393555, 0.898438) -- NOTE: SetTexCoord will NOT work
     tex:SetAllPoints(drText)
-    tex:SetParentKey("Flipbook")
+    Cell.Polyfill.SetParentKey(tex, "Flipbook")
 
     local ag = drText:CreateAnimationGroup()
     ag:SetLooping("REPEAT")
 
-    local flip = ag:CreateAnimation("FlipBook")
+    local flip = Cell.Polyfill.CreateAnimation(ag, "FlipBook")
     flip:SetDuration(1)
-    flip:SetFlipBookRows(8)
-    flip:SetFlipBookColumns(4)
-    flip:SetFlipBookFrames(31)
-    --flip:SetFlipBookFrameWidth(0)
-    --flip:SetFlipBookFrameHeight(0)
-    flip:SetChildKey("Flipbook")
+    Cell.Polyfill.SetFlipBookRows(flip, 8)
+    Cell.Polyfill.SetFlipBookColumns(flip, 4)
+    Cell.Polyfill.SetFlipBookFrames(flip, 31)
+    --Cell.Polyfill.SetFlipBookFrameWidth(flip, 0)
+    --Cell.Polyfill.SetFlipBookFrameHeight(flip, 0)
+    Cell.Polyfill.SetChildKey(flip, "Flipbook")
 
     function drText:Display()
         drText:Show()
@@ -433,7 +433,7 @@ function U.CreateDispelRequestText(parent)
 
     function drText:SetType(type)
         tex:SetTexture("Interface/AddOns/Cell/Media/FlipBooks/dispel_"..type..".png")
-        flip:SetFlipBookFrames(flipBookFrames[type])
+        Cell.Polyfill.SetFlipBookFrames(flip, flipBookFrames[type])
     end
 
     function drText:SetColor(color)

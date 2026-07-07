@@ -40,7 +40,7 @@ local GlowMaskPool = {
     createFunc = function(self)
         -- WotLK: CreateMaskTexture doesn't exist, return a stub object
         if self.parent.CreateMaskTexture then
-            return self.parent:CreateMaskTexture()
+            return Cell.Polyfill.CreateMaskTexture(self.parent)
         else
             -- Return a stub object with minimal methods
             return {
@@ -369,13 +369,13 @@ function lib.PixelGlow_Start(r,color,N,frequency,length,th,xOffset,yOffset,borde
 
         if not f.bg then
             f.bg = GlowTexPool:Acquire()
-            f.bg:SetColorTexture(0.1,0.1,0.1,0.8)
+            Cell.Polyfill.SetColorTexture(f.bg, 0.1,0.1,0.1,0.8)
             f.bg:SetParent(f)
             f.bg:SetAllPoints(f)
             f.bg:SetDrawLayer("ARTWORK",6)
             -- WotLK: AddMaskTexture may not exist
             if f.bg.AddMaskTexture then
-                f.bg:AddMaskTexture(f.masks[2])
+                Cell.Polyfill.AddMaskTexture(f.bg, f.masks[2])
             end
         end
     else
@@ -392,7 +392,7 @@ function lib.PixelGlow_Start(r,color,N,frequency,length,th,xOffset,yOffset,borde
         -- WotLK: GetNumMaskTextures and AddMaskTexture may not exist
         if tex.GetNumMaskTextures and tex.AddMaskTexture then
             if tex:GetNumMaskTextures() < 1 then
-                tex:AddMaskTexture(f.masks[1])
+                Cell.Polyfill.AddMaskTexture(tex, f.masks[1])
             end
         end
     end
@@ -706,16 +706,16 @@ end
 
 local function updateAlphaAnim(f,alpha)
     for _,anim in pairs(f.animIn.appear) do
-        anim:SetToAlpha(alpha)
+        Cell.Polyfill.SetToAlpha(anim, alpha)
     end
     for _,anim in pairs(f.animIn.fade) do
-        anim:SetFromAlpha(alpha)
+        Cell.Polyfill.SetFromAlpha(anim, alpha)
     end
     for _,anim in pairs(f.animOut.appear) do
-        anim:SetToAlpha(alpha)
+        Cell.Polyfill.SetToAlpha(anim, alpha)
     end
     for _,anim in pairs(f.animOut.fade) do
-        anim:SetFromAlpha(alpha)
+        Cell.Polyfill.SetFromAlpha(anim, alpha)
     end
 end
 

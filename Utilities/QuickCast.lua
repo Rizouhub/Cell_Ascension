@@ -55,11 +55,11 @@ local function UpdateWidgets()
     Cell.SetEnabled(quickCastTable["enabled"], qcOuterCP, qcOuterBtn, qcInnerCP, qcInnerBtn, qcGlowBuffsCP, qcGlowBuffsAddBtn, qcGlowCastsCP, qcGlowCastsAddBtn)
 
     for _, b in pairs(qcGlowBuffsButtons) do
-        b:SetEnabled(quickCastTable["enabled"])
+        Cell.Polyfill.SetEnabled(b, quickCastTable["enabled"])
     end
 
     for _, b in pairs(qcGlowCastsButtons) do
-        b:SetEnabled(quickCastTable["enabled"])
+        Cell.Polyfill.SetEnabled(b, quickCastTable["enabled"])
     end
 end
 
@@ -231,15 +231,15 @@ local function CreateQCPane()
 
         CellSpellTooltip:SetOwner(qcAddEB, "ANCHOR_NONE")
         CellSpellTooltip:SetPoint("TOPLEFT", qcAddEB, "BOTTOMLEFT", 0, -1)
-        CellSpellTooltip:SetSpellByID(spellId, icon)
+        Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId, icon)
         CellSpellTooltip:Show()
     end)
 
-    qcAddEB:HookScript("OnShow", function()
+    Cell.Polyfill.HookScript(qcAddEB, "OnShow", function()
         qcAddEB:SetTips("|cffababab"..L["Input spell id"])
     end)
 
-    qcAddEB:HookScript("OnHide", function()
+    Cell.Polyfill.HookScript(qcAddEB, "OnHide", function()
         CellSpellTooltip:Hide()
     end)
 
@@ -392,16 +392,16 @@ local function CreateSpellButton(parent, func)
         end
     end)
 
-    b:HookScript("OnEnter", function(self)
+    Cell.Polyfill.HookScript(b, "OnEnter", function(self)
         if self.id and self.icon then
             CellSpellTooltip:SetOwner(self, "ANCHOR_NONE")
             CellSpellTooltip:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
-            CellSpellTooltip:SetSpellByID(self.id, self.icon)
+            Cell.Polyfill.SetSpellByID(CellSpellTooltip, self.id, self.icon)
             CellSpellTooltip:Show()
         end
     end)
 
-    b:HookScript("OnLeave", function(self)
+    Cell.Polyfill.HookScript(b, "OnLeave", function(self)
         CellSpellTooltip:Hide()
     end)
 
@@ -490,16 +490,16 @@ local function LoadGlowList(parent, buttons, addBtn, anchorTo, t, separator)
                 buttons[i].duration:SetPoint("BOTTOMRIGHT")
             end
 
-            buttons[i]:HookScript("OnEnter", function(self)
+            Cell.Polyfill.HookScript(buttons[i], "OnEnter", function(self)
                 if self.id and self.icon then
                     CellSpellTooltip:SetOwner(self, "ANCHOR_NONE")
                     CellSpellTooltip:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
-                    CellSpellTooltip:SetSpellByID(self.id, self.icon)
+                    Cell.Polyfill.SetSpellByID(CellSpellTooltip, self.id, self.icon)
                     CellSpellTooltip:Show()
                 end
             end)
 
-            buttons[i]:HookScript("OnLeave", function(self)
+            Cell.Polyfill.HookScript(buttons[i], "OnLeave", function(self)
                 CellSpellTooltip:Hide()
             end)
 
@@ -621,7 +621,7 @@ local function CreateGlowCastsPane()
 
     -- editbox
     local popup = Cell.CreateDualPopupEditBox(qcGlowCastsPane, "ID", L["Duration"], true)
-    popup.left:HookScript("OnTextChanged", function(self)
+    Cell.Polyfill.HookScript(popup.left, "OnTextChanged", function(self)
         local spellId = tonumber(self:GetText())
         if not spellId then
             CellSpellTooltip:Hide()
@@ -636,10 +636,10 @@ local function CreateGlowCastsPane()
 
         CellSpellTooltip:SetOwner(self, "ANCHOR_NONE")
         CellSpellTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -1)
-        CellSpellTooltip:SetSpellByID(spellId, icon)
+        Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId, icon)
         CellSpellTooltip:Show()
     end)
-    popup:HookScript("OnHide", function()
+    Cell.Polyfill.HookScript(popup, "OnHide", function()
         CellSpellTooltip:Hide()
     end)
 
@@ -1097,12 +1097,12 @@ CreateQuickCastButton = function(parent, name, isPreview)
     local outerCD = CreateFrame("Cooldown", name.."OuterCD", b, "CooldownFrameTemplate")
     b.outerCD = outerCD
     outerCD:SetFrameLevel(b:GetFrameLevel() + 1)
-    outerCD:SetSwipeTexture(Cell.vars.whiteTexture)
-    outerCD:SetDrawEdge(true)
+    Cell.Polyfill.SetSwipeTexture(outerCD, Cell.vars.whiteTexture)
+    Cell.Polyfill.SetDrawEdge(outerCD, true)
     -- outerCD:SetBackdrop({bgFile = Cell.vars.whiteTexture})
     -- outerCD:SetBackdropColor(0, 0, 0, 0.5)
     outerCD.noCooldownCount = true -- disable omnicc
-    outerCD:SetHideCountdownNumbers(true)
+    Cell.Polyfill.SetHideCountdownNumbers(outerCD, true)
     outerCD:Hide()
     outerCD:SetScript("OnCooldownDone", function()
         outerCD:Hide()
@@ -1118,12 +1118,12 @@ CreateQuickCastButton = function(parent, name, isPreview)
     local innerCD = CreateFrame("Cooldown", name.."InnerCD", b, "CooldownFrameTemplate")
     b.innerCD = innerCD
     innerCD:SetFrameLevel(b:GetFrameLevel() + 2)
-    innerCD:SetSwipeTexture(Cell.vars.whiteTexture)
-    innerCD:SetDrawEdge(true)
+    Cell.Polyfill.SetSwipeTexture(innerCD, Cell.vars.whiteTexture)
+    Cell.Polyfill.SetDrawEdge(innerCD, true)
     innerCD:SetBackdrop({bgFile = Cell.vars.whiteTexture})
     innerCD:SetBackdropColor(0, 0, 0, 0.4)
     innerCD.noCooldownCount = true -- disable omnicc
-    innerCD:SetHideCountdownNumbers(true)
+    Cell.Polyfill.SetHideCountdownNumbers(innerCD, true)
     innerCD:Hide()
     innerCD:SetScript("OnCooldownDone", function()
         innerCD:Hide()
@@ -1265,8 +1265,8 @@ CreateQuickCastButton = function(parent, name, isPreview)
         if glowCastCD:IsShown() then
             LCG.ButtonGlow_Start(glowCastCD, _glowCastsColor)
         end
-        outerCD:SetSwipeColor(unpack(_outerColor))
-        innerCD:SetSwipeColor(unpack(_innerColor))
+        Cell.Polyfill.SetSwipeColor(outerCD, unpack(_outerColor))
+        Cell.Polyfill.SetSwipeColor(innerCD, unpack(_innerColor))
     end
 
     --! NOTE: GROUP_ROSTER_UPDATE or PLAYER_LOGIN or MANUALLY CALLED

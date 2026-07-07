@@ -341,9 +341,9 @@ local function InitIndicator(indicatorName)
         end)
         function indicator:SetColor(cType, cTable)
             if cType == "class_color" then
-                indicator.tex:SetColorTexture(F.GetClassColor(Cell.vars.playerClass))
+                Cell.Polyfill.SetColorTexture(indicator.tex, F.GetClassColor(Cell.vars.playerClass))
             else
-                indicator.tex:SetColorTexture(cTable[1], cTable[2], cTable[3])
+                Cell.Polyfill.SetColorTexture(indicator.tex, cTable[1], cTable[2], cTable[3])
             end
         end
 
@@ -382,7 +382,7 @@ local function InitIndicator(indicatorName)
                     elseif self.highlightType == "current" or self.highlightType == "current+" then
                         self.highlight:SetVertexColor(r, g, b, 1)
                     elseif self.highlightType == "gradient" or self.highlightType == "gradient-half" then
-                        self.highlight:SetGradient("VERTICAL", CreateColor(r, g, b, 1), CreateColor(r, g, b, 0))
+                        Cell.Polyfill.SetGradient(self.highlight, "VERTICAL", CreateColor(r, g, b, 1), CreateColor(r, g, b, 0))
                     end
                     if indicator.isVisible then self.highlight:Show() end
                 end
@@ -425,13 +425,13 @@ local function InitIndicator(indicatorName)
         indicator.isRaidDebuffs = true
         local types = {"", "Curse", "Magic"}
         for i = 1, 3 do
-            indicator[i]:HookScript("OnShow", function()
+            Cell.Polyfill.HookScript(indicator[i], "OnShow", function()
                 indicator[i]:SetCooldown(GetTime(), 13, types[i], "Interface\\Icons\\INV_Misc_QuestionMark", 7)
                 indicator[i].cooldown:SetScript("OnHide", function()
                     indicator[i]:SetCooldown(GetTime(), 13, types[i], "Interface\\Icons\\INV_Misc_QuestionMark", 7)
                 end)
             end)
-            indicator[i]:HookScript("OnHide", function()
+            Cell.Polyfill.HookScript(indicator[i], "OnHide", function()
                 indicator[i].cooldown:Hide()
                 indicator[i].cooldown:SetScript("OnHide", nil)
             end)
@@ -440,14 +440,14 @@ local function InitIndicator(indicatorName)
     elseif indicatorName == "privateAuras" then
         indicator.isPrivateAuras = true
 
-        indicator.mask = indicator:CreateMaskTexture()
+        indicator.mask = Cell.Polyfill.CreateMaskTexture(indicator)
         indicator.mask:SetTexture("interface/framegeneral/uiframeiconmask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
         indicator.mask:SetAllPoints(indicator)
 
         indicator.icon = indicator:CreateTexture(nil, "ARTWORK")
         indicator.icon:SetAllPoints(indicator)
         indicator.icon:SetTexture("Interface\\Icons\\Spell_Shadow_Possession")
-        indicator.icon:AddMaskTexture(indicator.mask)
+        Cell.Polyfill.AddMaskTexture(indicator.icon, indicator.mask)
 
         indicator.border = indicator:CreateTexture(nil, "BORDER")
         indicator.border:SetPoint("TOPLEFT", indicator.icon, -1, 0)
@@ -459,31 +459,31 @@ local function InitIndicator(indicatorName)
         indicator.cooldown = CreateFrame("Cooldown", nil, indicator, "CooldownFrameTemplate")
         indicator.cooldown:SetAllPoints(indicator)
         indicator.cooldown:SetReverse(true)
-        indicator.cooldown:SetDrawEdge(false)
-        indicator.cooldown:SetDrawBling(false)
+        Cell.Polyfill.SetDrawEdge(indicator.cooldown, false)
+        Cell.Polyfill.SetDrawBling(indicator.cooldown, false)
 
         local timer
-        indicator:HookScript("OnShow", function()
+        Cell.Polyfill.HookScript(indicator, "OnShow", function()
             if timer then timer:Cancel() end
             indicator.cooldown:SetCooldown(GetTime(), 15)
             timer = C_Timer.NewTicker(15, function()
                 indicator.cooldown:SetCooldown(GetTime(), 15)
             end)
         end)
-        indicator:HookScript("OnHide", function()
+        Cell.Polyfill.HookScript(indicator, "OnHide", function()
             if timer then timer:Cancel() end
         end)
 
     elseif indicatorName == "targetedSpells" then
         indicator.isTargetedSpells = true
         for _, f in ipairs(indicator) do
-            f:HookScript("OnShow", function()
+            Cell.Polyfill.HookScript(f, "OnShow", function()
                 f:SetCooldown(GetTime(), 3, "Interface\\Icons\\ability_warlock_chaosbolt", 7)
                 f.cooldown:SetScript("OnHide", function()
                     f:SetCooldown(GetTime(), 3, "Interface\\Icons\\ability_warlock_chaosbolt", 7)
                 end)
             end)
-            f:HookScript("OnHide", function()
+            Cell.Polyfill.HookScript(f, "OnHide", function()
                 f.cooldown:Hide()
                 f.cooldown:SetScript("OnHide", nil)
             end)
@@ -500,13 +500,13 @@ local function InitIndicator(indicatorName)
             {"", "Interface\\Icons\\spell_nature_earthbind"},
         }
         for i = 1, 3 do
-            indicator[i]:HookScript("OnShow", function()
+            Cell.Polyfill.HookScript(indicator[i], "OnShow", function()
                 indicator[i]:SetCooldown(GetTime(), 13, spells[i][1], spells[i][2], 7)
                 indicator[i].cooldown:SetScript("OnHide", function()
                     indicator[i]:SetCooldown(GetTime(), 13, spells[i][1], spells[i][2], 7)
                 end)
             end)
-            indicator[i]:HookScript("OnHide", function()
+            Cell.Polyfill.HookScript(indicator[i], "OnHide", function()
                 indicator[i].cooldown:Hide()
                 indicator[i].cooldown:SetScript("OnHide", nil)
             end)
@@ -776,7 +776,7 @@ local function UpdateIndicators(layout, indicatorName, setting, value, value2)
                 -- privateAuraOptions
                 if t["privateAuraOptions"] then
                     indicator.cooldown:SetDrawSwipe(t["privateAuraOptions"][1])
-                    indicator.cooldown:SetHideCountdownNumbers(not (t["privateAuraOptions"][1] and t["privateAuraOptions"][2]))
+                    Cell.Polyfill.SetHideCountdownNumbers(indicator.cooldown, not (t["privateAuraOptions"][1] and t["privateAuraOptions"][2]))
                 end
                 -- update glow
                 if t["glowOptions"] then
@@ -951,7 +951,7 @@ local function UpdateIndicators(layout, indicatorName, setting, value, value2)
             end
         elseif setting == "privateAuraOptions" then
             indicator.cooldown:SetDrawSwipe(value[1])
-            indicator.cooldown:SetHideCountdownNumbers(not (value[1] and value[2]))
+            Cell.Polyfill.SetHideCountdownNumbers(indicator.cooldown, not (value[1] and value[2]))
         elseif setting == "speed" then
             indicator:SetSpeed(value)
         elseif setting == "shape" then
@@ -1264,7 +1264,7 @@ LoadSyncDropdown = function()
             }
         })
         syncDropdown:SetSelectedValue("none")
-        syncDropdown:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(syncDropdown, false)
     else
         -- check
         local indices = {}
@@ -1325,7 +1325,7 @@ LoadSyncDropdown = function()
 
         syncDropdown:SetItems(items)
         syncDropdown:SetSelectedValue(currentLayoutTable["syncWith"] or "none")
-        syncDropdown:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(syncDropdown, true)
     end
 end
 
@@ -1485,7 +1485,7 @@ local function CreateListPane()
         popup:SetPoint("TOPLEFT", 117, -187)
         popup.dropdown1:SetItems(typeItems)
         popup.dropdown1:SetSelectedItem(1)
-        -- popup.dropdown1:SetEnabled(false)
+        -- Cell.Polyfill.SetEnabled(popup.dropdown1, false)
         popup.dropdown2:SetItems(auraTypeItems)
         popup.dropdown2:SetSelectedItem(1)
     end)
@@ -1494,7 +1494,7 @@ local function CreateListPane()
     renameBtn = Cell.CreateButton(listPane, nil, "blue-hover", {46, 20}, nil, nil, nil, nil, nil, L["Rename"])
     renameBtn:SetPoint("TOPLEFT", createBtn, "TOPRIGHT", P.Scale(-1), 0)
     renameBtn:SetTexture("Interface\\AddOns\\Cell_Ascension\\Media\\Icons\\rename", {16, 16}, {"CENTER", 0, 0})
-    renameBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(renameBtn, false)
     renameBtn:SetScript("OnClick", function()
         local name = currentLayoutTable["indicators"][selected]["name"]
         local popup = Cell.CreateConfirmPopup(indicatorsTab, 200, L["Rename indicator"].."\n"..name, function(self)
@@ -1509,7 +1509,7 @@ local function CreateListPane()
     deleteBtn = Cell.CreateButton(listPane, nil, "red-hover", {46, 20}, nil, nil, nil, nil, nil, L["Delete"])
     deleteBtn:SetPoint("TOPLEFT", renameBtn, "TOPRIGHT", P.Scale(-1), 0)
     deleteBtn:SetTexture("Interface\\AddOns\\Cell_Ascension\\Media\\Icons\\trash", {16, 16}, {"CENTER", 0, 0})
-    deleteBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(deleteBtn, false)
     deleteBtn:SetScript("OnClick", function()
         local name = currentLayoutTable["indicators"][selected]["name"]
         local indicatorName = currentLayoutTable["indicators"][selected]["indicatorName"]
@@ -2008,11 +2008,11 @@ local function ShowIndicatorSettings(id)
     Cell.UpdateIndicatorSettingsHeight()
 
     if string.find(indicatorName, "indicator") then
-        renameBtn:SetEnabled(true)
-        deleteBtn:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(renameBtn, true)
+        Cell.Polyfill.SetEnabled(deleteBtn, true)
     else
-        renameBtn:SetEnabled(false)
-        deleteBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(renameBtn, false)
+        Cell.Polyfill.SetEnabled(deleteBtn, false)
     end
     selected = id
 end
@@ -2060,7 +2060,7 @@ LoadIndicatorList = function()
             P.Size(listButtons[i].typeIcon, 16, 16)
 
             listButtons[i].ShowTooltip = function()
-                if listButtons[i]:GetFontString():IsTruncated() then
+                if Cell.Polyfill.IsTruncated(listButtons[i]:GetFontString()) then
                     CellTooltip:SetOwner(listButtons[i], "ANCHOR_NONE")
                     CellTooltip:SetPoint("RIGHT", listButtons[i], "LEFT")
                     CellTooltip:AddLine(listButtons[i]:GetText())

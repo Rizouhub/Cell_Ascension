@@ -109,13 +109,13 @@ function A.ApplyFadeInOutToParent(parent, condition, ...)
     for _, f in pairs({...}) do
         f:SetHitRectInsets(-2, -2, -2, -2)
 
-        f:HookScript("OnEnter", function()
+        Cell.Polyfill.HookScript(f, "OnEnter", function()
             if condition() then
                 A.FrameFadeIn(parent, 0.25, parent:GetAlpha(), 1)
             end
         end)
 
-        f:HookScript("OnLeave", function()
+        Cell.Polyfill.HookScript(f, "OnLeave", function()
             if condition() then
                 A.FrameFadeOut(parent, 0.25, parent:GetAlpha(), 0)
             end
@@ -129,9 +129,9 @@ end
 function A.CreateFadeIn(frame, fromAlpha, toAlpha, duration, delay, onFinished)
     local fadeIn = frame:CreateAnimationGroup()
     frame.fadeIn = fadeIn
-    fadeIn.alpha = fadeIn:CreateAnimation("Alpha")
-    fadeIn.alpha:SetFromAlpha(fromAlpha)
-    fadeIn.alpha:SetToAlpha(toAlpha)
+    fadeIn.alpha = Cell.Polyfill.CreateAnimation(fadeIn, "Alpha")
+    Cell.Polyfill.SetFromAlpha(fadeIn.alpha, fromAlpha)
+    Cell.Polyfill.SetToAlpha(fadeIn.alpha, toAlpha)
     fadeIn.alpha:SetDuration(duration)
     if delay then fadeIn.alpha:SetStartDelay(delay) end
 
@@ -154,9 +154,9 @@ end
 function A.CreateFadeOut(frame, fromAlpha, toAlpha, duration, delay, onFinished)
     local fadeOut = frame:CreateAnimationGroup()
     frame.fadeOut = fadeOut
-    fadeOut.alpha = fadeOut:CreateAnimation("Alpha")
-    fadeOut.alpha:SetFromAlpha(fromAlpha)
-    fadeOut.alpha:SetToAlpha(toAlpha)
+    fadeOut.alpha = Cell.Polyfill.CreateAnimation(fadeOut, "Alpha")
+    Cell.Polyfill.SetFromAlpha(fadeOut.alpha, fromAlpha)
+    Cell.Polyfill.SetToAlpha(fadeOut.alpha, toAlpha)
     fadeOut.alpha:SetDuration(duration)
     if delay then fadeOut.alpha:SetStartDelay(delay) end
 
@@ -185,9 +185,9 @@ end
 function A.ApplyFadeInOutToMenu(anchorFrame, hoverFrame)
     local fadingIn, fadedIn, fadingOut, fadedOut
     anchorFrame.fadeIn = anchorFrame:CreateAnimationGroup()
-    anchorFrame.fadeIn.alpha = anchorFrame.fadeIn:CreateAnimation("alpha")
-    anchorFrame.fadeIn.alpha:SetFromAlpha(0)
-    anchorFrame.fadeIn.alpha:SetToAlpha(1)
+    anchorFrame.fadeIn.alpha = Cell.Polyfill.CreateAnimation(anchorFrame.fadeIn, "alpha")
+    Cell.Polyfill.SetFromAlpha(anchorFrame.fadeIn.alpha, 0)
+    Cell.Polyfill.SetToAlpha(anchorFrame.fadeIn.alpha, 1)
     anchorFrame.fadeIn.alpha:SetDuration(0.5)
     anchorFrame.fadeIn.alpha:SetSmoothing("OUT")
     anchorFrame.fadeIn:SetScript("OnPlay", function()
@@ -207,9 +207,9 @@ function A.ApplyFadeInOutToMenu(anchorFrame, hoverFrame)
     end)
 
     anchorFrame.fadeOut = anchorFrame:CreateAnimationGroup()
-    anchorFrame.fadeOut.alpha = anchorFrame.fadeOut:CreateAnimation("alpha")
-    anchorFrame.fadeOut.alpha:SetFromAlpha(1)
-    anchorFrame.fadeOut.alpha:SetToAlpha(0)
+    anchorFrame.fadeOut.alpha = Cell.Polyfill.CreateAnimation(anchorFrame.fadeOut, "alpha")
+    Cell.Polyfill.SetFromAlpha(anchorFrame.fadeOut.alpha, 1)
+    Cell.Polyfill.SetToAlpha(anchorFrame.fadeOut.alpha, 0)
     anchorFrame.fadeOut.alpha:SetDuration(0.5)
     anchorFrame.fadeOut.alpha:SetSmoothing("OUT")
     anchorFrame.fadeOut:SetScript("OnPlay", function()
@@ -250,19 +250,19 @@ function A.CreateBlinkAnimation(region, duration, enableShowHideHook)
     local blink = region:CreateAnimationGroup()
     region.blink = blink
 
-    local alpha = blink:CreateAnimation("Alpha")
+    local alpha = Cell.Polyfill.CreateAnimation(blink, "Alpha")
     blink.alpha = alpha
-    alpha:SetFromAlpha(0.25)
-    alpha:SetToAlpha(1)
+    Cell.Polyfill.SetFromAlpha(alpha, 0.25)
+    Cell.Polyfill.SetToAlpha(alpha, 1)
     alpha:SetDuration(duration or 0.5)
 
     blink:SetLooping("BOUNCE")
 
     if enableShowHideHook then
-        region:HookScript("OnShow", function()
+        Cell.Polyfill.HookScript(region, "OnShow", function()
             blink:Play()
         end)
-        region:HookScript("OnHide", function()
+        Cell.Polyfill.HookScript(region, "OnHide", function()
             blink:Stop()
         end)
     else

@@ -470,7 +470,7 @@ local function CreateInstanceFrame()
     local imageFrame = Cell.CreateFrame("RaidDebuffsTab_InstanceImage", debuffsTab, 128, 64, true)
     imageFrame.bg = imageFrame:CreateTexture(nil, "BACKGROUND")
     imageFrame.bg:SetTexture(Cell.vars.whiteTexture)
-    imageFrame.bg:SetGradient("HORIZONTAL", CreateColor(0.1, 0.1, 0.1, 0), CreateColor(0.1, 0.1, 0.1, 1))
+    Cell.Polyfill.SetGradient(imageFrame.bg, "HORIZONTAL", CreateColor(0.1, 0.1, 0.1, 0), CreateColor(0.1, 0.1, 0.1, 1))
 
     imageFrame.tex = imageFrame:CreateTexture(nil, "ARTWORK")
     imageFrame.tex:SetSize(121, 64)
@@ -572,7 +572,7 @@ local function CreateBossesFrame()
     local imageFrame = Cell.CreateFrame("RaidDebuffsTab_BossImage", debuffsTab, 128, 64, true)
     imageFrame.bg = imageFrame:CreateTexture(nil, "BACKGROUND")
     imageFrame.bg:SetTexture(Cell.vars.whiteTexture)
-    imageFrame.bg:SetGradient("HORIZONTAL", CreateColor(0.1, 0.1, 0.1, 0), CreateColor(0.1, 0.1, 0.1, 1))
+    Cell.Polyfill.SetGradient(imageFrame.bg, "HORIZONTAL", CreateColor(0.1, 0.1, 0.1, 0), CreateColor(0.1, 0.1, 0.1, 1))
     -- imageFrame.bg:SetAllPoints(imageFrame)
 
     imageFrame.tex = imageFrame:CreateTexture(nil, "ARTWORK")
@@ -773,21 +773,21 @@ local function CreateDebuffsFrame()
             local spellId = tonumber(popup.editBox:GetText())
             if not spellId then
                 CellSpellTooltip:Hide()
-                popup.button1:SetEnabled(false)
+                Cell.Polyfill.SetEnabled(popup.button1, false)
                 return
             end
 
             local name, icon = F.GetSpellInfo(spellId)
             if not name then
                 CellSpellTooltip:Hide()
-                popup.button1:SetEnabled(false)
+                Cell.Polyfill.SetEnabled(popup.button1, false)
                 return
             end
 
-            popup.button1:SetEnabled(true)
+            Cell.Polyfill.SetEnabled(popup.button1, true)
             CellSpellTooltip:SetOwner(popup, "ANCHOR_NONE")
             CellSpellTooltip:SetPoint("TOPLEFT", popup, "BOTTOMLEFT", 0, -1)
-            CellSpellTooltip:SetSpellByID(spellId, icon)
+            Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId, icon)
             CellSpellTooltip:Show()
         end)
         popup:SetPoint("TOPLEFT", 117, -170)
@@ -795,7 +795,7 @@ local function CreateDebuffsFrame()
 
     delete = Cell.CreateButton(debuffsTab, L["Delete"], "accent-hover", {66, 20})
     delete:SetPoint("LEFT", create, "RIGHT", 5, 0)
-    delete:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(delete, false)
     delete:SetScript("OnClick", function()
         local text = selectedSpellName.." ["..selectedSpellId.."]".."\n".."|T"..selectedSpellIcon..":12:12:0:0:12:12:1:11:1:11|t"
         local popup = Cell.CreateConfirmPopup(debuffsTab, 200, L["Delete debuff?"].."\n"..text, function()
@@ -1076,7 +1076,7 @@ ShowDebuffs = function(bossId, buttonIndex)
     selectedSpellId = nil
     selectedButtonIndex = nil
     RaidDebuffsTab_DebuffDetails.scrollFrame:Hide()
-    delete:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(delete, false)
 
     debuffListFrame.scrollFrame:ResetScroll()
 
@@ -1119,7 +1119,7 @@ ShowDebuffs = function(bossId, buttonIndex)
         debuffListFrame:GetScript("OnEnter")()
         CellSpellTooltip:SetOwner(b, "ANCHOR_NONE")
         CellSpellTooltip:SetPoint("TOPRIGHT", b, "TOPLEFT", -1, 0)
-        CellSpellTooltip:SetSpellByID(b.spellId, b.spellTex)
+        Cell.Polyfill.SetSpellByID(CellSpellTooltip, b.spellId, b.spellTex)
         CellSpellTooltip:Show()
     end, function(b)
         debuffListFrame:GetScript("OnLeave")()
@@ -1166,16 +1166,16 @@ local function CreatePreviewButton()
     previewText:SetText(Cell.GetAccentColorString()..L["Preview"])
 
     previewButton.fadeIn = previewButton:CreateAnimationGroup()
-    local fadeIn = previewButton.fadeIn:CreateAnimation("alpha")
-    fadeIn:SetFromAlpha(0)
-    fadeIn:SetToAlpha(1)
+    local fadeIn = Cell.Polyfill.CreateAnimation(previewButton.fadeIn, "alpha")
+    Cell.Polyfill.SetFromAlpha(fadeIn, 0)
+    Cell.Polyfill.SetToAlpha(fadeIn, 1)
     fadeIn:SetDuration(0.25)
     fadeIn:SetSmoothing("OUT")
 
     previewButton.fadeOut = previewButton:CreateAnimationGroup()
-    local fadeOut = previewButton.fadeOut:CreateAnimation("alpha")
-    fadeOut:SetFromAlpha(1)
-    fadeOut:SetToAlpha(0)
+    local fadeOut = Cell.Polyfill.CreateAnimation(previewButton.fadeOut, "alpha")
+    Cell.Polyfill.SetFromAlpha(fadeOut, 1)
+    Cell.Polyfill.SetToAlpha(fadeOut, 0)
     fadeOut:SetDuration(0.25)
     fadeOut:SetSmoothing("IN")
     fadeOut:SetScript("OnPlay", function()
@@ -1275,7 +1275,7 @@ local function CreateDetailsFrame()
     spellIconBG:SetSize(27, 27)
     spellIconBG:SetDrawLayer("ARTWORK", 6)
     spellIconBG:SetPoint("TOPLEFT", 5, -5)
-    spellIconBG:SetColorTexture(0, 0, 0, 1)
+    Cell.Polyfill.SetColorTexture(spellIconBG, 0, 0, 0, 1)
 
     spellIcon = detailsContentFrame:CreateTexture(nil, "ARTWORK")
     spellIcon:SetDrawLayer("ARTWORK", 7)
@@ -1536,7 +1536,7 @@ local function CreateDetailsFrame()
 
     -- glowTarget
     glowTargetDropdown = Cell.CreateDropdown(detailsContentFrame, 117)
-    glowTargetDropdown:SetEnabled(false) -- TODO:
+    Cell.Polyfill.SetEnabled(glowTargetDropdown, false) -- TODO:
     glowTargetDropdown:SetPoint("TOPLEFT", glowTypeDropdown, "BOTTOMLEFT", 0, -5)
     glowTargetDropdown:SetItems({
         {
@@ -2077,9 +2077,9 @@ ShowDetails = function(spell)
 
     -- check deletion
     if isEnabled then
-        delete:SetEnabled(not currentBossTable["enabled"][buttonIndex]["built-in"])
+        Cell.Polyfill.SetEnabled(delete, not currentBossTable["enabled"][buttonIndex]["built-in"])
     else -- disabled
-        delete:SetEnabled(not currentBossTable["disabled"][buttonIndex-#currentBossTable["enabled"]]["built-in"])
+        Cell.Polyfill.SetEnabled(delete, not currentBossTable["disabled"][buttonIndex-#currentBossTable["enabled"]]["built-in"])
     end
 end
 

@@ -113,14 +113,14 @@ for i = 1, 9 do
         markButtons[i].texture:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
         markButtons[i]:SetScript("OnClick", function()
             RemoveRaidTargets()
-            -- markButtons[i]:SetEnabled(false)
+            -- Cell.Polyfill.SetEnabled(markButtons[i], false)
             -- markButtons[i].texture:SetDesaturated(true)
             -- for j = 1, 8 do
             --     SetRaidTarget("player", j)
             -- end
             -- C_Timer.After(0.5, function()
             --     SetRaidTarget("player", 0)
-            --     markButtons[i]:SetEnabled(true)
+            --     Cell.Polyfill.SetEnabled(markButtons[i], true)
             --     markButtons[i].texture:SetDesaturated(false)
             -- end)
         end)
@@ -172,7 +172,7 @@ for i = 1, 9 do
         end)
     end
 
-    markButtons[i].bg:SetColorTexture(0.1, 0.1, 0.1, 0.7)
+    Cell.Polyfill.SetColorTexture(markButtons[i].bg, 0.1, 0.1, 0.1, 0.7)
     markButtons[i]:SetBackdropColor(0, 0, 0, 0)
     markButtons[i].color = {0, 0, 0, 0}
     markButtons[i].hoverColor = {markColors[i][1], markColors[i][2], markColors[i][3], 0.35}
@@ -219,14 +219,14 @@ for i = 1, 9 do
     else
         P.Point(worldMarkButtons[i].texture, "TOPLEFT", worldMarkButtons[i], "TOPLEFT", 1, -1)
         P.Point(worldMarkButtons[i].texture, "BOTTOMRIGHT", worldMarkButtons[i], "BOTTOMRIGHT", -1, 1)
-        worldMarkButtons[i].texture:SetColorTexture(markColors[i][1], markColors[i][2], markColors[i][3], 0.4)
+        Cell.Polyfill.SetColorTexture(worldMarkButtons[i].texture, markColors[i][1], markColors[i][2], markColors[i][3], 0.4)
         worldMarkButtons[i]:SetAttribute("type", "worldmarker")
         worldMarkButtons[i]:SetAttribute("marker", worldMarkIndices[i])
         -- worldMarkButtons[i]:SetAttribute("type", "macro")
         -- worldMarkButtons[i]:SetAttribute("macrotext", "/wm "..worldMarkIndices[i])
     end
 
-    worldMarkButtons[i].bg:SetColorTexture(0.1, 0.1, 0.1, 0.7)
+    Cell.Polyfill.SetColorTexture(worldMarkButtons[i].bg, 0.1, 0.1, 0.1, 0.7)
     worldMarkButtons[i]:SetBackdropColor(0, 0, 0, 0)
     worldMarkButtons[i].color = {0, 0, 0, 0}
     worldMarkButtons[i].hoverColor = {markColors[i][1], markColors[i][2], markColors[i][3], 0.35}

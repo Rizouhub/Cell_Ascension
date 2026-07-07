@@ -585,5 +585,5 @@ local obj = CreateFrame("Frame")
 UpdateMetatable(CreateFrame("StatusBar"))
 UpdateMetatable(obj:CreateTexture())
 if obj.CreateMaskTexture then
-    UpdateMetatable(obj:CreateMaskTexture())
+    UpdateMetatable(Cell.Polyfill.CreateMaskTexture(obj))
 end

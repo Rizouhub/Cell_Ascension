@@ -1914,7 +1914,7 @@ UnitButton_UpdatePowerMax = function(self)
     if not (self._shouldShowPowerBar and self.states.powerMax) then return end
 
     if barAnimationType == "Smooth" then
-        self.widgets.powerBar:SetMinMaxSmoothedValue(0, self.states.powerMax)
+        Cell.Polyfill.SetMinMaxSmoothedValue(self.widgets.powerBar, 0, self.states.powerMax)
     else
         self.widgets.powerBar:SetMinMaxValues(0, self.states.powerMax)
     end
@@ -1953,7 +1953,7 @@ local function UnitButton_UpdateHealthMax(self)
     UnitButton_UpdateHealthStates(self)
 
     if barAnimationType == "Smooth" then
-        self.widgets.healthBar:SetMinMaxSmoothedValue(0, self.states.healthMax)
+        Cell.Polyfill.SetMinMaxSmoothedValue(self.widgets.healthBar, 0, self.states.healthMax)
     else
         self.widgets.healthBar:SetMinMaxValues(0, self.states.healthMax)
     end
@@ -2067,7 +2067,7 @@ local function UnitButton_UpdateThreatBar(self)
     local _, status, scaledPercentage, rawPercentage = UnitDetailedThreatSituation(unit, "target")
     if status then
         self.indicators.aggroBar:Show()
-        self.indicators.aggroBar:SetSmoothedValue(scaledPercentage)
+        Cell.Polyfill.SetSmoothedValue(self.indicators.aggroBar, scaledPercentage)
         self.indicators.aggroBar:SetStatusBarColor(GetThreatStatusColor(status))
     else
         self.indicators.aggroBar:Hide()
@@ -3173,7 +3173,7 @@ function B.SetOrientation(button, orientation, rotateTexture)
     local absorbsBar = button.widgets.absorbsBar
     local overAbsorbGlow = button.widgets.overAbsorbGlow
 
-    gapTexture:SetColorTexture(unpack(CELL_BORDER_COLOR))
+    Cell.Polyfill.SetColorTexture(gapTexture, unpack(CELL_BORDER_COLOR))
 
     button.orientation = orientation
     if orientation == "vertical_health" then
@@ -3478,12 +3478,12 @@ function B.UpdateAnimation(button)
     barAnimationType = CellDB["appearance"]["barAnimation"]
 
     if barAnimationType == "Smooth" then
-        button.widgets.healthBar.SetBarValue = button.widgets.healthBar.SetSmoothedValue
-        button.widgets.powerBar.SetBarValue = button.widgets.powerBar.SetSmoothedValue
+        button.widgets.healthBar.SetBarValue = function(self, value) Cell.Polyfill.SetSmoothedValue(self, value) end
+        button.widgets.powerBar.SetBarValue = function(self, value) Cell.Polyfill.SetSmoothedValue(self, value) end
     else
-        button.widgets.healthBar:ResetSmoothedValue()
+        Cell.Polyfill.ResetSmoothedValue(button.widgets.healthBar)
         button.widgets.healthBar.SetBarValue = button.widgets.healthBar.SetValue
-        button.widgets.powerBar:ResetSmoothedValue()
+        Cell.Polyfill.ResetSmoothedValue(button.widgets.powerBar)
         button.widgets.powerBar.SetBarValue = button.widgets.powerBar.SetValue
     end
 
@@ -3652,7 +3652,7 @@ function CellUnitButton_OnLoad(button)
     -- P.Point(gapTexture, "BOTTOMLEFT", powerBar, "TOPLEFT")
     -- P.Point(gapTexture, "BOTTOMRIGHT", powerBar, "TOPRIGHT")
     -- P.Height(gapTexture, 1)
-    gapTexture:SetColorTexture(unpack(CELL_BORDER_COLOR))
+    Cell.Polyfill.SetColorTexture(gapTexture, unpack(CELL_BORDER_COLOR))
 
     -- power loss
     local powerBarLoss = button:CreateTexture(name.."PowerBarLoss", "ARTWORK", nil , -7)
@@ -3777,7 +3777,7 @@ function CellUnitButton_OnLoad(button)
     local damageFlashAG = damageFlashTex:CreateAnimationGroup()
     button.widgets.damageFlashAG = damageFlashAG
 
-    local alpha = damageFlashAG:CreateAnimation("Alpha")
+    local alpha = Cell.Polyfill.CreateAnimation(damageFlashAG, "Alpha")
     alpha:SetChange(-0.7)
     alpha:SetDuration(0.2)
 
@@ -3856,10 +3856,10 @@ function CellUnitButton_OnLoad(button)
 
     -- events
     button:SetScript("OnAttributeChanged", UnitButton_OnAttributeChanged) -- init
-    button:HookScript("OnShow", UnitButton_OnShow)
-    button:HookScript("OnHide", UnitButton_OnHide) -- use _onhide for click-castings
-    button:HookScript("OnEnter", UnitButton_OnEnter) -- SecureHandlerEnterLeaveTemplate
-    button:HookScript("OnLeave", UnitButton_OnLeave) -- SecureHandlerEnterLeaveTemplate
+    Cell.Polyfill.HookScript(button, "OnShow", UnitButton_OnShow)
+    Cell.Polyfill.HookScript(button, "OnHide", UnitButton_OnHide) -- use _onhide for click-castings
+    Cell.Polyfill.HookScript(button, "OnEnter", UnitButton_OnEnter) -- SecureHandlerEnterLeaveTemplate
+    Cell.Polyfill.HookScript(button, "OnLeave", UnitButton_OnLeave) -- SecureHandlerEnterLeaveTemplate
     button:SetScript("OnUpdate", UnitButton_OnUpdate)
     button:SetScript("OnEvent", UnitButton_OnEvent)
     button:RegisterForClicks("AnyDown")

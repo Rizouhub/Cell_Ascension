@@ -339,7 +339,7 @@ fakeIconsFrame:Hide()
 local fakeIcons = {}
 local function CreateFakeIcon(spellIcon)
     local bg = fakeIconsFrame:CreateTexture(nil, "BORDER")
-    bg:SetColorTexture(0, 0, 0, 1)
+    Cell.Polyfill.SetColorTexture(bg, 0, 0, 0, 1)
     P.Size(bg, 32, 32)
 
     local icon = fakeIconsFrame:CreateTexture(nil, "ARTWORK")
@@ -409,7 +409,7 @@ local function CreateBuffButton(parent, size, spell1, spell2, icon, index)
     b:SetAttribute("spell1", spell1)
     b:SetAttribute("type2", "spell")
     b:SetAttribute("spell2", spell2)
-    b:HookScript("OnClick", function(self, button, down)
+    Cell.Polyfill.HookScript(b, "OnClick", function(self, button, down)
         if button == "LeftButton" and IsShiftKeyDown() and not down then
             local msg = F.GetUnaffectedString(index)
             if msg then

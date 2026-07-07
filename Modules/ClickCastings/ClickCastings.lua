@@ -22,14 +22,14 @@ local saveBtn, cancelBtn
 local deleted, changed = {}, {}
 local function CheckChanges()
     if F.Getn(deleted) == 0 and F.Getn(changed) == 0 then
-        saveBtn:SetEnabled(false)
-        cancelBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(saveBtn, false)
+        Cell.Polyfill.SetEnabled(cancelBtn, false)
         for _, b in pairs(listButtons) do
             b.unmovable = nil
         end
     else
-        saveBtn:SetEnabled(true)
-        cancelBtn:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(saveBtn, true)
+        Cell.Polyfill.SetEnabled(cancelBtn, true)
         for _, b in pairs(listButtons) do
             b.unmovable = true
         end
@@ -240,7 +240,7 @@ if Cell.isRetail then
         b:SetAttribute("_onenter", [[
             -- print("_onenter")
             self:ClearBindings()
-            self:Run(self:GetAttribute("snippet"))
+            Cell.Polyfill.Run(self, self:GetAttribute("snippet"))
 
             -- self:SetBindingClick(true, "SHIFT-MOUSEWHEELUP", self, "shiftSCROLLUP")
             -- FIXME: --! 如果游戏按键设置（比如“视角”“载具控制”）中绑定了滚轮，那么 self:SetBindingClick(true, "MOUSEWHEELUP", self, "SCROLLUP") 会失效
@@ -717,11 +717,11 @@ function F.UpdateClickCastOnFrame(frame, snippet)
     if frame then
         if not frame._menuPostClickHooked then
             frame._menuPostClickHooked = true
-            frame:HookScript("PreClick", function(self)
+            Cell.Polyfill.HookScript(frame, "PreClick", function(self)
                 self._menuClickModifier = GetPostClickModifier()
             end)
 
-            frame:HookScript("PostClick", function(self, button)
+            Cell.Polyfill.HookScript(frame, "PostClick", function(self, button)
                 local modifier = self._menuClickModifier or ""
                 self._menuClickModifier = nil
 
@@ -1444,10 +1444,10 @@ local function ShowActionsMenu(index, b)
 
                             CellSpellTooltip:SetOwner(peb, "ANCHOR_NONE")
                             CellSpellTooltip:SetPoint("TOPLEFT", peb, "BOTTOMLEFT", 0, -1)
-                            CellSpellTooltip:SetSpellByID(spellId, icon)
+                            Cell.Polyfill.SetSpellByID(CellSpellTooltip, spellId, icon)
                             CellSpellTooltip:Show()
                         end)
-                        peb:HookScript("OnHide", function()
+                        Cell.Polyfill.HookScript(peb, "OnHide", function()
                             CellSpellTooltip:Hide()
                         end)
                     end
@@ -1605,7 +1605,7 @@ local function CreateListPane()
 
     saveBtn = Cell.CreateButton(listPane, L["Save"], "green-hover", {142, 20})
     saveBtn:SetPoint("TOPLEFT", newBtn, "TOPRIGHT", P.Scale(-1), 0)
-    saveBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(saveBtn, false)
     saveBtn:SetScript("OnClick", function()
         -- deleted
         local deletedIndices = {}
@@ -1643,7 +1643,7 @@ local function CreateListPane()
 
     cancelBtn = Cell.CreateButton(listPane, L["Cancel"], "red-hover", {141, 20})
     cancelBtn:SetPoint("TOPLEFT", saveBtn, "TOPRIGHT", P.Scale(-1), 0)
-    cancelBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(cancelBtn, false)
     cancelBtn:SetScript("OnClick", function()
         -- deleted
         for index, b in pairs(deleted) do

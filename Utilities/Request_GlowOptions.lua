@@ -128,12 +128,12 @@ local function LoadGlowOptions()
     glowTypeDropdown:SetSelectedValue(glowType)
     glowColor:SetColor(glowOptions[1])
 
-    glowOffsetX:SetEnabled(glowType ~= "normal")
-    glowOffsetY:SetEnabled(glowType ~= "normal")
-    glowLines:SetEnabled(glowType ~= "normal")
-    glowFrequency:SetEnabled(glowType ~= "normal")
-    glowLength:SetEnabled(glowType ~= "normal")
-    glowThickness:SetEnabled(glowType ~= "normal")
+    Cell.Polyfill.SetEnabled(glowOffsetX, glowType ~= "normal")
+    Cell.Polyfill.SetEnabled(glowOffsetY, glowType ~= "normal")
+    Cell.Polyfill.SetEnabled(glowLines, glowType ~= "normal")
+    Cell.Polyfill.SetEnabled(glowFrequency, glowType ~= "normal")
+    Cell.Polyfill.SetEnabled(glowLength, glowType ~= "normal")
+    Cell.Polyfill.SetEnabled(glowThickness, glowType ~= "normal")
 
     if glowType == "normal" then
         glowLines:Show()

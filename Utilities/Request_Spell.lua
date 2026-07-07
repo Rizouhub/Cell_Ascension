@@ -57,7 +57,7 @@ local function ShowSpellOptions(index)
     end
 
     canEdit = not CellDB["spellRequest"]["spells"][index]["isBuiltIn"] -- not built-in
-    srDeleteBtn:SetEnabled(canEdit)
+    Cell.Polyfill.SetEnabled(srDeleteBtn, canEdit)
 
     srMacroText:Show()
     srMacroEB:SetCursorPosition(0)
@@ -86,7 +86,7 @@ local function HideSpellOptions()
     canEdit = nil
     srType = nil
     srSpellsDD:ClearSelected()
-    srDeleteBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(srDeleteBtn, false)
     srTypeOptionsBtn:Hide()
     CellDropdownList:Hide()
     srMacroText:Hide()
@@ -132,7 +132,7 @@ local function CreateSRPane()
 
     waTips = Cell.CreateButton(srPane, "WA", "accent", {50, 17})
     waTips:SetPoint("TOPRIGHT")
-    waTips:HookScript("OnEnter", function()
+    Cell.Polyfill.HookScript(waTips, "OnEnter", function()
         CellTooltip:SetOwner(waTips, "ANCHOR_NONE")
         CellTooltip:SetPoint("TOPLEFT", waTips, "TOPRIGHT", 6, 0)
         CellTooltip:AddLine("WeakAuras Custom Events")
@@ -144,7 +144,7 @@ local function CreateSRPane()
         CellTooltip:AddLine("|cffffffff".."arg5: caster")
         CellTooltip:Show()
     end)
-    waTips:HookScript("OnLeave", function()
+    Cell.Polyfill.HookScript(waTips, "OnLeave", function()
         CellTooltip:Hide()
     end)
 
@@ -471,7 +471,7 @@ local function CreateSpellEditFrame()
         if not id then
             CellSpellTooltip:Hide()
             spellId = nil
-            addBtn:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(addBtn, false)
             spellIdEB.tip:SetTextColor(1, 0, 0, 0.777)
             return
         end
@@ -480,7 +480,7 @@ local function CreateSpellEditFrame()
         if not name then
             CellSpellTooltip:Hide()
             spellId = nil
-            addBtn:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(addBtn, false)
             spellIdEB.tip:SetTextColor(1, 0, 0, 0.777)
             return
         end
@@ -488,14 +488,14 @@ local function CreateSpellEditFrame()
         C_Timer.After(0.1, function()
             CellSpellTooltip:SetOwner(spellEditFrame, "ANCHOR_NONE")
             CellSpellTooltip:SetPoint("TOPLEFT", spellEditFrame, "BOTTOMLEFT", 0, -1)
-            CellSpellTooltip:SetSpellByID(id)
+            Cell.Polyfill.SetSpellByID(CellSpellTooltip, id)
             CellSpellTooltip:Show()
         end)
 
         spellId = id
         spellName = name
         spellIcon = icon
-        addBtn:SetEnabled(spellId and buffId)
+        Cell.Polyfill.SetEnabled(addBtn, spellId and buffId)
         spellIdEB.tip:SetTextColor(0, 1, 0, 0.777)
     end)
 
@@ -518,7 +518,7 @@ local function CreateSpellEditFrame()
         local id = tonumber(buffIdEB:GetText())
         if not id then
             buffId = nil
-            addBtn:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(addBtn, false)
             buffIdEB.tip:SetTextColor(1, 0, 0, 0.777)
             return
         end
@@ -526,13 +526,13 @@ local function CreateSpellEditFrame()
         local name = F.GetSpellInfo(id)
         if not name then
             buffId = nil
-            addBtn:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(addBtn, false)
             buffIdEB.tip:SetTextColor(1, 0, 0, 0.777)
             return
         end
 
         buffId = id
-        addBtn:SetEnabled(spellId and buffId)
+        Cell.Polyfill.SetEnabled(addBtn, spellId and buffId)
         buffIdEB.tip:SetTextColor(0, 1, 0, 0.777)
     end)
 
@@ -563,7 +563,7 @@ ShowSpellEditFrame = function(index)
     spellEditFrame:Show()
 
     if not index then -- add
-        spellIdEB:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(spellIdEB, true)
         spellIdEB:SetFocus()
 
         title:SetText(L["Add new spell"])
@@ -620,7 +620,7 @@ ShowSpellEditFrame = function(index)
             spellEditFrame:Hide()
         end)
     else
-        spellIdEB:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(spellIdEB, false)
         buffIdEB:SetFocus()
 
         spellIdEB:SetText(CellDB["spellRequest"]["spells"][index]["spellId"])

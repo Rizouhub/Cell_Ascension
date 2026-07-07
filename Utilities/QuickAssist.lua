@@ -75,7 +75,7 @@ config:SetScript("OnDragStop", function()
     P.SavePosition(anchorFrame, layoutTable["position"])
 end)
 
-config:HookScript("OnEnter", function()
+Cell.Polyfill.HookScript(config, "OnEnter", function()
     hoverFrame:GetScript("OnEnter")(hoverFrame)
     CellTooltip:SetOwner(config, "ANCHOR_NONE")
     CellTooltip:SetPoint(tooltipPoint, config, tooltipRelativePoint, tooltipX, tooltipY)
@@ -85,7 +85,7 @@ config:HookScript("OnEnter", function()
     CellTooltip:Show()
 end)
 
-config:HookScript("OnLeave", function()
+Cell.Polyfill.HookScript(config, "OnLeave", function()
     hoverFrame:GetScript("OnLeave")(hoverFrame)
     CellTooltip:Hide()
 end)
@@ -638,7 +638,7 @@ function CellQuickAssist_OnLoad(button)
     button.deadTex = deadTex
     deadTex:SetAllPoints(healthBar)
     deadTex:SetTexture(Cell.vars.whiteTexture)
-    deadTex:SetGradient("VERTICAL", CreateColor(0.545, 0, 0, 1), CreateColor(0, 0, 0, 1))
+    Cell.Polyfill.SetGradient(deadTex, "VERTICAL", CreateColor(0.545, 0, 0, 1), CreateColor(0, 0, 0, 1))
     deadTex:Hide()
 
     -- nameText
@@ -691,10 +691,10 @@ function CellQuickAssist_OnLoad(button)
 
     -- script
     button:SetScript("OnAttributeChanged", QuickAssist_OnAttributeChanged) -- init
-    button:HookScript("OnShow", QuickAssist_OnShow)
-    button:HookScript("OnHide", QuickAssist_OnHide) -- click-castings: _onhide
-    button:HookScript("OnEnter", QuickAssist_OnEnter) -- click-castings: _onenter
-    button:HookScript("OnLeave", QuickAssist_OnLeave) -- click-castings: _onleave
+    Cell.Polyfill.HookScript(button, "OnShow", QuickAssist_OnShow)
+    Cell.Polyfill.HookScript(button, "OnHide", QuickAssist_OnHide) -- click-castings: _onhide
+    Cell.Polyfill.HookScript(button, "OnEnter", QuickAssist_OnEnter) -- click-castings: _onenter
+    Cell.Polyfill.HookScript(button, "OnLeave", QuickAssist_OnLeave) -- click-castings: _onleave
     button:SetScript("OnUpdate", QuickAssist_OnUpdate)
     button:SetScript("OnSizeChanged", QuickAssist_OnSizeChanged)
     button:SetScript("OnEvent", QuickAssist_OnEvent)
@@ -743,10 +743,10 @@ for i, b in ipairs(header) do
 end
 
 -- update mover
-header[1]:HookScript("OnShow", function()
+Cell.Polyfill.HookScript(header[1], "OnShow", function()
     UpdateAnchor()
 end)
-header[1]:HookScript("OnHide", function()
+Cell.Polyfill.HookScript(header[1], "OnHide", function()
     UpdateAnchor()
 end)
 
@@ -1326,11 +1326,11 @@ local function QuickAssist_CreateIndicators(button)
             buffIcons[i].tex:SetAllPoints(buffIcons[i].icon)
 
             hooksecurefunc(buffIcons[i], "SetCooldown", function(self, _, _, _, _, _, _, color, glow)
-                self.tex:SetColorTexture(unpack(color))
-                -- self.spark:SetColorTexture(color[1], color[2], color[3], 1) -- ignore alpha
+                Cell.Polyfill.SetColorTexture(self.tex, unpack(color))
+                -- Cell.Polyfill.SetColorTexture(self.spark, color[1], color[2], color[3], 1) -- ignore alpha
                 -- elseif self.cooldown:IsObjectType("Cooldown") then
-                --     self.cooldown:SetSwipeTexture(0)
-                --     self.cooldown:SetSwipeColor(unpack(color))
+                --     Cell.Polyfill.SetSwipeTexture(self.cooldown, 0)
+                --     Cell.Polyfill.SetSwipeColor(self.cooldown, unpack(color))
                 ShowGlow(self, glow, color)
             end)
         end

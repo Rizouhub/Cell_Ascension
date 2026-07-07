@@ -334,7 +334,7 @@ local function CreateImportConfirmationFrame()
         for name, cb in pairs(checkboxes) do
             if name == "nickname" then
                 cb:SetChecked(false)
-                cb:SetEnabled(imported["nicknames"])
+                Cell.Polyfill.SetEnabled(cb, imported["nicknames"])
             else
                 cb:SetChecked(true)
             end
@@ -427,19 +427,19 @@ local function CreateImportExportFrame()
 
                         if success and data then
                             title:SetText(L["Import"]..": r"..version)
-                            importBtn:SetEnabled(true)
+                            Cell.Polyfill.SetEnabled(importBtn, true)
                             imported = data
                         else
                             title:SetText(L["Import"]..": |cffff2222"..L["Error"])
-                            importBtn:SetEnabled(false)
+                            Cell.Polyfill.SetEnabled(importBtn, false)
                         end
                     else -- incompatible version
                         title:SetText(L["Import"]..": |cffff2222"..L["Incompatible Version"])
-                        importBtn:SetEnabled(false)
+                        Cell.Polyfill.SetEnabled(importBtn, false)
                     end
                 else
                     title:SetText(L["Import"]..": |cffff2222"..L["Error"])
-                    importBtn:SetEnabled(false)
+                    Cell.Polyfill.SetEnabled(importBtn, false)
                 end
             else
                 eb:SetText(exported)
@@ -490,7 +490,7 @@ function F.ShowImportFrame()
     importExportFrame:Show()
     isImport = true
     importBtn:Show()
-    importBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(importBtn, false)
 
     exported = ""
     title:SetText(L["Import"])

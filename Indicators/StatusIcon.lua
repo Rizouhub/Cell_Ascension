@@ -95,7 +95,7 @@ function I.CreateStatusIcon(parent)
     end
 
     function statusIcon:SetAtlas(...)
-        statusIcon.tex:SetAtlas(...)
+        Cell.Polyfill.SetAtlas(statusIcon.tex, ...)
     end
 
     function statusIcon:SetVertexColor(...)
@@ -117,7 +117,7 @@ function I.CreateStatusIcon(parent)
     local bar = CreateFrame("StatusBar", nil, resurrectionIcon)
     bar:SetAllPoints(resurrectionIcon)
     bar:SetOrientation("VERTICAL")
-    bar:SetReverseFill(true)
+    Cell.Polyfill.SetReverseFill(bar, true)
     bar:SetStatusBarTexture(Cell.vars.whiteTexture)
     bar:GetStatusBarTexture():SetAlpha(0)
     bar.elapsedTime = 0
@@ -129,7 +129,7 @@ function I.CreateStatusIcon(parent)
         bar.elapsedTime = bar.elapsedTime + elapsed
     end)
 
-    local mask = resurrectionIcon:CreateMaskTexture()
+    local mask = Cell.Polyfill.CreateMaskTexture(resurrectionIcon)
     mask:SetTexture(Cell.vars.whiteTexture, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
     mask:SetPoint("TOPLEFT", bar:GetStatusBarTexture(), "BOTTOMLEFT")
     mask:SetPoint("BOTTOMRIGHT")
@@ -137,7 +137,7 @@ function I.CreateStatusIcon(parent)
     local maskIcon = bar:CreateTexture(nil, "ARTWORK")
     maskIcon:SetAllPoints(resurrectionIcon)
     maskIcon:SetTexture("Interface\\RaidFrame\\Raid-Icon-Rez")
-    maskIcon:AddMaskTexture(mask)
+    Cell.Polyfill.AddMaskTexture(maskIcon, mask)
 
     function resurrectionIcon:SetTimer(start, duration)
         resurrectionIcon:Hide() -- pause OnUpdate
@@ -243,14 +243,14 @@ if Cell.isRetail then
         elseif CELL_SUMMON_ICONS_ENABLED and C_IncomingSummon.HasIncomingSummon(unit) then
             local status = C_IncomingSummon.IncomingSummonStatus(unit)
             if status == Enum.SummonStatus.Pending then
-                icon:SetAtlas("Raid-Icon-SummonPending")
+                Cell.Polyfill.SetAtlas(icon, "Raid-Icon-SummonPending")
                 icon:SetTexCoord(0.15, 0.85, 0.15, 0.85)
             elseif status == Enum.SummonStatus.Accepted then
-                icon:SetAtlas("Raid-Icon-SummonAccepted")
+                Cell.Polyfill.SetAtlas(icon, "Raid-Icon-SummonAccepted")
                 icon:SetTexCoord(0.15, 0.85, 0.15, 0.85)
                 C_Timer.After(6, function() I.UpdateStatusIcon(button) end)
             elseif status == Enum.SummonStatus.Declined then
-                icon:SetAtlas("Raid-Icon-SummonDeclined")
+                Cell.Polyfill.SetAtlas(icon, "Raid-Icon-SummonDeclined")
                 icon:SetTexCoord(0.15, 0.85, 0.15, 0.85)
                 C_Timer.After(6, function() I.UpdateStatusIcon(button) end)
             end
@@ -274,12 +274,12 @@ if Cell.isRetail then
         --     icon:Show()
         elseif button.states.BGFlag then
             icon:SetVertexColor(1, 1, 1, 1)
-            icon:SetAtlas("nameplates-icon-flag-"..button.states.BGFlag)
+            Cell.Polyfill.SetAtlas(icon, "nameplates-icon-flag-"..button.states.BGFlag)
             icon:SetTexCoord(0, 1, 0, 1)
             icon:Show()
         elseif button.states.BGOrb then
             icon:SetVertexColor(1, 1, 1, 1)
-            icon:SetAtlas("nameplates-icon-orb-"..button.states.BGOrb)
+            Cell.Polyfill.SetAtlas(icon, "nameplates-icon-orb-"..button.states.BGOrb)
             icon:SetTexCoord(0, 1, 0, 1)
             icon:Show()
         else
@@ -319,7 +319,7 @@ else
         --     icon:Show()
         elseif button.states.BGFlag then
             icon:SetVertexColor(1, 1, 1, 1)
-            icon:SetAtlas(button.states.BGFlag.."_icon_and_flag-dynamicIcon")
+            Cell.Polyfill.SetAtlas(icon, button.states.BGFlag.."_icon_and_flag-dynamicIcon")
             icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
             icon:Show()
         else

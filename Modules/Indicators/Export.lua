@@ -76,7 +76,7 @@ local function CreateIndicatorsExportFrame()
     -- list buttons
     exportBtn = Cell.CreateButton(listParent, L["Export"], "green", {64, 20})
     exportBtn:SetPoint("BOTTOMLEFT", 5, 5)
-    exportBtn:SetEnabled(false)
+    Cell.Polyfill.SetEnabled(exportBtn, false)
     exportBtn:SetScript("OnClick", function()
         exportFrame:Show()
 
@@ -173,9 +173,9 @@ end
 -------------------------------------------------
 Validate = function()
     if F.Getn(selectedIndicators) ~= 0 then
-        exportBtn:SetEnabled(true)
+        Cell.Polyfill.SetEnabled(exportBtn, true)
     else
-        exportBtn:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(exportBtn, false)
     end
 end
 

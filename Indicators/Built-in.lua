@@ -289,11 +289,11 @@ function I.CreateTankActiveMitigation(parent)
 
     bar:SetStatusBarTexture(Cell.vars.whiteTexture)
     bar:GetStatusBarTexture():SetAlpha(0)
-    bar:SetReverseFill(true)
+    Cell.Polyfill.SetReverseFill(bar, true)
 
     local tex = bar:CreateTexture(nil, "BORDER", nil, -1)
     bar.tex = tex
-    tex:SetColorTexture(F.GetClassColor(Cell.vars.playerClass))
+    Cell.Polyfill.SetColorTexture(tex, F.GetClassColor(Cell.vars.playerClass))
     tex:SetPoint("TOPLEFT")
     tex:SetPoint("BOTTOMRIGHT", bar:GetStatusBarTexture(), "BOTTOMLEFT")
 
@@ -309,9 +309,9 @@ function I.CreateTankActiveMitigation(parent)
     function bar:SetCooldown(start, duration)
         if bar.cType == "class_color" then
             if not parent.states.class then parent.states.class = UnitClassBase(parent.states.unit) end --? why sometimes parent.states.class == nil ???
-            tex:SetColorTexture(F.GetClassColor(parent.states.class))
+            Cell.Polyfill.SetColorTexture(tex, F.GetClassColor(parent.states.class))
         else
-            tex:SetColorTexture(bar.cTable[1], bar.cTable[2], bar.cTable[3])
+            Cell.Polyfill.SetColorTexture(tex, bar.cTable[1], bar.cTable[2], bar.cTable[3])
         end
         bar:SetMinMaxValues(0, duration)
         bar:SetValue(GetTime()-start)
@@ -452,7 +452,7 @@ local function Debuffs_ShowTooltip(debuffs, show)
                 if Cell.isWrath or Cell.isVanilla or Cell.isCata then
                     debuffs[i]:EnableMouse(true)
                 else
-                    debuffs[i]:SetMouseClickEnabled(false)
+                    Cell.Polyfill.SetMouseClickEnabled(debuffs[i], false)
                 end
             end
         else
@@ -462,7 +462,7 @@ local function Debuffs_ShowTooltip(debuffs, show)
                 if Cell.isWrath or Cell.isVanilla or Cell.isCata then
                      debuffs[i]:EnableMouse(false)
                 else
-                     debuffs[i]:SetMouseMotionEnabled(false)
+                     Cell.Polyfill.SetMouseMotionEnabled(debuffs[i], false)
                 end
             else
                 debuffs[i]:EnableMouse(false)
@@ -495,7 +495,7 @@ local function Debuffs_EnableBlacklistShortcut(debuffs, enabled)
         else
             debuffs[i]:SetScript("OnMouseUp", nil)
             if debuffs.showTooltip then
-                debuffs[i]:SetMouseClickEnabled(false)
+                Cell.Polyfill.SetMouseClickEnabled(debuffs[i], false)
             else
                 debuffs[i]:EnableMouse(false)
             end
@@ -618,7 +618,7 @@ local function Dispels_SetDispels(self, dispelTypes)
                     self.highlight:SetVertexColor(r, g, b, 1)
                 elseif self.highlightType == "gradient" or self.highlightType == "gradient-half" then
                     self.highlight:SetTexture(Cell.vars.whiteTexture)
-                    self.highlight:SetGradient("VERTICAL", CreateColor(r, g, b, 1), CreateColor(r, g, b, 0))
+                    Cell.Polyfill.SetGradient(self.highlight, "VERTICAL", CreateColor(r, g, b, 1), CreateColor(r, g, b, 0))
                 end
                 self.highlight:Show()
             end
@@ -1358,19 +1358,19 @@ local function StatusText_SetPosition(self, point, yOffset, justify)
         self.text:SetJustifyH("LEFT")
         self.timer:SetPoint("RIGHT")
         self.timer:SetJustifyH("RIGHT")
-        self.bg:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0.777), CreateColor(0, 0, 0, 0))
+        Cell.Polyfill.SetGradient(self.bg, "HORIZONTAL", CreateColor(0, 0, 0, 0.777), CreateColor(0, 0, 0, 0))
     elseif justify == "left" then
         self.text:SetPoint("LEFT")
         self.text:SetJustifyH("LEFT")
         self.timer:SetPoint("LEFT", self.text, "RIGHT", 2, 0)
         self.timer:SetJustifyH("LEFT")
-        self.bg:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0.777), CreateColor(0, 0, 0, 0))
+        Cell.Polyfill.SetGradient(self.bg, "HORIZONTAL", CreateColor(0, 0, 0, 0.777), CreateColor(0, 0, 0, 0))
     else
         self.text:SetPoint("RIGHT")
         self.text:SetJustifyH("RIGHT")
         self.timer:SetPoint("RIGHT", self.text, "LEFT", -2, 0)
         self.timer:SetJustifyH("RIGHT")
-        self.bg:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 0.777))
+        Cell.Polyfill.SetGradient(self.bg, "HORIZONTAL", CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 0.777))
     end
 
     self:SetHeight(self.text:GetHeight()+P.Scale(1)*2)
@@ -1418,7 +1418,7 @@ function I.CreateStatusText(parent)
 
     statusText.bg = statusText:CreateTexture(nil, "ARTWORK")
     statusText.bg:SetTexture(Cell.vars.whiteTexture)
-    -- statusText.bg:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0.777), CreateColor(0, 0, 0, 0))
+    -- Cell.Polyfill.SetGradient(statusText.bg, "HORIZONTAL", CreateColor(0, 0, 0, 0.777), CreateColor(0, 0, 0, 0))
     statusText.bg:SetAllPoints(statusText)
 
     local text = statusText:CreateFontString(nil, "ARTWORK", "Cell_Ascension_FONT_STATUS")
@@ -1941,7 +1941,7 @@ function I.CreateReadyCheckIcon(parent)
 
     function readyCheckIcon:SetStatus(status)
         readyCheckIcon.tex:SetTexture(READY_CHECK_STATUS[status].t)
-        -- readyCheckIcon.tex:SetAtlas(READY_CHECK_STATUS[status].t)
+        -- Cell.Polyfill.SetAtlas(readyCheckIcon.tex, READY_CHECK_STATUS[status].t)
         readyCheckIcon:Show()
 
     end
@@ -1982,16 +1982,16 @@ function I.CreateAggroBorder(parent)
     right:SetPoint("BOTTOMRIGHT")
     right:SetWidth(5)
 
-    top:SetGradient("VERTICAL", CreateColor(1, 0.1, 0.1, 0.2), CreateColor(1, 0.1, 0.1, 1))
-    bottom:SetGradient("VERTICAL", CreateColor(1, 0.1, 0.1, 1), CreateColor(1, 0.1, 0.1, 0.2))
-    left:SetGradient("HORIZONTAL", CreateColor(1, 0.1, 0.1, 1), CreateColor(1, 0.1, 0.1, 0.2))
-    right:SetGradient("HORIZONTAL", CreateColor(1, 0.1, 0.1, 0.2), CreateColor(1, 0.1, 0.1, 1))
+    Cell.Polyfill.SetGradient(top, "VERTICAL", CreateColor(1, 0.1, 0.1, 0.2), CreateColor(1, 0.1, 0.1, 1))
+    Cell.Polyfill.SetGradient(bottom, "VERTICAL", CreateColor(1, 0.1, 0.1, 1), CreateColor(1, 0.1, 0.1, 0.2))
+    Cell.Polyfill.SetGradient(left, "HORIZONTAL", CreateColor(1, 0.1, 0.1, 1), CreateColor(1, 0.1, 0.1, 0.2))
+    Cell.Polyfill.SetGradient(right, "HORIZONTAL", CreateColor(1, 0.1, 0.1, 0.2), CreateColor(1, 0.1, 0.1, 1))
 
     function aggroBorder:ShowAggro(r, g, b)
-        top:SetGradient("VERTICAL", CreateColor(r, g, b, 0.2), CreateColor(r, g, b, 1))
-        bottom:SetGradient("VERTICAL", CreateColor(r, g, b, 1), CreateColor(r, g, b, 0.2))
-        left:SetGradient("HORIZONTAL", CreateColor(r, g, b, 1), CreateColor(r, g, b, 0.2))
-        right:SetGradient("HORIZONTAL", CreateColor(r, g, b, 0.2), CreateColor(r, g, b, 1))
+        Cell.Polyfill.SetGradient(top, "VERTICAL", CreateColor(r, g, b, 0.2), CreateColor(r, g, b, 1))
+        Cell.Polyfill.SetGradient(bottom, "VERTICAL", CreateColor(r, g, b, 1), CreateColor(r, g, b, 0.2))
+        Cell.Polyfill.SetGradient(left, "HORIZONTAL", CreateColor(r, g, b, 1), CreateColor(r, g, b, 0.2))
+        Cell.Polyfill.SetGradient(right, "HORIZONTAL", CreateColor(r, g, b, 0.2), CreateColor(r, g, b, 1))
         aggroBorder:Show()
     end
 
@@ -2024,10 +2024,10 @@ function I.CreateAggroBlink(parent)
     aggroBlink.blink = blink
     blink:SetLooping("REPEAT")
 
-    local alpha = blink:CreateAnimation("Alpha")
+    local alpha = Cell.Polyfill.CreateAnimation(blink, "Alpha")
     blink.alpha = alpha
-    alpha:SetFromAlpha(1)
-    alpha:SetToAlpha(0)
+    Cell.Polyfill.SetFromAlpha(alpha, 1)
+    Cell.Polyfill.SetToAlpha(alpha, 0)
     alpha:SetDuration(0.5)
 
     aggroBlink:SetScript("OnShow", function(self)
@@ -2114,7 +2114,7 @@ function I.CreateShieldBar(parent)
     shieldBar.parentHealthBar = parent.widgets.healthBar
 
     function shieldBar:SetColor(r, g, b, a)
-        tex:SetColorTexture(r, g, b, a)
+        Cell.Polyfill.SetColorTexture(tex, r, g, b, a)
     end
 
     function shieldBar:UpdatePixelPerfect()
@@ -2165,7 +2165,7 @@ function I.CreateHealthThresholds(parent)
             else
                 healthThresholds.tex:SetPoint("BOTTOM", 0, Cell.vars.healthThresholds[found][1] * parent.widgets.healthBar:GetHeight())
             end
-            healthThresholds.tex:SetColorTexture(unpack(Cell.vars.healthThresholds[found][2]))
+            Cell.Polyfill.SetColorTexture(healthThresholds.tex, unpack(Cell.vars.healthThresholds[found][2]))
             healthThresholds:Show()
         else
             healthThresholds:Hide()
@@ -2179,7 +2179,7 @@ function I.CreateHealthThresholds(parent)
             for i, t in ipairs(Cell.vars.healthThresholds) do
                 healthThresholds[i] = healthThresholds[i] or healthThresholds:CreateTexture(nil, "ARTWORK")
                 P.Size(healthThresholds[i], healthThresholds.thickness, healthThresholds.thickness)
-                healthThresholds[i]:SetColorTexture(unpack(t[2]))
+                Cell.Polyfill.SetColorTexture(healthThresholds[i], unpack(t[2]))
                 -- healthThresholds[i]:SetBlendMode("ADD")
 
                 healthThresholds[i]:ClearAllPoints()
@@ -2220,11 +2220,11 @@ function I.CreatePowerWordShield(parent)
 
     -- simple vertical bars beside the unit button: yellow = PW:S duration, red = Weakened Soul
     local shieldBar = powerWordShield:CreateTexture(nil, "OVERLAY", nil, 0)
-    shieldBar:SetColorTexture(1, 1, 0, 0.9)
+    Cell.Polyfill.SetColorTexture(shieldBar, 1, 1, 0, 0.9)
     shieldBar:Hide()
 
     local wsBar = powerWordShield:CreateTexture(nil, "OVERLAY", nil, 1)
-    wsBar:SetColorTexture(1, 0.2, 0.2, 0.9)
+    Cell.Polyfill.SetColorTexture(wsBar, 1, 0.2, 0.2, 0.9)
     wsBar:Hide()
 
     powerWordShield.shieldBar = shieldBar
@@ -2378,12 +2378,12 @@ function I.CreateCombatIcon(parent)
     combatIcon.tex = combatIcon:CreateTexture(nil, "ARTWORK", nil, 0)
     combatIcon.tex:SetAllPoints()
     combatIcon.tex:SetTexture("Interface\\AddOns\\Cell_Ascension\\Media\\Icons\\combat", nil, nil, "TRILINEAR")
-    -- combatIcon.tex:SetAtlas("combat_swords-dynamicIcon")
+    -- Cell.Polyfill.SetAtlas(combatIcon.tex, "combat_swords-dynamicIcon")
 
     combatIcon.flashTex = combatIcon:CreateTexture(nil, "ARTWORK", nil, -5)
     combatIcon.flashTex:SetAllPoints()
     combatIcon.flashTex:SetTexture("Interface\\AddOns\\Cell_Ascension\\Media\\Icons\\combat_glow", nil, nil, "TRILINEAR")
-    -- combatIcon.flashTex:SetAtlas("combat_swords-flash")
+    -- Cell.Polyfill.SetAtlas(combatIcon.flashTex, "combat_swords-flash")
     combatIcon.flashTex:SetBlendMode("ADD")
 
     A.CreateBlinkAnimation(combatIcon.flashTex, nil, true)
@@ -2413,7 +2413,7 @@ function I.CreateMissingBuffs(parent)
         local name = parent:GetName().."MissingBuff"..i
         local frame = I.CreateAura_BarIcon(name, missingBuffs)
         tinsert(missingBuffs, frame)
-        frame:HookScript("OnSizeChanged", function()
+        Cell.Polyfill.HookScript(frame, "OnSizeChanged", function()
             LCG.ButtonGlow_Start(frame)
         end)
     end

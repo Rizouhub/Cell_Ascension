@@ -10,7 +10,7 @@ local function CreateChangelogsFrame()
     Cell.frames.changelogsFrame = changelogsFrame
     changelogsFrame:SetToplevel(true)
 
-    changelogsFrame.header.closeBtn:HookScript("OnClick", function()
+    Cell.Polyfill.HookScript(changelogsFrame.header.closeBtn, "OnClick", function()
         CellDB["changelogsViewed"] = Cell.version
     end)
 
@@ -38,7 +38,7 @@ local function CreateChangelogsFrame()
         C_Timer.After(0, function()
             local height
             if content.GetContentHeight then
-                height = content:GetContentHeight()
+                height = Cell.Polyfill.GetContentHeight(content)
             else
                 -- 3.3.5 fallback: use current frame height, or a sane default
                 height = content:GetHeight()
@@ -71,7 +71,7 @@ local function CreateChangelogsFrame()
         C_Timer.After(0, function()
             local height
             if content.GetContentHeight then
-                height = content:GetContentHeight()
+                height = Cell.Polyfill.GetContentHeight(content)
             else
                 height = content:GetHeight()
                 if height == 0 then

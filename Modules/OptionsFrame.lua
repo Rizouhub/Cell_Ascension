@@ -206,7 +206,7 @@ function F.ApplyCombatProtectionToFrame(f, x1, y1, x2, y2)
         f.combatMask:Show()
     end
 
-    f:HookScript("OnShow", function()
+    Cell.Polyfill.HookScript(f, "OnShow", function()
         if InCombatLockdown() then
             f.combatMask:Show()
         end
@@ -218,7 +218,7 @@ function F.ApplyCombatProtectionToWidget(widget)
     tinsert(protectedWidgets, widget)
 
     if InCombatLockdown() then
-        widget:SetEnabled(false)
+        Cell.Polyfill.SetEnabled(widget, false)
     end
 end
 
@@ -230,14 +230,14 @@ optionsFrame:SetScript("OnEvent", function(self, event)
             f.combatMask:Show()
         end
         for _, w in pairs(protectedWidgets) do
-            w:SetEnabled(false)
+            Cell.Polyfill.SetEnabled(w, false)
         end
     elseif event == "PLAYER_REGEN_ENABLED" then
         for _, f in pairs(protectedFrames) do
             f.combatMask:Hide()
         end
         for _, w in pairs(protectedWidgets) do
-            w:SetEnabled(true)
+            Cell.Polyfill.SetEnabled(w, true)
         end
     end
 end)
