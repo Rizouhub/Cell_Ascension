@@ -25,16 +25,8 @@ local eventFrame = CreateFrame("Frame")
 eventFrame:SetScript("OnEvent", function(_, event, ...)
     if event ~= "COMBAT_LOG_EVENT_UNFILTERED" then return end
 
-    -- WotLK 3.3.5a: sourceRaidFlags and destRaidFlags don't exist (added in 4.2.0)
-    local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellId, spellName
-    if CombatLogGetCurrentEventInfo then
-        -- Retail/Cata+ has sourceRaidFlags and destRaidFlags
-        local sourceRaidFlags, destRaidFlags
-        timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName = GetCLEUInfo(...)
-    else
-        -- WotLK 3.3.5a: No sourceRaidFlags/destRaidFlags
-        timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellId, spellName = GetCLEUInfo(...)
-    end
+    -- Ascension 3.3.5: raw CLEU varargs, no hideCaster, shim CombatLogGetCurrentEventInfo returns nothing
+    local timestamp, subevent, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellId, spellName = ...
     -- if subevent == "SPELL_SUMMON" then print(subevent, sourceName, sourceGUID, destName, destGUID, spellName) end
     if subevent == "SPELL_SUMMON" then
         -- print(sourceGUID == Cell.vars.playerGUID, destGUID, spellName, spellId)
@@ -71,37 +63,36 @@ function I.CreateAoEHealing(parent)
     aoeHealing.tex:SetAllPoints(aoeHealing)
     aoeHealing.tex:SetTexture(Cell.vars.whiteTexture)
 
-    local ag = aoeHealing:CreateAnimationGroup()
-    local a1 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
-    Cell.Polyfill.SetFromAlpha(a1, 0)
-    Cell.Polyfill.SetToAlpha(a1, 1)
-    a1:SetDuration(0.5)
-    a1:SetOrder(1)
-    a1:SetSmoothing("OUT")
-    local a2 = Cell.Polyfill.CreateAnimation(ag, "Alpha")
-    Cell.Polyfill.SetFromAlpha(a2, 1)
-    Cell.Polyfill.SetToAlpha(a2, 0)
-    a2:SetDuration(0.5)
-    a2:SetOrder(2)
-    a2:SetSmoothing("IN")
+    -- Ascension 3.3.5: Alpha animations wipe the texture's gradient state on every tick,
+    -- so the fade is done manually with frame:SetAlpha (render-level, doesn't touch the texture)
+    local FADE_IN, FADE_OUT = 0.5, 0.5
 
-    ag:SetScript("OnPlay", function()
-        aoeHealing:Show()
-    end)
-    ag:SetScript("OnFinished", function()
-        aoeHealing:Hide()
-    end)
+    local function OnFade(self, dt)
+        self._t = self._t + dt
+        if self._t < FADE_IN then
+            self:SetAlpha(self._t / FADE_IN)
+        elseif self._t < FADE_IN + FADE_OUT then
+            self:SetAlpha(1 - (self._t - FADE_IN) / FADE_OUT)
+        else
+            self:SetScript("OnUpdate", nil)
+            self:Hide()
+            self:SetAlpha(1)
+        end
+    end
 
     function aoeHealing:SetColor(r, g, b)
+        aoeHealing.r, aoeHealing.g, aoeHealing.b = r, g, b
         Cell.Polyfill.SetGradient(aoeHealing.tex, "VERTICAL", CreateColor(r, g, b, 0), CreateColor(r, g, b, 0.77))
     end
 
     function aoeHealing:Display()
-        -- if ag:IsPlaying() then
-        --     ag:Restart()
-        -- else
-            ag:Play()
-        -- end
+        if aoeHealing.r then -- reapply, Hide/Show state changes may also reset it
+            Cell.Polyfill.SetGradient(aoeHealing.tex, "VERTICAL", CreateColor(aoeHealing.r, aoeHealing.g, aoeHealing.b, 0), CreateColor(aoeHealing.r, aoeHealing.g, aoeHealing.b, 0.77))
+        end
+        aoeHealing._t = 0
+        aoeHealing:SetAlpha(0)
+        aoeHealing:Show()
+        aoeHealing:SetScript("OnUpdate", OnFade)
     end
 end
 

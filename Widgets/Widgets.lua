@@ -633,6 +633,10 @@ function Cell.CreateButton(parent, text, buttonColor, size, noBorder, noBackgrou
 
     -- texture
     function b:SetTexture(tex, texSize, point, isAtlas, noPushDownEffect)
+        if not tex then -- Ascension fix: nil texture (e.g. customRangeSpellBtn:SetTexture(nil))
+            if b.tex then b.tex:Hide() end
+            return
+        end
         b.tex = b:CreateTexture(nil, "ARTWORK")
         b.tex:SetPoint(unpack(point))
         b.tex:SetSize(unpack(texSize))
@@ -1980,7 +1984,7 @@ function Cell.CreatePopupEditBox(parent, func, multiLine)
         end)
 
         function eb:ShowEditBox(text)
-            eb:SetText(text)
+            eb:SetText(text and tostring(text) or "") -- Ascension fix: SetText(nil) errors on 3.3.5
             eb:Show()
         end
 

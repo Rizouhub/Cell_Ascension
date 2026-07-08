@@ -7,6 +7,7 @@ local U = Cell.uFuncs
 function F.Revise()
     local dbRevision = CellDB["revise"] and tonumber(string.match(CellDB["revise"], "%d+")) or 0
     F.Debug("DBRevision:", dbRevision)
+    if CellDB["revise"] == Cell.version and (not CellCharacterDB or CellCharacterDB["revise"] == Cell.version) then return end -- fork version stuck at r1: skip re-running migrations every login (was resetting scale to 1)
 
     local charaDbRevision
     if CellCharacterDB then
