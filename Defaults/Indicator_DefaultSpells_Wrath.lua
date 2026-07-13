@@ -178,12 +178,16 @@ function I.UpdateAoEHealings(t)
     -- user created
     wipe(customAoEHealings)
     for _, id in pairs(t["custom"]) do
+        local name = F.GetSpellInfo(id)
+        if name then
+            customAoEHealings[name] = true
+        end
         customAoEHealings[id] = true
     end
 end
 
 function I.IsAoEHealing(name, id)
-    return builtInAoEHealings[name] or builtInAoEHealings[id] or customAoEHealings[id]
+    return builtInAoEHealings[name] or builtInAoEHealings[id] or customAoEHealings[id] or customAoEHealings[name]
 end
 
 local summonDuration = {}
@@ -256,16 +260,16 @@ function I.UpdateExternals(t)
     -- user created
     wipe(customExternals)
     for _, id in pairs(t["custom"]) do
-        -- local name = F.GetSpellInfo(id)
-        -- if name then
-        --     customExternals[name] = true
-        -- end
+        local name = F.GetSpellInfo(id)
+        if name then
+            customExternals[name] = true
+        end
         customExternals[id] = true
     end
 end
 
 function I.IsExternalCooldown(name, id, source, target)
-    return builtInExternals[name] or builtInExternals[id] or customExternals[id]
+    return builtInExternals[name] or builtInExternals[id] or customExternals[id] or customExternals[name]
 end
 
 -------------------------------------------------
@@ -348,10 +352,10 @@ function I.UpdateDefensives(t)
     -- user created
     wipe(customDefensives)
     for _, id in pairs(t["custom"]) do
-        -- local name = F.GetSpellInfo(id)
-        -- if name then
-        --     customDefensives[name] = true
-        -- end
+        local name = F.GetSpellInfo(id)
+        if name then
+            customDefensives[name] = true
+        end
         customDefensives[id] = true
     end
 end
@@ -364,7 +368,7 @@ local defensiveBlacklist = {
 
 function I.IsDefensiveCooldown(name, id)
     if defensiveBlacklist[id] then return end
-    return builtInDefensives[name] or builtInDefensives[id] or customDefensives[id]
+    return builtInDefensives[name] or builtInDefensives[id] or customDefensives[id] or customDefensives[name]
 end
 
 -------------------------------------------------

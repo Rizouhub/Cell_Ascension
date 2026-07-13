@@ -353,7 +353,7 @@ LoadSnippet = function(index)
         selected = index
         forceLoadSelected = false
         codePane:SetText(CellDB["snippets"][index]["code"])
-        Cell.Polyfill.SetEnabled(codePane, true)
+        Cell.Polyfill.SetEnabled(codePane.eb, true)
         Cell.Polyfill.SetEnabled(bottomPane.runBtn, true)
         Cell.Polyfill.SetEnabled(bottomPane.saveBtn, false)
         Cell.Polyfill.SetEnabled(bottomPane.cancelBtn, false)
