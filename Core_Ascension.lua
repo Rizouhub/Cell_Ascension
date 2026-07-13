@@ -71,17 +71,11 @@ CellParent:SetFrameLevel(0)
 -------------------------------------------------
 -- layout
 -------------------------------------------------
-local delayedLayoutGroupType
-local delayedFrame = CreateFrame("Frame")
-delayedFrame:SetScript("OnEvent", function()
-    delayedFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-    F.UpdateLayout(delayedLayoutGroupType)
-end)
+
 
 function F.UpdateLayout(layoutGroupType)
     if InCombatLockdown() then
-        delayedLayoutGroupType = layoutGroupType
-        delayedFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+        Timer.AfterCombat(function() local gtype = F.GetGroupType() F.UpdateLayout(gtype) end)
     else
 
         Cell.vars.layoutAutoSwitch = CellCharacterDB["layoutAutoSwitch"][Cell.vars.activeTalentGroup]
