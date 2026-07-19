@@ -42,8 +42,12 @@ local function UpdateColor_HSBA(h, s, b, a, updateBrightness, updatePickers)
 
     if updatePickers then
         picker:SetPoint("CENTER", hueSaturation, "BOTTOMLEFT", H/360*hueSaturation:GetWidth(), S*hueSaturation:GetHeight())
+        brightness.isUpdating = true
         brightness:SetValue(1-B)
+        brightness.isUpdating = nil
+        alpha.isUpdating = true
         alpha:SetValue(1-a)
+        alpha.isUpdating = nil
     end
 end
 
@@ -73,6 +77,7 @@ local function CreateEB(label, width, height, isNumeric, group)
     eb:SetScript("OnEditFocusGained", function()
         eb:HighlightText()
         eb.oldText = eb:GetText()
+        colorPicker.activeEditBox = eb
     end)
 
     eb:SetScript("OnEditFocusLost", function()
@@ -82,7 +87,7 @@ local function CreateEB(label, width, height, isNumeric, group)
         end
     end)
 
-    eb:SetScript("OnEnterPressed", function()
+    function eb:Commit()
         if isNumeric then
             if group == "rgb" then
                 if rEB:GetNumber() > 255 then
@@ -134,7 +139,10 @@ local function CreateEB(label, width, height, isNumeric, group)
             H, S, B = F.ConvertRGBToHSB(r, g, b)
             UpdateAll("rgb", r, g, b, A, true, true)
         end
+    end
 
+    eb:SetScript("OnEnterPressed", function()
+        eb:Commit()
         eb:ClearFocus()
     end)
 
@@ -200,6 +208,7 @@ local function CreateColorPicker()
     hueSaturationBG:SetPoint("TOPLEFT", current, "BOTTOMLEFT", 0, -7)
 
     hueSaturation = CreateFrame("Frame", nil, hueSaturationBG)
+    hueSaturation:EnableMouse(true)
     hueSaturation:SetPoint("TOPLEFT", P.Scale(1), P.Scale(-1))
     hueSaturation:SetPoint("BOTTOMRIGHT", P.Scale(-1), P.Scale(1))
 
@@ -254,8 +263,8 @@ local function CreateColorPicker()
     P.Size(brightness, 17, 130)
     brightness:SetPoint("TOPLEFT", hueSaturation, "TOPRIGHT", 15, 0)
 
-    brightness:SetScript("OnValueChanged", function(self, value, userChanged)
-        if not userChanged then return end
+    brightness:SetScript("OnValueChanged", function(self, value)
+        if self.isUpdating then return end
         B = 1 - value
 
         if brightness.prev == B then return end
@@ -302,8 +311,8 @@ local function CreateColorPicker()
         alpha:SetAlpha(0.2)
         alpha.thumb2:SetVertexColor(0.2, 0.2, 0.2, 1)
     end)
-    alpha:SetScript("OnValueChanged", function(self, value, userChanged)
-        if not userChanged then return end
+    alpha:SetScript("OnValueChanged", function(self, value)
+        if self.isUpdating then return end
         A = 1 - value
 
         if alpha.prev == A then return end
@@ -397,10 +406,8 @@ local function CreateColorPicker()
         local mouseX, mouseY = GetCursorPosition()
 
         local scale = picker:GetEffectiveScale()
-        mouseX, mouseY = mouseX/scale, mouseY/scale
 
         -- start dragging
-        local x, y = select(4, picker:GetPoint(1))
         picker:StartMoving(mouseX/scale-hueSaturationX, mouseY/scale-hueSaturationY, mouseX, mouseY)
     end)
 
@@ -464,6 +471,7 @@ function Cell.ShowColorPicker(callback, onConfirm, hasAlpha, r, g, b, a)
     -- clear previous
     brightness.prev = nil
     alpha.prev = nil
+    colorPicker.activeEditBox = nil
 
     -- already shown, restore previous
     if colorPicker:IsShown() then
@@ -481,6 +489,14 @@ function Cell.ShowColorPicker(callback, onConfirm, hasAlpha, r, g, b, a)
     Callback = callback
 
     confirmBtn:SetScript("OnClick", function()
+        -- A mouse click on Confirm does not fire an edit box's OnEnterPressed
+        -- script, so commit the active field before accepting the picker.
+        local activeEditBox = colorPicker.activeEditBox
+        if activeEditBox and activeEditBox.Commit then
+            activeEditBox:Commit()
+            activeEditBox:ClearFocus()
+        end
+        colorPicker.activeEditBox = nil
         colorPicker:Hide()
         if onConfirm then
             local r, g, b = F.ConvertHSBToRGB(H, S, B)
@@ -490,6 +506,7 @@ function Cell.ShowColorPicker(callback, onConfirm, hasAlpha, r, g, b, a)
 
     cancelBtn:SetScript("OnClick", function()
         colorPicker:Hide()
+        colorPicker.activeEditBox = nil
         if callback then callback(oR, oG, oB, oA) end
     end)
 
