@@ -430,6 +430,20 @@ local function Debuffs_SetOrientation(self, orientation)
     self:UpdateSize()
 end
 
+local function Debuffs_UpdateMouse(debuffs)
+    local click = debuffs.enableBlacklistShortcut
+    local motion = debuffs.showTooltip
+
+    for i = 1, 10 do
+        if Cell.isWrath or Cell.isVanilla or Cell.isCata then
+            debuffs[i]:EnableMouse(click or motion)
+        else
+            Cell.Polyfill.SetMouseClickEnabled(debuffs[i], click)
+            Cell.Polyfill.SetMouseMotionEnabled(debuffs[i], motion)
+        end
+    end
+end
+
 local function Debuffs_ShowTooltip(debuffs, show)
     debuffs.showTooltip = show
 
@@ -446,29 +460,13 @@ local function Debuffs_ShowTooltip(debuffs, show)
             debuffs[i]:SetScript("OnLeave", function()
                 GameTooltip:Hide()
             end)
-
-            -- https://warcraft.wiki.gg/wiki/API_ScriptRegion_EnableMouse
-            if not debuffs.enableBlacklistShortcut then
-                if Cell.isWrath or Cell.isVanilla or Cell.isCata then
-                    debuffs[i]:EnableMouse(true)
-                else
-                    Cell.Polyfill.SetMouseClickEnabled(debuffs[i], false)
-                end
-            end
         else
             debuffs[i]:SetScript("OnEnter", nil)
             debuffs[i]:SetScript("OnLeave", nil)
-            if debuffs.enableBlacklistShortcut then
-                if Cell.isWrath or Cell.isVanilla or Cell.isCata then
-                     debuffs[i]:EnableMouse(false)
-                else
-                     Cell.Polyfill.SetMouseMotionEnabled(debuffs[i], false)
-                end
-            else
-                debuffs[i]:EnableMouse(false)
-            end
         end
     end
+
+    Debuffs_UpdateMouse(debuffs)
 end
 
 local function Debuffs_EnableBlacklistShortcut(debuffs, enabled)
@@ -477,12 +475,14 @@ local function Debuffs_EnableBlacklistShortcut(debuffs, enabled)
     for i = 1, 10 do
         if enabled then
             debuffs[i]:SetScript("OnMouseUp", function(self, button, isInside)
-                if button == "RightButton" and isInside and IsLeftAltKeyDown() and IsLeftControlKeyDown()
+                if button == "RightButton" and (isInside or self:IsMouseOver()) and IsLeftAltKeyDown() and IsLeftControlKeyDown()
                     and self.spellId and not F.TContains(CellDB["debuffBlacklist"], self.spellId) then
                     -- print msg
                     local name, icon = F.GetSpellInfo(self.spellId)
                     if name and icon then
-                        F.Print(L["Added |T%d:0|t|cFFFF3030%s(%d)|r into debuff blacklist."]:format(icon, name, self.spellId))
+                        local msg = L["Added |T%d:0|t|cFFFF3030%s(%d)|r into debuff blacklist."]
+                        msg = msg:gsub("%%d:0", "%%s:0")
+                        F.Print(msg:format(icon, name, self.spellId))
                     end
                     -- update db
                     tinsert(CellDB["debuffBlacklist"], self.spellId)
@@ -494,13 +494,10 @@ local function Debuffs_EnableBlacklistShortcut(debuffs, enabled)
             end)
         else
             debuffs[i]:SetScript("OnMouseUp", nil)
-            if debuffs.showTooltip then
-                Cell.Polyfill.SetMouseClickEnabled(debuffs[i], false)
-            else
-                debuffs[i]:EnableMouse(false)
-            end
         end
     end
+
+    Debuffs_UpdateMouse(debuffs)
 end
 
 function I.CreateDebuffs(parent)
@@ -922,6 +919,11 @@ local function RaidDebuffs_ShowTooltip(raidDebuffs, show)
             raidDebuffs[i]:SetScript("OnLeave", function()
                 GameTooltip:Hide()
             end)
+            if Cell.isWrath or Cell.isVanilla or Cell.isCata then
+                raidDebuffs[i]:EnableMouse(true)
+            else
+                Cell.Polyfill.SetMouseMotionEnabled(raidDebuffs[i], true)
+            end
         else
             raidDebuffs[i]:SetScript("OnEnter", nil)
             raidDebuffs[i]:SetScript("OnLeave", nil)
