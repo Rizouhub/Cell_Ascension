@@ -88,6 +88,13 @@ select(2, ...).L = setmetatable({
 
     ["CHANGELOGS"] = [[
 
+        <h1>r1.0.6-release (2026-07-20)</h1>
+        <p>* Restore HealAbsorb bar options.</p>
+        <p>* Added Directional Arrow Indicator (Thanks @Rizou!).</p>
+        <br/>
+
+    
+
         <h1>r1.0.5-release (2026-07-11)</h1>
         <p>* Fix pets not showing up when detached layout is toggled on.</p>
         <br/>

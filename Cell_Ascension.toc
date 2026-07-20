@@ -1,6 +1,6 @@
 ## Interface: 30300
 ## Title: Cell
-## Version: r1.0.5-release
+## Version: r1.0.6-release
 ## Author: enderneko , modified by Netherborne and Holyjezus
 ## Notes: Clean healing addon with customizable frames.
 ## X-Flavor: Ascension
