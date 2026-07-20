@@ -586,6 +586,12 @@ local function UpdateIndicators(layout, indicatorName, setting, value, value2)
                         b.indicators[indicatorName]:Hide()
                     end
                 end, true)
+            elseif indicatorName == "directionArrow" then
+                F.IterateAllUnitButtons(function(b)
+                    if not value and b.indicators[indicatorName] then
+                        b.indicators[indicatorName]:Hide()
+                    end
+                end, true)
             elseif indicatorName == "aoeHealing" then
                 I.EnableAoEHealing(value)
             elseif indicatorName == "targetCounter" then
@@ -2110,6 +2116,15 @@ local function UnitButton_UpdateInRange(self)
             else
                 A.FrameFadeOut(self, 0.25, self:GetAlpha(), CellDB["appearance"]["outOfRangeAlpha"])
             end
+
+            -- direction arrow (shown while mouseover an out-of-range unit)
+            if self._isMouseOver and enabledIndicators["directionArrow"] and self.indicators.directionArrow then
+                if inRange then
+                    self.indicators.directionArrow:Hide()
+                else
+                    self.indicators.directionArrow:Show()
+                end
+            end
         end
         self.states.wasInRange = inRange
         -- self:SetAlpha(inRange and 1 or CellDB["appearance"]["outOfRangeAlpha"])
@@ -2796,6 +2811,11 @@ local function UnitButton_OnEnter(self)
 
     if highlightEnabled then self.widgets.mouseoverHighlight:Show() end
 
+    self._isMouseOver = true
+    if enabledIndicators["directionArrow"] and not self.states.inRange and self.indicators.directionArrow then
+        self.indicators.directionArrow:Show()
+    end
+
     local unit = self.states.displayedUnit
     if not unit then return end
 
@@ -2805,6 +2825,11 @@ end
 local function UnitButton_OnLeave(self)
     self.widgets.mouseoverHighlight:Hide()
     GameTooltip:Hide()
+
+    self._isMouseOver = nil
+    if self.indicators.directionArrow then
+        self.indicators.directionArrow:Hide()
+    end
 end
 
 local UNKNOWN = _G.UNKNOWN
@@ -3813,6 +3838,7 @@ function CellUnitButton_OnLoad(button)
     I.CreateRoleIcon(button)
     I.CreateLeaderIcon(button)
     I.CreateCombatIcon(button)
+    I.CreateDirectionArrow(button)
     I.CreateReadyCheckIcon(button)
     I.CreateAggroBlink(button)
     I.CreateAggroBorder(button)

@@ -1,7 +1,7 @@
 local addonName, Cell = ...
 
 -- number of built-in indicators
-Cell.defaults.builtIns = 29
+Cell.defaults.builtIns = 30
 
 Cell.defaults.indicatorIndices = {
     ["nameText"] = 1,
@@ -33,6 +33,7 @@ Cell.defaults.indicatorIndices = {
     ["crowdControls"] = 27,
     ["actions"] = 28,
     ["missingBuffs"] = 29,
+    ["directionArrow"] = 30,
 }
 
 Cell.defaults.layout = {
@@ -514,6 +515,16 @@ Cell.defaults.layout = {
             ["size"] = {13, 13},
             ["orientation"] = "right-to-left",
         }, -- 29
+        {
+            ["name"] = "Direction Arrow",
+            ["indicatorName"] = "directionArrow",
+            ["type"] = "built-in",
+            ["enabled"] = true,
+            ["color"] = {1, 0.2, 0.1, 1},
+            ["position"] = {"CENTER", "healthBar", "CENTER", 0, 0},
+            ["frameLevel"] = 50,
+            ["size"] = {16, 16},
+        }, -- 30
     },
 }
 

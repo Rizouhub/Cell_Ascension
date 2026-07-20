@@ -1591,6 +1591,7 @@ indicatorSettings = {
 ["roleIcon"] = {"enabled", "checkbutton:hideDamager", "size-square", "roleTexture", "position", "frameLevel"},
 ["leaderIcon"] = {"enabled", "checkbutton:hideInCombat", "size-square", "position"},
 ["combatIcon"] = {"enabled", "checkbutton:onlyEnableNotInCombat", "size-square", "position", "frameLevel"},
+["directionArrow"] = {"enabled", "color-alpha", "size-square", "position", "frameLevel"},
 ["readyCheckIcon"] = {"enabled", "size-square", "position", "frameLevel"},
 ["playerRaidIcon"] = {"enabled", "size-square", "alpha", "position", "frameLevel"},
 ["targetRaidIcon"] = {"enabled", "size-square", "alpha", "position", "frameLevel"},
