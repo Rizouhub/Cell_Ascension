@@ -558,51 +558,51 @@ do
         return timer
     end
 
-    -- Completely replace C_Timer (don't try to preserve native version)
-    C_Timer = {
-        After = function(durationOrSelf, callbackOrDuration, maybeCallback)
-            -- Handle both C_Timer.After(duration, callback) and C_Timer:After(duration, callback)
-            local duration, callback
-            if type(durationOrSelf) == "table" and durationOrSelf == C_Timer then
-                -- Called with colon syntax: C_Timer:After(duration, callback)
-                duration = callbackOrDuration
-                callback = maybeCallback
-            else
-                -- Called with dot syntax: C_Timer.After(duration, callback)
-                duration = durationOrSelf
-                callback = callbackOrDuration
-            end
-            CreateTimer(duration, callback, false)
-        end,
+    -- -- Completely replace C_Timer (don't try to preserve native version)
+    -- C_Timer = {
+    --     After = function(durationOrSelf, callbackOrDuration, maybeCallback)
+    --         -- Handle both C_Timer.After(duration, callback) and C_Timer:After(duration, callback)
+    --         local duration, callback
+    --         if type(durationOrSelf) == "table" and durationOrSelf == C_Timer then
+    --             -- Called with colon syntax: C_Timer:After(duration, callback)
+    --             duration = callbackOrDuration
+    --             callback = maybeCallback
+    --         else
+    --             -- Called with dot syntax: C_Timer.After(duration, callback)
+    --             duration = durationOrSelf
+    --             callback = callbackOrDuration
+    --         end
+    --         CreateTimer(duration, callback, false)
+    --     end,
 
-        NewTimer = function(durationOrSelf, callbackOrDuration, maybeCallback)
-            -- Handle both calling conventions
-            local duration, callback
-            if type(durationOrSelf) == "table" and durationOrSelf == C_Timer then
-                duration = callbackOrDuration
-                callback = maybeCallback
-            else
-                duration = durationOrSelf
-                callback = callbackOrDuration
-            end
-            return CreateTimer(duration, callback, false)
-        end,
+    --     NewTimer = function(durationOrSelf, callbackOrDuration, maybeCallback)
+    --         -- Handle both calling conventions
+    --         local duration, callback
+    --         if type(durationOrSelf) == "table" and durationOrSelf == C_Timer then
+    --             duration = callbackOrDuration
+    --             callback = maybeCallback
+    --         else
+    --             duration = durationOrSelf
+    --             callback = callbackOrDuration
+    --         end
+    --         return CreateTimer(duration, callback, false)
+    --     end,
 
-        NewTicker = function(durationOrSelf, callbackOrDuration, iterationsOrCallback, maybeIterations)
-            -- Handle both calling conventions
-            local duration, callback, iterations
-            if type(durationOrSelf) == "table" and durationOrSelf == C_Timer then
-                duration = callbackOrDuration
-                callback = iterationsOrCallback
-                iterations = maybeIterations
-            else
-                duration = durationOrSelf
-                callback = callbackOrDuration
-                iterations = iterationsOrCallback
-            end
-            return CreateTimer(duration, callback, true)
-        end
-    }
+    --     NewTicker = function(durationOrSelf, callbackOrDuration, iterationsOrCallback, maybeIterations)
+    --         -- Handle both calling conventions
+    --         local duration, callback, iterations
+    --         if type(durationOrSelf) == "table" and durationOrSelf == C_Timer then
+    --             duration = callbackOrDuration
+    --             callback = iterationsOrCallback
+    --             iterations = maybeIterations
+    --         else
+    --             duration = durationOrSelf
+    --             callback = callbackOrDuration
+    --             iterations = iterationsOrCallback
+    --         end
+    --         return CreateTimer(duration, callback, true)
+    --     end
+    -- }
 end
 
 -- C_Spell
