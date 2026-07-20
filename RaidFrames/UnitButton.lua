@@ -3874,7 +3874,7 @@ function CellUnitButton_OnLoad(button)
     -- shield bar
     local shieldBar = midLevelFrame:CreateTexture(name.."ShieldBar", "ARTWORK", nil, -5)
     button.widgets.shieldBar = shieldBar
-    shieldBar:SetTexture("Interface\\AddOns\\Cell_Ascension\\Media\\shield", "REPEAT", "REPEAT")
+    shieldBar:SetTexture("Interface\\AddOns\\Cell_Ascension\\Media\\shieldabsorbs.tga", "REPEAT", "REPEAT")
     shieldBar:SetHorizTile(true)
     shieldBar:SetVertTile(true)
     shieldBar:Hide()
@@ -3882,7 +3882,7 @@ function CellUnitButton_OnLoad(button)
 
     local shieldBarR = midLevelFrame:CreateTexture(name.."ShieldBarR", "ARTWORK", nil, -5)
     button.widgets.shieldBarR = shieldBarR
-    shieldBarR:SetTexture("Interface\\AddOns\\Cell_Ascension\\Media\\shield", "REPEAT", "REPEAT")
+    shieldBarR:SetTexture("Interface\\AddOns\\Cell_Ascension\\Media\\shieldabsorbs.tga", "REPEAT", "REPEAT")
     shieldBarR:SetHorizTile(true)
     shieldBarR:SetVertTile(true)
     shieldBarR:Hide()

@@ -827,19 +827,17 @@ local function UpdateCheckButtons()
     Cell.Polyfill.SetEnabled(predColorPicker, CellDB["appearance"]["healPrediction"][1] and CellDB["appearance"]["healPrediction"][2])
     Cell.Polyfill.SetEnabled(shieldColorPicker, CellDB["appearance"]["shield"][1])
     Cell.Polyfill.SetEnabled(reverseCB, CellDB["appearance"]["shield"][1])
-    -- WotLK 3.3.5a: Keep heal absorb controls hidden (don't enable/show them)
-    -- Cell.Polyfill.SetEnabled(absorbColorPicker, CellDB["appearance"]["healAbsorb"][1])
-    -- Cell.Polyfill.SetEnabled(invertColorCB, CellDB["appearance"]["healAbsorb"][1])
+    Cell.Polyfill.SetEnabled(absorbColorPicker, CellDB["appearance"]["healAbsorb"][1])
+    Cell.Polyfill.SetEnabled(invertColorCB, CellDB["appearance"]["healAbsorb"][1])
     Cell.Polyfill.SetEnabled(oversColorPicker, CellDB["appearance"]["overshield"][1])
 
-    -- WotLK 3.3.5a: Keep heal absorb controls hidden
-    -- if CellDB["appearance"]["healAbsorbInvertColor"] then
-    --     absorbCB:SetText(L["Heal Absorb"])
-    --     absorbColorPicker:Hide()
-    -- else
-    --     absorbCB:SetText("")
-    --     absorbColorPicker:Show()
-    -- end
+    if CellDB["appearance"]["healAbsorbInvertColor"] then
+        absorbCB:SetText(L["Heal Absorb"])
+        absorbColorPicker:Hide()
+    else
+        absorbCB:SetText("")
+        absorbColorPicker:Show()
+    end
 end
 
 local function UpdateColorPickers()
@@ -1459,7 +1457,6 @@ local function CreateUnitButtonStylePane()
     -- useLibCB:SetPoint("TOPLEFT", predCustomCB, "BOTTOMLEFT", 0, -7)
     -- Cell.Polyfill.SetEnabled(useLibCB, Cell.isVanilla or Cell.isCata)
 
-    -- WotLK 3.3.5a: Heal absorbs don't exist in WotLK, hide these settings
     -- heal absorb
     absorbCB = Cell.CreateCheckButton(unitButtonPane, "", function(checked, self)
         CellDB["appearance"]["healAbsorb"][1] = checked
@@ -1468,7 +1465,6 @@ local function CreateUnitButtonStylePane()
     end)
     absorbCB:SetPoint("TOPLEFT", predCB, "BOTTOMLEFT", 0, -28)
     Cell.Polyfill.SetEnabled(absorbCB, true)
-    absorbCB:Hide()  -- WotLK: Hide this setting
 
     absorbColorPicker = Cell.CreateColorPicker(unitButtonPane, L["Heal Absorb"], true, function(r, g, b, a)
         CellDB["appearance"]["healAbsorb"][2][1] = r
@@ -1478,7 +1474,6 @@ local function CreateUnitButtonStylePane()
         Cell.Fire("UpdateAppearance", "shields")
     end)
     absorbColorPicker:SetPoint("TOPLEFT", absorbCB, "TOPRIGHT", 5, 0)
-    absorbColorPicker:Hide()  -- WotLK: Hide this setting
 
     -- heal absorb invert color
     invertColorCB = Cell.CreateCheckButton(unitButtonPane, L["Invert Color"], function(checked, self)
@@ -1487,7 +1482,6 @@ local function CreateUnitButtonStylePane()
         Cell.Fire("UpdateAppearance", "shields")
     end)
     invertColorCB:SetPoint("TOPLEFT", absorbCB, "BOTTOMRIGHT", 0, -7)
-    invertColorCB:Hide()  -- WotLK: Hide this setting
 
     -- shield
     shieldCB = Cell.CreateCheckButton(unitButtonPane, "", function(checked, self)
@@ -1495,9 +1489,7 @@ local function CreateUnitButtonStylePane()
         UpdateCheckButtons()
         Cell.Fire("UpdateAppearance", "shields")
     end)
-    -- WotLK: Position at same level as Heal Prediction (not as a child)
-    -- Place below predCustomCB but align with predCB's left edge
-    shieldCB:SetPoint("TOPLEFT", predCB, "BOTTOMLEFT", 0, -35)
+    shieldCB:SetPoint("TOPLEFT", absorbCB, "BOTTOMLEFT", 0, -28)
     Cell.Polyfill.SetEnabled(shieldCB, not Cell.isVanilla)
 
     shieldColorPicker = Cell.CreateColorPicker(unitButtonPane, L["Shield Texture"], true, function(r, g, b, a)
