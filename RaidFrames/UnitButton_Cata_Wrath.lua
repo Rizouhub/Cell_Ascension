@@ -1566,7 +1566,7 @@ local function UnitButton_UpdateHealthStates(self, diff)
     end
 
     if enabledIndicators["healthText"] then -- and not self.states.isDeadOrGhost then
-        self.indicators.healthText:SetValue(health, healthMax, self.states.totalAbsorbs, 0)
+        self.indicators.healthText:SetValue(health, healthMax, self.states.totalAbsorbs, self.states.healAbsorbs)
         self.indicators.healthText:Show()
     else
         self.indicators.healthText:Hide()
@@ -2309,19 +2309,23 @@ UnitButton_UpdateShieldAbsorbs = function(self)
 end
 
 UnitButton_UpdateHealAbsorbs = function(self, skipStateUpdates)
+    local unit = self.states.displayedUnit
+    if not unit then return end
+
+    if not skipStateUpdates then
+        UnitButton_UpdateHealthStates(self)
+    end
+
+    if enabledIndicators["healthText"] then
+        self.indicators.healthText:SetValue(self.states.health, self.states.healthMax, self.states.totalAbsorbs, self.states.healAbsorbs)
+    end
+
     if not absorbEnabled then
         if self.widgets.absorbsBar then
             self.widgets.absorbsBar:Hide()
             self.widgets.overAbsorbGlow:Hide()
         end
         return
-    end
-
-    local unit = self.states.displayedUnit
-    if not unit then return end
-
-    if not skipStateUpdates then
-        UnitButton_UpdateHealthStates(self)
     end
 
     if self.states.healAbsorbs > 0 then

@@ -2259,6 +2259,10 @@ UnitButton_UpdateShieldAbsorbs = function(self, skipStateUpdates)
         UnitButton_UpdateHealthStates(self)
     end
 
+    if enabledIndicators["healthText"] then
+        self.indicators.healthText:SetValue(self.states.health, self.states.healthMax, self.states.totalAbsorbs, self.states.healAbsorbs)
+    end
+
     if self.states.totalAbsorbs > 0 then
         local shieldPercent = self.states.totalAbsorbs / self.states.healthMax
 
@@ -2291,17 +2295,21 @@ UnitButton_UpdateShieldAbsorbs = function(self, skipStateUpdates)
 end
 
 local function UnitButton_UpdateHealAbsorbs(self, skipStateUpdates)
-    if not absorbEnabled then
-        self.widgets.absorbsBar:Hide()
-        self.widgets.overAbsorbGlow:Hide()
-        return
-    end
-
     local unit = self.states.displayedUnit
     if not unit then return end
 
     if not skipStateUpdates then
         UnitButton_UpdateHealthStates(self)
+    end
+
+    if enabledIndicators["healthText"] then
+        self.indicators.healthText:SetValue(self.states.health, self.states.healthMax, self.states.totalAbsorbs, self.states.healAbsorbs)
+    end
+
+    if not absorbEnabled then
+        self.widgets.absorbsBar:Hide()
+        self.widgets.overAbsorbGlow:Hide()
+        return
     end
 
     if self.states.healAbsorbs > 0 then
